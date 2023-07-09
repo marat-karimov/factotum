@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Factotum</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="schema-container">
+        <div id="schema-empty-state-container">
+          <div>Virtual database schema here</div>
+        </div>
+        <div id="schema"></div>
+      </div>
+
+      <div class="right">
+        <div class="small_element" , id="sql-editor-container">
+          <div class="content">
+            <textarea id="sql-editor">--Your SQL editor is here</textarea>
+          </div>
+        </div>
+
+        <div id="search-container">
+          <div id="search-box">
+            <input
+              placeholder="Find"
+              type="text"
+              id="search-field"
+              name="fSearch"
+            />
+            <span id="match-container">
+              <span id="current-match">0</span>/<span id="rows-matched">0</span>
+            </span>
+
+            <div id="next-button"></div>
+            <div id="prev-button"></div>
+            <div id="close-button"></div>
+          </div>
+        </div>
+
+        <div class="small_element" , id="table-container">
+          <div class="content"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="full_width">
+      <div id="logs-output"></div>
+    </div>
+
+    <div id="info-panel">
+      <span id="engine"></span> <span id="memory-usage"></span>
+    </div>
+  </body>
+</html>

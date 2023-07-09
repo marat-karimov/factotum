@@ -1,0 +1,226 @@
+* {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: monospace, monospace;
+  color: #a9b7c6;
+  background-color: #282828;
+}
+
+.container {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.schema-container,
+.small_element {
+  max-height: 100%;
+}
+
+.schema-container {
+  overflow-y: auto;
+  max-height: 100%;
+  resize: horizontal;
+  min-width: 20%;
+  background-color: #2b2b2b;
+  font-size: 14px;
+  border-right: 1px solid #3d3d3d;
+}
+
+#sql-editor {
+  width: 100%;
+  background-color: #282828;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-x: auto;
+  width: 100%;
+}
+
+.content {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.full_width {
+  padding: 15px;
+  width: 100%;
+  min-height: 10%;
+  max-height: 10%;
+  overflow-y: auto;
+  background-color: #313335;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+#table-container {
+  height: 100%;
+  color: #a9b7c6;
+  cursor: default;
+}
+
+#empty-state-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  font-size: 24px;
+  background-color: #282828;
+}
+
+#schema-empty-state-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 50%; /* adjust this as necessary */
+  font-size: 16px;
+  margin: 0 auto; /* add this line */
+  text-align: center;
+}
+.tabulator-cell-selected {
+  background-color: #014180;
+}
+
+.tabulator-row-selected {
+  background-color: #014180 !important;
+}
+
+.tabulator-rownum-selected {
+  background-color: #464646;
+}
+
+#lds-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-size: 24px;
+}
+
+#info-panel {
+  background-color: #014180;
+  padding: 5px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#engine {
+  align-self: flex-start;
+}
+
+#memory-usage {
+  align-self: flex-end;
+}
+
+.CodeMirror {
+  resize: vertical;
+  overflow: hidden;
+}
+
+.highlight {
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: rgb(255, 94, 94);
+  text-decoration-thickness: 1px;
+}
+
+::-webkit-scrollbar-corner {
+  background: #666;
+}
+
+#search-container {
+  max-height: 0;
+  visibility: hidden;
+}
+
+#search-container.visible {
+  visibility: visible;
+  min-height: 40px;
+}
+
+#search-box {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* Align items vertically */
+  font-size: 14px; /* Adjust size as necessary */
+  background-color: #313335;
+  padding: 8px;
+  border-top: 1px solid #3d3d3d;
+}
+
+#search-field {
+  margin-left: 33px;
+  margin-right: 10px; /* Add space to the right of the search input */
+  border: 1px solid #a9b7c6;
+  outline: none;
+  background-color: transparent;
+  height: 24px;
+  padding-left: 8px;
+  color: #a9b7c6;
+}
+
+#match-container {
+  display: inline-block;
+  width: 70px; /* Adjust this to the size that fits your content */
+  text-align: center; /* Center the content */
+}
+
+#rows-matched {
+  margin-right: 15px; /* Add space to the right of the rows matched */
+}
+
+/* CSS for arrows using Unicode characters */
+#next-button::before,
+#prev-button::before,
+#close-button::before {
+  transition: color 0.3s ease-in-out;
+  font-size: 18px; /* Adjust size as necessary */
+}
+
+#close-button {
+  margin-left: auto;
+}
+
+#next-button::before {
+  content: "🡓"; /* Up arrow */
+  margin-right: 10px; /* Add space to the right of the next button */
+}
+
+#prev-button::before {
+  content: "🡑"; /* Down arrow */
+}
+
+#close-button::before {
+  content: "✖";
+  font-size: 14px;
+}
+
+/* Dracula hover effect */
+#next-button:hover::before {
+  color: #fff;
+}
+
+#prev-button:hover::before {
+  color: #fff;
+}
+
+#close-button:hover::before {
+  color: #fff;
+}

@@ -1,0 +1,9 @@
+cx-Freeze==6.15.1
+cx-Logging==3.1.0
+lief==0.13.1
+polars==0.18.2
+xlsx2csv==0.8.1
+duckdb==0.8.1
+psutil==5.9.5
+sqlparse==0.4.4
+sqlglot==16.4.2

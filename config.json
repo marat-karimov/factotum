@@ -1,0 +1,12 @@
+{
+    "read_files": [
+        { "name": "Comma Separated", "extensions": ["csv"] },
+        { "name": "MS Excel", "extensions": ["xlsx"] },
+        { "name": "Apache Parquet", "extensions": ["parquet"] },
+        { "name": "JSON Files", "extensions": ["json"] }
+
+      ],
+      "write_files": [
+        { "name": "Comma Separated", "extensions": ["csv"] }
+      ]
+  }
