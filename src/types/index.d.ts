@@ -1,50 +1,19 @@
 export {};
 
 declare global {
-  interface Window {
-    api: any;
-  }
-
-  interface ImportFileResponse {
-    tableName: string;
-    error: string;
-  }
-
-  interface ExportFileResponse {
-    error: string;
-  }
-
+  type Engine = "polars" | "duckdb";
+  type Kind = "success" | "error" | "info";
   type TableData = Record<string, unknown>[];
-
-  interface RunSqlResponse {
-    tableData: TableData;
-    columns: string[];
-    error: string;
-  }
-
-  interface TableForRender {
-    tableData: TableData;
-    columns: string[];
-  }
-
   type DataBaseSchema = Record<string, string[]>;
 
-  interface DataBaseSchemaResponse {
-    schema: DataBaseSchema;
+  interface Window {
+    api: IpcApi;
   }
 
-  interface HeartbeatResponse {
-    heartbeat: string;
-    memory_usage_mb: number;
+  interface EditorValuePosition {
+    startPos: CodeMirror.Position;
+    endPos: CodeMirror.Position;
   }
-
-  interface KillResponse {
-    message: string;
-  }
-
-  type Engine = "polars" | "duckdb";
-
-  type Kind = "success" | "error" | "info";
 
   interface LogMessage {
     message: string;
@@ -61,14 +30,42 @@ declare global {
     error: string;
   }
 
-  interface EditorValuePosition {
-    startPos: CodeMirror.Position;
-    endPos: CodeMirror.Position;
-  }
-
   interface ErrorInput {
     sql: string;
     error: string;
+  }
+
+  interface ImportFileResponse {
+    tableName: string;
+    error: string;
+  }
+
+  interface ExportFileResponse {
+    error: string;
+  }
+
+  interface RunSqlResponse {
+    tableData: TableData;
+    columns: string[];
+    error: string;
+  }
+
+  interface TableForRender {
+    tableData: TableData;
+    columns: string[];
+  }
+
+  interface DataBaseSchemaResponse {
+    schema: DataBaseSchema;
+  }
+
+  interface HeartbeatResponse {
+    heartbeat: string;
+    memory_usage_mb: number;
+  }
+
+  interface KillResponse {
+    message: string;
   }
 
   interface ValidateResponse {
@@ -76,5 +73,11 @@ declare global {
     sql: string;
     last_statement: string;
     error: string;
+  }
+
+  interface IpcApi {
+    send: (channel: string, data?: any) => void;
+    receive: (channel: string, func: (...args: any[]) => void) => void;
+    invoke: <T>(channel: string, ...args: any[]) => Promise<T>;
   }
 }

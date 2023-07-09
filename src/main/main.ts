@@ -18,7 +18,7 @@ import {
   sendRenderSearchBox,
 } from "./ipcDispatcher";
 import { SqlHandler } from "./sqlHandler";
-import { ImportFileHandler } from "./importFileHandler";
+import { ImportFilesHandler as ImportFilesHandler } from "./importFileHandler";
 import { ExportFileHandler } from "./exportFileHandler";
 import { Heartbeat } from "./heartbeat";
 import { EngineSwitchHandler } from "./engineSwitchHandler";
@@ -40,10 +40,6 @@ const defaultEngine: Engine = "polars";
 spawnPythonProcess(defaultEngine);
 
 let mainWindow: BrowserWindow;
-
-async function handleRunSql() {
-  sendGetSqlToRun(mainWindow);
-}
 
 function createWindow() {
   // Create the browser window.
@@ -72,6 +68,10 @@ async function handleSearch() {
   });
 }
 
+async function handleRunSql() {
+  sendGetSqlToRun(mainWindow);
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -88,7 +88,7 @@ app.whenReady().then(() => {
   });
 
   const sqlHandler = new SqlHandler(mainWindow);
-  const importFileHandler = new ImportFileHandler(mainWindow, sqlHandler);
+  const importFilesHandler = new ImportFilesHandler(mainWindow, sqlHandler);
   const exportFileHandler = new ExportFileHandler(mainWindow);
   const heartbeat = new Heartbeat(mainWindow, app);
   heartbeat.startSendingHeartbeats();
@@ -99,14 +99,14 @@ app.whenReady().then(() => {
     heartbeat
   );
 
-  const mainMenuBuilder = new MainMenu(
+  const mainMenuBuilder = new MainMenu({
     mainWindow,
-    importFileHandler.handleImportFile,
-    exportFileHandler.handleExportFile,
-    handleRunSql,
-    handleSearch,
-    engineSwitch.handleEngineSwitch
-  );
+    importFilesHandler: importFilesHandler.handleImportFile,
+    exportFileHandler: exportFileHandler.handleExportFile,
+    runSqlHandler: handleRunSql,
+    searchHandler: handleSearch,
+    engineSwitchHandler: engineSwitch.handleEngineSwitch,
+  });
 
   const mainMenu = mainMenuBuilder.buildMenu();
   Menu.setApplicationMenu(mainMenu);

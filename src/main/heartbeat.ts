@@ -15,7 +15,7 @@ export class Heartbeat {
   }
 
   public startSendingHeartbeats = () => {
-    const _sendHeartbeat = async () => {
+    const sendHeartbeatAndMemoryUsage = async () => {
       const { memory_usage_mb: pythonRamUsage } = await sendHeartbeat();
       const nodeRamUsage = this.calcNodeRamUsage();
       const totalRamUsage = Math.round(pythonRamUsage + nodeRamUsage);
@@ -23,7 +23,7 @@ export class Heartbeat {
     };
 
     this.heartbeatIntervalId = setInterval(
-      _sendHeartbeat,
+      sendHeartbeatAndMemoryUsage,
       this.heartbeatInterval
     );
   };

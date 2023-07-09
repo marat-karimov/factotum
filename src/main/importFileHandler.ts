@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import {
-    sendAppendToEditor,
+  sendAppendToEditor,
   sendAppendToLogs,
   sendRenderEmptyState,
   sendRenderSpinner,
@@ -8,7 +8,7 @@ import {
 import { sendImportFile } from "./requestDispatcher";
 import { SqlHandler } from "./sqlHandler";
 
-export class ImportFileHandler {
+export class ImportFilesHandler {
   private win: BrowserWindow;
   private sqlHandler: SqlHandler
 

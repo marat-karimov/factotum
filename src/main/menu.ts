@@ -1,25 +1,43 @@
-import { Menu, dialog, BrowserWindow, MenuItemConstructorOptions } from "electron";
+import {
+  Menu,
+  dialog,
+  BrowserWindow,
+  MenuItemConstructorOptions,
+} from "electron";
 import { allowedReadFormats, allowedWriteFormats } from "./loadConfig";
 
 export class MainMenu {
   private mainWindow: BrowserWindow;
-  private openFileHandler: (filePath: string) => Promise<void>;
-  private saveFileHandler: (filePath: string) => Promise<void>;
+  private importFilesHandler: (filePath: string) => Promise<void>;
+  private exportFileHandler: (filePath: string) => Promise<void>;
   private runSqlHandler: () => Promise<void>;
   private searchHandler: () => Promise<void>;
-  private engineSwitchHandler: (selectedItemId: string, otherItemId: string) => Promise<void>;
+  private engineSwitchHandler: (
+    selectedItemId: string,
+    otherItemId: string
+  ) => Promise<void>;
 
-  constructor(
-    mainWindow: BrowserWindow,
-    openFileHandler: (filePath: string) => Promise<void>,
-    saveFileHandler: (filePath: string) => Promise<void>,
-    runSqlHandler: () => Promise<void>,
-    searchHandler: () => Promise<void>,
-    engineSwitchHandler: (selectedItemId: string, otherItemId: string) => Promise<void>
-  ) {
+  constructor({
+    mainWindow,
+    importFilesHandler,
+    exportFileHandler,
+    runSqlHandler,
+    searchHandler,
+    engineSwitchHandler,
+  }: {
+    mainWindow: BrowserWindow;
+    importFilesHandler: (filePath: string) => Promise<void>;
+    exportFileHandler: (filePath: string) => Promise<void>;
+    runSqlHandler: () => Promise<void>;
+    searchHandler: () => Promise<void>;
+    engineSwitchHandler: (
+      selectedItemId: string,
+      otherItemId: string
+    ) => Promise<void>;
+  }) {
     this.mainWindow = mainWindow;
-    this.openFileHandler = openFileHandler;
-    this.saveFileHandler = saveFileHandler;
+    this.importFilesHandler = importFilesHandler;
+    this.exportFileHandler = exportFileHandler;
     this.runSqlHandler = runSqlHandler;
     this.searchHandler = searchHandler;
     this.engineSwitchHandler = engineSwitchHandler;
@@ -33,7 +51,7 @@ export class MainMenu {
 
     if (!result.canceled) {
       for (const filePath of result.filePaths) {
-        await this.openFileHandler(filePath);
+        await this.importFilesHandler(filePath);
       }
     }
   }
@@ -45,7 +63,7 @@ export class MainMenu {
 
     if (!result.canceled) {
       const filePath = result.filePath;
-      await this.saveFileHandler(filePath);
+      await this.exportFileHandler(filePath);
     }
   }
 
@@ -155,8 +173,8 @@ export class MainMenu {
       fileMenu,
       editMenu,
       engineMenu,
-      runSqlMenu,
       viewMenu,
+      runSqlMenu,
     ];
 
     const menu = Menu.buildFromTemplate(menuTemplate);
