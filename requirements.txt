@@ -9,3 +9,4 @@ sqlparse==0.4.4
 sqlglot==16.4.2
 numpy==1.25.1
 pyarrow==12.0.1
+flask==2.3.2
