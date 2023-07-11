@@ -4,6 +4,11 @@ import CodeMirror, {
   MarkerRange,
 } from "codemirror";
 import { sendSqlToValidate } from "../../ipcToMainSender";
+import {
+  DataBaseSchema,
+  EditorValuePosition,
+  ErrorInput,
+} from "../../../types/types";
 
 export class SqlEditor {
   private sqlEditorElement = document.getElementById(

@@ -1,5 +1,6 @@
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import { join } from "path";
+import { Engine } from "../types/types";
 
 export function spawnPythonProcess(
   engine: Engine

@@ -1,3 +1,5 @@
+import { LogMessage } from "../../../types/types";
+
 export class LogsWindow {
   private colorMap: { [key: string]: string } = {
     success: "#6A8759",

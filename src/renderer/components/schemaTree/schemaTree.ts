@@ -1,5 +1,6 @@
 import { TreeNode, TreeView } from "../../static/tree.js";
 import { ctrlCHandler } from "../../shortcutsHandlers";
+import { DataBaseSchema } from "../../../types/types";
 
 export class SchemaTree {
   private schemaContainerClass = ".schema-container";

@@ -1,78 +1,82 @@
 import { BrowserWindow } from "electron";
+import { IpcChannels, IpcDataTypes } from "../types/types";
 
 export function sendAppendToLogs(
   mainWindow: BrowserWindow,
-  data: LogMessage
+  data: IpcDataTypes[IpcChannels.AppendToLogs]
 ) {
-  mainWindow.webContents.send("appendToLogs", data);
+  mainWindow.webContents.send(IpcChannels.AppendToLogs, data);
 }
 
 export function sendRenderCurrentEngine(
   mainWindow: BrowserWindow,
-  engine: Engine
+  engine: IpcDataTypes[IpcChannels.RenderCurrentEngine]
 ) {
-  mainWindow.webContents.send("renderCurrentEngine", engine);
+  mainWindow.webContents.send(IpcChannels.RenderCurrentEngine, engine);
 }
 
-export function sendAppendToEditor(mainWindow: BrowserWindow, sql: string) {
-  mainWindow.webContents.send("appendToEditor", sql);
+export function sendAppendToEditor(
+  mainWindow: BrowserWindow,
+  sql: IpcDataTypes[IpcChannels.AppendToEditor]
+) {
+  mainWindow.webContents.send(IpcChannels.AppendToEditor, sql);
 }
 
 export function sendRenderMemoryUsage(
   mainWindow: BrowserWindow,
-  memoryUsage: string
+  memoryUsage: IpcDataTypes[IpcChannels.RenderMemoryUsage]
 ) {
-  mainWindow.webContents.send("renderMemoryUsage", memoryUsage);
+  mainWindow.webContents.send(IpcChannels.RenderMemoryUsage, memoryUsage);
 }
 
 export function sendRenderSearchBox(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send("renderSearchBox");
+  mainWindow.webContents.send(IpcChannels.RenderSearchBox);
 }
 
 export function sendHideSearchBox(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send("hideSearchBox");
+  mainWindow.webContents.send(IpcChannels.HideSearchBox);
 }
 
 export function sendRenderTable(
   mainWindow: BrowserWindow,
-  data: TableForRender
+  data: IpcDataTypes[IpcChannels.RenderTable]
 ) {
-  mainWindow.webContents.send("renderTable", data);
+  mainWindow.webContents.send(IpcChannels.RenderTable, data);
 }
 
 export function sendRenderEmptyState(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send("renderEmptyState");
+  mainWindow.webContents.send(IpcChannels.RenderEmptyState);
 }
 
 export function sendUpdateDatabaseSchema(
   mainWindow: BrowserWindow,
-  schema: DataBaseSchema
+  schema: IpcDataTypes[IpcChannels.UpdateDatabaseSchema]
 ) {
-  mainWindow.webContents.send("updateDatabaseSchema", schema);
+  mainWindow.webContents.send(IpcChannels.UpdateDatabaseSchema, schema);
 }
 
 export function sendGetSqlToRun(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send("getSqlToRun");
+  mainWindow.webContents.send(IpcChannels.GetSqlToRun);
 }
 
 export function sendValidInput(
   mainWindow: BrowserWindow,
-  validInput: ValidInput
+  validInput: IpcDataTypes[IpcChannels.ValidInput]
 ) {
-  mainWindow.webContents.send("validInput", validInput);
+  mainWindow.webContents.send(IpcChannels.ValidInput, validInput);
 }
 
 export function sendInvalidInput(
   mainWindow: BrowserWindow,
-  invalidInput: InvalidInput
+  invalidInput: IpcDataTypes[IpcChannels.InvalidInput]
 ) {
-  mainWindow.webContents.send("invalidInput", invalidInput);
+  mainWindow.webContents.send(IpcChannels.InvalidInput, invalidInput);
 }
 
 export function sendRenderSpinner(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send("renderSpinner");
+  mainWindow.webContents.send(IpcChannels.RenderSpinner);
 }
 
 export function sendRenderLastTable(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send("renderLatestRenderedTable");
+  mainWindow.webContents.send(IpcChannels.RenderLastTable);
 }

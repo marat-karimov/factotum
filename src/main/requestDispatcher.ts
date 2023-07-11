@@ -1,3 +1,12 @@
+import {
+  DataBaseSchemaResponse,
+  ExportFileResponse,
+  HeartbeatResponse,
+  ImportFileResponse,
+  KillResponse,
+  RunSqlResponse,
+  ValidateResponse,
+} from "../types/types";
 import { sendPost } from "./request";
 
 export function sendImportFile(filePath: string): Promise<ImportFileResponse> {

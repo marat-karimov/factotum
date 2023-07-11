@@ -3,6 +3,7 @@ import { sendAppendToLogs, sendRenderCurrentEngine } from "./ipcDispatcher";
 import { sendKill } from "./requestDispatcher";
 import { Heartbeat } from "./heartbeat";
 import { spawnPythonProcess } from "./spawnPython";
+import { Engine } from "../types/types";
 
 export class EngineSwitchHandler {
   private win: BrowserWindow;

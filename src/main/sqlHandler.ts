@@ -9,6 +9,7 @@ import {
   sendValidInput,
 } from "./ipcDispatcher";
 import { sendGetSchema, sendRunSql, sendValidate } from "./requestDispatcher";
+import { TableForRender } from "../types/types";
 
 export class SqlHandler {
   private win: BrowserWindow;

@@ -20,8 +20,7 @@ import { LogsWindow } from "./components/logsWindow/logsWindow";
 import { renderEmptyState } from "./components/table/tableEmptyState";
 import { StatusBar } from "./components/statusBar/statusBar";
 import { sendSqlToRun } from "./ipcToMainSender";
-
-type CommandMap = Record<string, (args: any) => void>;
+import { DataBaseSchema, IpcChannels } from "../types/types";
 
 const tableRenderer = new TableRenderer();
 const editor = new SqlEditor();
@@ -29,27 +28,32 @@ const logsWindow = new LogsWindow();
 const statusBar = new StatusBar();
 const schemaTree = new SchemaTree();
 
+type CommandMap = Record<IpcChannels, (args: any) => void>;
+
 const commandMap: CommandMap = {
-  invalidInput: editor.handleInvalidInput,
-  validInput: editor.handleValidInput,
-  getSqlToRun: getSqlToRun,
-  renderCurrentEngine: statusBar.renderCurrentEngine,
-  renderMemoryUsage: statusBar.renderMemoryUsage,
-  updateDatabaseSchema: updateDatabaseSchema,
-  appendToLogs: logsWindow.appendToLogs,
-  renderTable: tableRenderer.renderNewTable,
-  renderLatestRenderedTable: tableRenderer.renderLatestTable,
-  appendToEditor: editor.appendToEditor,
-  renderSpinner: renderSpinner,
-  renderEmptyState: renderEmptyState,
-  renderSearchBox: tableRenderer.renderSearchBox,
-  hideSearchBox: tableRenderer.hideSearchBox,
+  [IpcChannels.InvalidInput]: editor.handleInvalidInput,
+  [IpcChannels.ValidInput]: editor.handleValidInput,
+  [IpcChannels.GetSqlToRun]: getSqlToRun,
+  [IpcChannels.RenderCurrentEngine]: statusBar.renderCurrentEngine,
+  [IpcChannels.RenderMemoryUsage]: statusBar.renderMemoryUsage,
+  [IpcChannels.UpdateDatabaseSchema]: updateDatabaseSchema,
+  [IpcChannels.AppendToLogs]: logsWindow.appendToLogs,
+  [IpcChannels.RenderTable]: tableRenderer.renderNewTable,
+  [IpcChannels.RenderLastTable]: tableRenderer.renderLatestTable,
+  [IpcChannels.AppendToEditor]: editor.appendToEditor,
+  [IpcChannels.RenderSpinner]: renderSpinner,
+  [IpcChannels.RenderEmptyState]: renderEmptyState,
+  [IpcChannels.RenderSearchBox]: tableRenderer.renderSearchBox,
+  [IpcChannels.HideSearchBox]: tableRenderer.hideSearchBox,
 };
 
 function initialize() {
   renderEmptyState();
   Object.keys(commandMap).forEach((command) => {
-    window.api.receive(command, commandMap[command]);
+    window.api.receive(
+      command as IpcChannels,
+      commandMap[command as IpcChannels]
+    );
   });
 }
 

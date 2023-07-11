@@ -2,6 +2,7 @@ import { TabulatorFull as Tabulator, ColumnDefinition } from "tabulator-tables";
 import { TableHandler as TableClickHandler } from "./tableHandler";
 
 import { TableSearch } from "./tableSearch";
+import { TableForRender } from "../../../types/types";
 
 export class TableRenderer {
   private latestData: TableForRender = null;
