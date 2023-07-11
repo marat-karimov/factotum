@@ -10,7 +10,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "setup-venv": "node setup-venv.js"
+    "setup-venv": "ts-node setup-venv.ts"
 
   },
   "keywords": [],
