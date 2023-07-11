@@ -70,6 +70,7 @@ export class MainMenu {
   buildMenu(): Electron.Menu {
     const importFilesItem: MenuItemConstructorOptions = {
       label: "Import files",
+      id: 'import-files',
       accelerator: "CmdOrCtrl+O",
       click: () => this.openFileDialog(),
     };
@@ -92,6 +93,7 @@ export class MainMenu {
 
     const fileMenu: MenuItemConstructorOptions = {
       label: "File",
+      id: 'file',
       submenu: [importFilesItem, exportSqlItem, separatorItem, quitItem],
     };
 
