@@ -3,9 +3,8 @@ import polars as pl
 from engine import DataEngine
 import duckdb
 import os
-import ntpath
 
-SUPPORTED_EXTENSIONS = ['.csv', '.xlsx', '.parquet', '.json']
+SUPPORTED_EXTENSIONS = ['.csv', '.parquet', '.json', '.tsv']
 
 
 class DuckDBEngine(DataEngine):
@@ -55,6 +54,9 @@ class DuckDBEngine(DataEngine):
         if file_extension == '.csv':
             return duckdb.read_csv(file_path, header=True)
 
+        if file_extension == '.tsv':
+            return duckdb.read_csv(file_path, header=True, sep="\t")
+
         if file_extension == '.parquet':
             return duckdb.read_parquet(file_path)
 
@@ -65,9 +67,27 @@ class DuckDBEngine(DataEngine):
             f"Unsupported file format. Only {', '.join(SUPPORTED_EXTENSIONS)} are supported.")
 
     def write_file(self, file_path: str, latest_query_result: duckdb.DuckDBPyRelation):
-        """Writes the latest query result to a CSV file."""
-        latest_query_result.write_csv(file_path)
-        return {'error': None}
+
+        file_extension = os.path.splitext(file_path)[1]
+
+        if file_extension == '.csv':
+            latest_query_result.write_csv(file_path)
+            return {'error': None}
+
+        if file_extension == '.tsv':
+            latest_query_result.write_csv(file_path, sep="\t")
+            return {'error': None}
+        
+        if file_extension == '.parquet':
+            latest_query_result.write_parquet(file_path)
+            return {'error': None}
+        
+        if file_extension == '.json':
+            latest_query_result.pl().write_json(file_path, row_oriented=True)
+            return {'error': None}
+
+        raise ValueError(
+            f"Unsupported file format. Only {', '.join(SUPPORTED_EXTENSIONS)} are supported.")
 
     def to_dataframe(self, max_rows: int, lazyframe: duckdb.DuckDBPyRelation) -> pl.DataFrame:
         return lazyframe.limit(max_rows).pl()

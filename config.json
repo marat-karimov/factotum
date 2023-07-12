@@ -1,12 +1,18 @@
 {
     "read_files": [
+        { "name": "All Files", "extensions": ["*"] },
         { "name": "Comma Separated", "extensions": ["csv"] },
+        { "name": "Tab Separated", "extensions": ["tsv"] },
         { "name": "MS Excel", "extensions": ["xlsx"] },
         { "name": "Apache Parquet", "extensions": ["parquet"] },
-        { "name": "JSON Files", "extensions": ["json"] }
+        { "name": "JSON", "extensions": ["json"] }
 
       ],
       "write_files": [
-        { "name": "Comma Separated", "extensions": ["csv"] }
+        { "name": "Comma Separated", "extensions": ["csv"] },
+        { "name": "Tab Separated", "extensions": ["tsv"] },
+        { "name": "MS Excel", "extensions": ["xlsx"] },
+        { "name": "Apache Parquet", "extensions": ["parquet"] },
+        { "name": "JSON", "extensions": ["json"] }
       ]
   }
