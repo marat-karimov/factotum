@@ -3,6 +3,7 @@ import { TableHandler as TableClickHandler } from "./tableHandler";
 
 import { TableSearch } from "./tableSearch";
 import { TableForRender } from "../../../types/types";
+import { renderSpinner } from "../spinner/spinner";
 
 export class TableRenderer {
   private latestData: TableForRender = null;
@@ -32,6 +33,8 @@ export class TableRenderer {
 
   private renderTable(data: TableForRender) {
     this.cleanup();
+
+    renderSpinner();
 
     this.tableClickHandler = new TableClickHandler();
 

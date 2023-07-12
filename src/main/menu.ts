@@ -99,7 +99,7 @@ export class MainMenu {
 
     const searchItem: MenuItemConstructorOptions = {
       id: "search",
-      label: "Search",
+      label: "Find in table",
       accelerator: "CmdOrCtrl+F",
       click: () => this.searchHandler(),
     };
