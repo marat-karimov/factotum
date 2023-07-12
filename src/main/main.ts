@@ -80,6 +80,7 @@ app.whenReady().then(() => {
   createWindow();
 
   mainWindow.webContents.on("did-finish-load", () => {
+    console.log('ui window has been loaded')
     sendAppendToLogs(mainWindow, {
       message: `Import files to start working!
     Files are added as tables to a virtual database`,
