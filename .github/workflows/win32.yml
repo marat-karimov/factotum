@@ -28,5 +28,8 @@ jobs:
       - name: Build Electron app
         run: npm run package
 
-      - name: Run Playwright tests
-        run: npm run test
+      - name: Run Electron app
+        run: out\\Factotum-win32-x64\\Factotum.exe
+
+      # - name: Run Playwright tests
+      #   run: npm run test

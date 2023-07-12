@@ -29,7 +29,6 @@ test.only("file import", async () => {
 
   await expect(page.locator("text=SELECT * FROM Automobile LIMIT 100;")).toBeVisible();
 
-  await page.pause()
 });
 
 async function setup() {
