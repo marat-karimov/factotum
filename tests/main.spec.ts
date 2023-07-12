@@ -8,7 +8,7 @@ import {
 
 import { _electron as electron } from "playwright";
 
-test.only("file import", async () => {
+test("File import", async () => {
   const { app, page } = await setup();
 
   await expect(
@@ -33,11 +33,8 @@ test.only("file import", async () => {
 
 async function setup() {
   const latestBuild = findLatestBuild();
-  console.log('laetstBuild', latestBuild)
 
   const appInfo = parseElectronApp(latestBuild);
-
-  console.log('appInfo', appInfo)
 
   const app = await electron.launch({
     args: [appInfo.main],
