@@ -8,7 +8,7 @@ import {
 
 import { _electron as electron } from "playwright";
 
-test.only("file import", async () => {
+test("File import", async () => {
   const { app, page } = await setup();
 
   await expect(
@@ -29,7 +29,6 @@ test.only("file import", async () => {
 
   await expect(page.locator("text=SELECT * FROM Automobile LIMIT 100;")).toBeVisible();
 
-  await page.pause()
 });
 
 async function setup() {
@@ -40,6 +39,7 @@ async function setup() {
   const app = await electron.launch({
     args: [appInfo.main],
     executablePath: appInfo.executable,
+    timeout: 60000
   });
 
   const page = await app.firstWindow();
