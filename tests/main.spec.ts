@@ -33,12 +33,16 @@ test.only("file import", async () => {
 
 async function setup() {
   const latestBuild = findLatestBuild();
+  console.log('laetstBuild', latestBuild)
 
   const appInfo = parseElectronApp(latestBuild);
+
+  console.log('appInfo', appInfo)
 
   const app = await electron.launch({
     args: [appInfo.main],
     executablePath: appInfo.executable,
+    timeout: 60000
   });
 
   const page = await app.firstWindow();

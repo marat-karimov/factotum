@@ -28,12 +28,5 @@ jobs:
       - name: Build Electron app
         run: npm run package
 
-      - name: Run Electron app
-        shell: powershell
-        run: |
-              Start-Process -NoNewWindow -FilePath "out\\Factotum-win32-x64\\Factotum.exe"
-              Start-Sleep -s 60  # Waits for 60 seconds
-
-
-      # - name: Run Playwright tests
-      #   run: npm run test
+      - name: Run Playwright tests
+        run: npm run test
