@@ -1,0 +1,32 @@
+name: Test
+
+on: push
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.10
+
+      - name: Install node dependencies
+        run: npm ci
+
+      - name: Install python dependencies
+        run: npm run setup-venv
+
+      - name: Build Electron app
+        run: npm run package
+
+      - name: Run Playwright tests
+        run: npm run test
