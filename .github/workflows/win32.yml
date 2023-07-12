@@ -20,7 +20,7 @@ jobs:
           python-version: 3.10
 
       - name: Install node dependencies
-        run: npm ci
+        run: yarn install
 
       - name: Install python dependencies
         run: npm run setup-venv
