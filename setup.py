@@ -12,7 +12,7 @@ additional_modules = []
 
 
 build_exe_options = {
-    "packages": [],
+    "packages": ["pyarrow.vendored.version", "pyreadstat"],
     "excludes": ["tkinter", "PyQt4.QtSql", "sqlite3", 
                                   "scipy.lib.lapack.flapack",
                                   "PyQt4.QtNetwork",

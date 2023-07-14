@@ -27,7 +27,7 @@ test("File import", async () => {
 
   await clickMenuItemById(app, "import-files");
 
-  await expect(page.locator("text=SELECT * FROM Automobile LIMIT 100;")).toBeVisible();
+  await expect(page.locator("text=SELECT * FROM Automobile LIMIT 100;")).toHaveCount(2)
 
 });
 

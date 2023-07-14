@@ -12,10 +12,6 @@ class DataEngine(ABC):
     UNSUPPORTED_STATEMENTS = []
 
     @abstractmethod
-    def connect(self) -> duckdb.DuckDBPyConnection | pl.SQLContext:
-        pass
-
-    @abstractmethod
     def register(self, name: str, df: Any):
         pass
 
@@ -24,7 +20,7 @@ class DataEngine(ABC):
         pass
 
     @abstractmethod
-    def to_dataframe(self, max_rows: int, lazyframe: duckdb.DuckDBPyRelation | pl.LazyFrame) -> pl.DataFrame:
+    def to_dataframe(self, max_rows: int, max_cols: int, lf: duckdb.DuckDBPyRelation | pl.LazyFrame) -> pl.DataFrame:
         pass
 
     abstractmethod
@@ -41,5 +37,5 @@ class DataEngine(ABC):
         pass
 
     @abstractmethod
-    def get_schema(self):
+    def get_schema(self, max_cols: int):
         pass
