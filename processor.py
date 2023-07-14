@@ -4,7 +4,7 @@ from functools import wraps
 import ntpath
 import sqlparse
 from polars.exceptions import PolarsPanicError
-import polars as pl
+from flask import jsonify
 
 import sqlglot
 
@@ -21,9 +21,9 @@ def handle_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
         except (Exception, PolarsPanicError) as e:
             error_message = f"Error in {func.__name__}: {str(e)}"
             if func.__name__ in ['export_file', 'import_file', 'run_sql']:
-                return {'error': error_message}
-            elif func.__name__ == 'get_scheme':
-                return {'scheme': {}, 'error': error_message}
+                return jsonify({'error': error_message})
+            elif func.__name__ == 'get_schema':
+                return jsonify({'schema': {}, 'error': error_message})
             else:
                 raise e
 
@@ -31,15 +31,12 @@ def handle_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
 
 
 class DataProcessor:
-    MAX_CELLS_TO_DISPLAY = 500000
+    MAX_ROWS_TO_DISPLAY = 100000
+    MAX_COLS_TO_DISPLAY = 200
 
     def __init__(self, engine: DataEngine):
         self.engine = engine
         self.latest_query_result = None
-
-    def calc_max_rows(self, df_width: int) -> int:
-        """Calculates the maximum number of rows to display based on the dataframe's width."""
-        return int(float(DataProcessor.MAX_CELLS_TO_DISPLAY) / df_width)
 
     @staticmethod
     def requires_quotes(identifier: str) -> bool:
@@ -74,7 +71,7 @@ class DataProcessor:
 
     @handle_exceptions
     def get_schema(self, data=None):
-        return self.engine.get_schema()
+        return self.engine.get_schema(max_cols=self.MAX_COLS_TO_DISPLAY)
 
     @handle_exceptions
     def run_sql(self, data: Dict[str, str]):
@@ -82,13 +79,11 @@ class DataProcessor:
         sql = data['sql']
         result = self.engine.sql(sql)
         if self.engine.is_empty(result):
-            return {'tableData': None, 'columns': None, 'error': None}
-        columns = result.columns
-        df_width = len(columns)
-        max_rows = self.calc_max_rows(df_width)
-        tableData = self.engine.to_dataframe(max_rows, result).to_dicts()
+            return jsonify({'tableData': None, 'columns': None, 'error': None})
+        df = self.engine.to_dataframe(
+            self.MAX_ROWS_TO_DISPLAY, self.MAX_COLS_TO_DISPLAY, result)
         self.latest_query_result = result
-        return {'tableData': tableData, 'columns': columns, 'error': None}
+        return jsonify({'tableData': df.to_dicts(), 'columns': df.columns, 'error': None})
 
     def contains_token_type(self, one_statement, token_type_list):
         tokens = sqlparse.parse(one_statement)
@@ -126,29 +121,38 @@ class DataProcessor:
 
         return error_clean
 
-    def validate(self, data):
+    def validate_statement_type(self, last_statement: str):
+        unsupported_statement = self.is_unsupported_statement(last_statement)
+
+        if unsupported_statement:
+            return f'Statement of {unsupported_statement} type is not supported by polars. Try switching to duckdb engine'
+
+        return None
+
+    def format_validation_response(self, result: bool, sql: str, last_statement: str, error: str):
+        return {"result": result, 'sql': sql, 'last_statement': last_statement, 'error': error}
+
+    def validate(self, data: Dict) -> Dict:
         sql = data['data']
-
         sql = sqlparse.format(sql, strip_comments=True)
-
         statements = sqlparse.split(sql)
+
+        if not statements:
+            return self.format_validation_response(False, sql, None, "No SQL statement found")
 
         last_statement = statements[-1]
 
-        unsupported_statement = self.is_unsupported_statement(last_statement)
-        write_statement = self.is_write_statement(last_statement)
+        error = self.validate_statement_type(last_statement)
+        if error is not None:
+            return self.format_validation_response(False, sql, last_statement, error)
 
         try:
-            if unsupported_statement:
-                error = f'Statement of {unsupported_statement} type is not supported by polars. Try switching to duckdb engine'
-                raise Exception(error)
-            elif write_statement:
+            if self.is_write_statement(last_statement):
                 sqlglot.transpile(last_statement)
             else:
                 self.engine.sql(last_statement)
-
-            return {"result": True, 'sql': sql, 'last_statement': last_statement, 'error': None}
-
         except Exception as e:
-            error_clean = self.clean_error(e)
-            return {"result": False, 'sql': sql, 'last_statement': last_statement, 'error': error_clean}
+            error = self.clean_error(e)
+            return self.format_validation_response(False, sql, last_statement, error)
+
+        return self.format_validation_response(True, sql, last_statement, None)

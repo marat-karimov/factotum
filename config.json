@@ -5,14 +5,22 @@
         { "name": "Tab Separated", "extensions": ["tsv"] },
         { "name": "MS Excel", "extensions": ["xlsx"] },
         { "name": "Apache Parquet", "extensions": ["parquet"] },
-        { "name": "JSON", "extensions": ["json"] }
-
+        { "name": "JSON", "extensions": ["json"] },
+        { "name": "Feather", "extensions": ["feather"] },
+        { "name": "Statistical Analysis System(SAS)", "extensions": ["sas7bdat", "xpt"] },
+        { "name": "Extensible Markup Language(XML)", "extensions": ["xml"] },
+        { "name": "Statistical Package for the Social Sciences(SPSS)", "extensions": ["sav"] },
+        { "name": "Stata Data Format", "extensions": ["dta"] }       
       ],
       "write_files": [
         { "name": "Comma Separated", "extensions": ["csv"] },
         { "name": "Tab Separated", "extensions": ["tsv"] },
         { "name": "MS Excel", "extensions": ["xlsx"] },
         { "name": "Apache Parquet", "extensions": ["parquet"] },
-        { "name": "JSON", "extensions": ["json"] }
+        { "name": "JSON", "extensions": ["json"] },
+        { "name": "Feather", "extensions": ["feather"] },
+        { "name": "Extensible Markup Language", "extensions": ["xml"] },
+        { "name": "Stata Data Format", "extensions": ["dta"] },
+        { "name": "Apache AVRO", "extensions": ["avro"] }
       ]
   }

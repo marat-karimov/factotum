@@ -10,7 +10,7 @@ from processor import DataProcessor
 from duckdb_engine import DuckDBEngine
 from polars_engine import PolarsEngine
 
-heartbeat_timeout_sec = 20
+heartbeat_timeout_sec = 30
 
 last_heartbeat_time = time.time()
 
