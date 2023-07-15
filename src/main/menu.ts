@@ -121,7 +121,7 @@ export class MainMenu {
     const duckdbItem: MenuItemConstructorOptions = {
       type: "checkbox",
       id: "duckdb",
-      label: "DuckDB",
+      label: "DuckDB (experimental)",
       checked: false,
       enabled: true,
       click: () => this.engineSwitchHandler("duckdb", "polars"),

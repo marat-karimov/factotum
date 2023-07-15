@@ -1,6 +1,6 @@
-import "./static/styles.css";
 import "./static/codemirror.css";
 import "./static/darcula.css";
+import "./static/styles.css";
 import "./static/treejs.css";
 import "./static/tabulator.css";
 import "./static/spinner.css";
@@ -19,8 +19,9 @@ import { renderSpinner } from "./components/spinner/spinner";
 import { LogsWindow } from "./components/logsWindow/logsWindow";
 import { renderEmptyState } from "./components/table/tableEmptyState";
 import { StatusBar } from "./components/statusBar/statusBar";
-import { sendSqlToRun } from "./ipcToMainSender";
-import { DataBaseSchema, IpcChannels } from "../types/types";
+import { sendSqlToRun } from "./toMainSender";
+import { DataBaseSchema, FromMainChannels } from "../types/types";
+import { messages } from "../messages";
 
 const tableRenderer = new TableRenderer();
 const editor = new SqlEditor();
@@ -28,31 +29,31 @@ const logsWindow = new LogsWindow();
 const statusBar = new StatusBar();
 const schemaTree = new SchemaTree();
 
-type CommandMap = Record<IpcChannels, (args: any) => void>;
+type CommandMap = Record<FromMainChannels, (args: any) => void>;
 
 const commandMap: CommandMap = {
-  [IpcChannels.InvalidInput]: editor.handleInvalidInput,
-  [IpcChannels.ValidInput]: editor.handleValidInput,
-  [IpcChannels.GetSqlToRun]: getSqlToRun,
-  [IpcChannels.RenderCurrentEngine]: statusBar.renderCurrentEngine,
-  [IpcChannels.RenderMemoryUsage]: statusBar.renderMemoryUsage,
-  [IpcChannels.UpdateDatabaseSchema]: updateDatabaseSchema,
-  [IpcChannels.AppendToLogs]: logsWindow.appendToLogs,
-  [IpcChannels.RenderTable]: tableRenderer.renderNewTable,
-  [IpcChannels.RenderLastTable]: tableRenderer.renderLatestTable,
-  [IpcChannels.AppendToEditor]: editor.appendToEditor,
-  [IpcChannels.RenderSpinner]: renderSpinner,
-  [IpcChannels.RenderEmptyState]: renderEmptyState,
-  [IpcChannels.RenderSearchBox]: tableRenderer.renderSearchBox,
-  [IpcChannels.HideSearchBox]: tableRenderer.hideSearchBox,
+  [FromMainChannels.InvalidInput]: editor.handleInvalidInput,
+  [FromMainChannels.ValidInput]: editor.handleValidInput,
+  [FromMainChannels.GetSqlToRun]: getSqlToRun,
+  [FromMainChannels.RenderCurrentEngine]: statusBar.renderCurrentEngine,
+  [FromMainChannels.RenderMemoryUsage]: statusBar.renderMemoryUsage,
+  [FromMainChannels.UpdateDatabaseSchema]: updateDatabaseSchema,
+  [FromMainChannels.AppendToLogs]: logsWindow.appendToLogs,
+  [FromMainChannels.RenderTable]: tableRenderer.renderNewTable,
+  [FromMainChannels.RenderLastTable]: tableRenderer.renderLatestTable,
+  [FromMainChannels.AppendToEditor]: editor.appendToEditor,
+  [FromMainChannels.RenderSpinner]: renderSpinner,
+  [FromMainChannels.RenderEmptyState]: renderEmptyState,
+  [FromMainChannels.RenderSearchBox]: tableRenderer.renderSearchBox,
+  [FromMainChannels.HideSearchBox]: tableRenderer.hideSearchBox,
 };
 
 function initialize() {
   renderEmptyState();
   Object.keys(commandMap).forEach((command) => {
     window.api.receive(
-      command as IpcChannels,
-      commandMap[command as IpcChannels]
+      command as FromMainChannels,
+      commandMap[command as FromMainChannels]
     );
   });
 }
@@ -67,7 +68,7 @@ function getSqlToRun() {
 
   if (!editorSelection) {
     logsWindow.appendToLogs({
-      message: "Please select one SQL statement",
+      message: messages.noSqlSelected,
       kind: "error",
     });
     return;

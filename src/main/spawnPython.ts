@@ -6,26 +6,7 @@ export function spawnPythonProcess(
   engine: Engine
 ): ChildProcessWithoutNullStreams {
   const path = resolvePyExecPath();
-  const childProcess = spawn(path, [engine]);
-
-  childProcess.stdout.on("data", (data) => {
-    console.log(`stdout: ${data}`);
-  });
-
-  childProcess.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`);
-  });
-
-  childProcess.on("close", (code) => {
-    console.log(`Child process exited with code ${code}`);
-  });
-
-  childProcess.on("error", (err) => {
-    console.error("Failed to spawn child process", err);
-    process.exit(0);
-  });
-
-  return childProcess;
+  return spawn(path, [engine]);
 }
 
 function resolvePyExecPath() {

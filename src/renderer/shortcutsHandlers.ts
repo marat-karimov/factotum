@@ -1,4 +1,4 @@
-import { sendCopyToClipboard } from "./ipcToMainSender";
+import { sendCopyToClipboard } from "./toMainSender";
 
 export function ctrlCHandler(value: unknown) {
   // Check if the Ctrl+C has been pressed

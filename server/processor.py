@@ -2,13 +2,11 @@ import os
 from typing import Dict, Callable, Any
 from functools import wraps
 import ntpath
-import sqlparse
 from polars.exceptions import PolarsPanicError
 from flask import jsonify
+from server.validator import SqlValidator
 
-import sqlglot
-
-from engine import DataEngine
+from server.engine import DataEngine
 
 
 def handle_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
@@ -34,8 +32,9 @@ class DataProcessor:
     MAX_ROWS_TO_DISPLAY = 100000
     MAX_COLS_TO_DISPLAY = 200
 
-    def __init__(self, engine: DataEngine):
+    def __init__(self, engine: DataEngine, validator: SqlValidator ):
         self.engine = engine
+        self.validator = validator
         self.latest_query_result = None
 
     @staticmethod
@@ -85,74 +84,5 @@ class DataProcessor:
         self.latest_query_result = result
         return jsonify({'tableData': df.to_dicts(), 'columns': df.columns, 'error': None})
 
-    def contains_token_type(self, one_statement, token_type_list):
-        tokens = sqlparse.parse(one_statement)
-
-        for token in tokens:
-            token_type = token.get_type()
-            if token_type in token_type_list:
-                return token_type
-
-        return False
-
-    def is_write_statement(self, one_statement):
-        return bool(self.contains_token_type(one_statement, self.engine.AVOID_LIVE_EVALUATION))
-
-    def is_unsupported_statement(self, one_statement):
-        return self.contains_token_type(one_statement, self.engine.UNSUPPORTED_STATEMENTS)
-
-    @staticmethod
-    def capitalize_only_first(s: str):
-        if len(s) > 0:
-            return s[0].upper() + s[1:]
-        else:
-            return s
-
-    def clean_error(self, error):
-        error = str(error)
-
-        substrings_to_replace = [
-            '\033[0m', '\033[4m', 'sql parser error:', 'Parser Error:']
-
-        for substr in substrings_to_replace:
-            error = error.replace(substr, '')
-
-        error_clean = self.capitalize_only_first(error.strip())
-
-        return error_clean
-
-    def validate_statement_type(self, last_statement: str):
-        unsupported_statement = self.is_unsupported_statement(last_statement)
-
-        if unsupported_statement:
-            return f'Statement of {unsupported_statement} type is not supported by polars. Try switching to duckdb engine'
-
-        return None
-
-    def format_validation_response(self, result: bool, sql: str, last_statement: str, error: str):
-        return {"result": result, 'sql': sql, 'last_statement': last_statement, 'error': error}
-
-    def validate(self, data: Dict) -> Dict:
-        sql = data['data']
-        sql = sqlparse.format(sql, strip_comments=True)
-        statements = sqlparse.split(sql)
-
-        if not statements:
-            return self.format_validation_response(False, sql, None, "No SQL statement found")
-
-        last_statement = statements[-1]
-
-        error = self.validate_statement_type(last_statement)
-        if error is not None:
-            return self.format_validation_response(False, sql, last_statement, error)
-
-        try:
-            if self.is_write_statement(last_statement):
-                sqlglot.transpile(last_statement)
-            else:
-                self.engine.sql(last_statement)
-        except Exception as e:
-            error = self.clean_error(e)
-            return self.format_validation_response(False, sql, last_statement, error)
-
-        return self.format_validation_response(True, sql, last_statement, None)
+    def validate(self, data: Dict):
+        return self.validator.validate(data)

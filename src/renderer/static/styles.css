@@ -43,6 +43,10 @@ html {
   line-height: 1.3;
 }
 
+/* pre {
+  margin: 0em;
+} */
+
 .right {
   display: flex;
   flex-direction: column;

@@ -4,17 +4,18 @@ import {
   sendAppendToLogs,
   sendRenderEmptyState,
   sendRenderSpinner,
-} from "./ipcDispatcher";
+} from "./fromMainSender";
 import { sendImportFile } from "./requestDispatcher";
 import { SqlHandler } from "./sqlHandler";
+import { messages } from "../messages";
 
 export class ImportFilesHandler {
   private win: BrowserWindow;
-  private sqlHandler: SqlHandler
+  private sqlHandler: SqlHandler;
 
   constructor(mainWindow: BrowserWindow, sqlHandler: SqlHandler) {
     this.win = mainWindow;
-    this.sqlHandler = sqlHandler
+    this.sqlHandler = sqlHandler;
   }
 
   public handleImportFile = async (filePath: string) => {
@@ -23,7 +24,7 @@ export class ImportFilesHandler {
     const { tableName, error } = await sendImportFile(filePath);
 
     if (error) {
-      const message = `Failed to import ${filePath} ${error}`;
+      const message = messages.importingFail(filePath, error);
 
       sendAppendToLogs(this.win, { message, kind: "error" });
       sendRenderEmptyState(this.win);
@@ -35,7 +36,7 @@ export class ImportFilesHandler {
   };
 
   private async handleImportFileSuccess(filePath: string, tableName: string) {
-    const message = `File ${filePath} has been imported as a table with name ${tableName}`;
+    const message = messages.importingSuccess(filePath, tableName);
     const sql = `SELECT * FROM ${tableName} LIMIT 100;`;
     sendAppendToLogs(this.win, { message, kind: "success" });
     sendAppendToEditor(this.win, sql);

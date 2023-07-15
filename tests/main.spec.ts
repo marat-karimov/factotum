@@ -16,8 +16,8 @@ test("File import", async () => {
   ).toBeVisible();
 
   await expect(page.locator("text=Virtual database schema here")).toBeVisible();
-  await expect(page.locator("text=data will be displayed here")).toBeVisible();
-  await expect(page.locator("text=Import files to start")).toBeVisible();
+  await expect(page.locator("text=Your data will appear here")).toBeVisible();
+  await expect(page.locator("text=Welcome! Simply import files")).toBeVisible();
   await expect(page.locator("text=SQL engine: polars")).toBeVisible();
   await expect(page.locator("text=RAM usage:")).toBeVisible();
 
@@ -27,8 +27,9 @@ test("File import", async () => {
 
   await clickMenuItemById(app, "import-files");
 
-  await expect(page.locator("text=SELECT * FROM Automobile LIMIT 100;")).toHaveCount(2)
-
+  await expect(
+    page.locator("text=SELECT * FROM Automobile LIMIT 100;")
+  ).toHaveCount(2);
 });
 
 async function setup() {
@@ -39,7 +40,7 @@ async function setup() {
   const app = await electron.launch({
     args: [appInfo.main],
     executablePath: appInfo.executable,
-    timeout: 60000
+    timeout: 60000,
   });
 
   const page = await app.firstWindow();

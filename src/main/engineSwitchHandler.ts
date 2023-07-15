@@ -1,9 +1,10 @@
 import { BrowserWindow, MessageBoxOptions, dialog } from "electron";
-import { sendAppendToLogs, sendRenderCurrentEngine } from "./ipcDispatcher";
+import { sendAppendToLogs, sendRenderCurrentEngine } from "./fromMainSender";
 import { sendKill } from "./requestDispatcher";
 import { Heartbeat } from "./heartbeat";
 import { spawnPythonProcess } from "./spawnPython";
 import { Engine } from "../types/types";
+import { messages } from "../messages";
 
 export class EngineSwitchHandler {
   private win: BrowserWindow;
@@ -73,11 +74,10 @@ export class EngineSwitchHandler {
   }
 
   private showEngineSwitchDialog = async (engine: Engine) => {
-    const message = [
-      `You are about to change the SQL engine from ${this.currentEngine}`,
-      `to ${engine}. If you proceed, all unsaved data will be lost`,
-      `and Factotum will start blank`,
-    ].join(" ");
+    const message = messages.engineSwitchConfirmation(
+      this.currentEngine,
+      engine
+    );
 
     const options: MessageBoxOptions = {
       type: "warning",
@@ -105,8 +105,8 @@ export class EngineSwitchHandler {
     this.win.webContents.once("did-finish-load", () => {
       this.mainMenu.getMenuItemById("export-file").enabled = false;
       sendAppendToLogs(this.win, {
-        message: `Switched to ${engine} engine`,
-        kind: 'success',
+        message: messages.engineSwitchSuccess(engine),
+        kind: "success",
       });
       sendRenderCurrentEngine(this.win, engine);
     });
