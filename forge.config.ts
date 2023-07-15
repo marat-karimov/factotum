@@ -11,14 +11,23 @@ import { rendererConfig } from "./webpack.renderer.config";
 
 const pyExecDir = process.platform + "_python";
 
+const name = 'Factotum'
+const description = 'SQL powered tabular data editor'
+
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: 'assets/icon.ico',
     extraResource: [pyExecDir, "config.json"],
-  },
+    },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      name,
+      description,
+      loadingGif: 'assets/transparent.gif',
+      setupIcon: 'assets/icon.ico',
+    }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
     new MakerDeb({}),

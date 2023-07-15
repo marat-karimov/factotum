@@ -15,7 +15,7 @@
   },
   "keywords": [],
   "author": {
-    "name": "karmagen88",
+    "name": "Marat Karimov",
     "email": "karmagen88@gmail.com"
   },
   "license": "MIT",
@@ -29,6 +29,7 @@
     "@electron-forge/plugin-webpack": "^6.2.1",
     "@playwright/test": "1.27.1",
     "@types/codemirror": "^5.60.8",
+    "@types/glob": "^8.1.0",
     "@types/tabulator-tables": "^5.5.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
@@ -51,6 +52,7 @@
     "@types/mousetrap": "^1.6.11",
     "axios": "^1.4.0",
     "codemirror": "5.65.13",
+    "custom-electron-titlebar": "^4.2.3",
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.0",
     "mousetrap": "^1.6.5",
