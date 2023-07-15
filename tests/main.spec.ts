@@ -8,6 +8,8 @@ import {
 
 import { _electron as electron } from "playwright";
 
+import {messages} from '../src/messages'
+
 test("File import", async () => {
   const { app, page } = await setup();
 
@@ -16,8 +18,8 @@ test("File import", async () => {
   ).toBeVisible();
 
   await expect(page.locator("text=Virtual database schema here")).toBeVisible();
-  await expect(page.locator("text=Your data will appear here")).toBeVisible();
-  await expect(page.locator("text=Welcome! Simply import files")).toBeVisible();
+  await expect(page.locator(`text=${messages.tableEmptyState}`)).toBeVisible();
+  await expect(page.locator(`text=${messages.welcome}`)).toBeVisible();
   await expect(page.locator("text=SQL engine: polars")).toBeVisible();
   await expect(page.locator("text=RAM usage:")).toBeVisible();
 
