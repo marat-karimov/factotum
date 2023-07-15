@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { sendRenderMemoryUsage } from "./ipcDispatcher";
+import { sendRenderMemoryUsage } from "./fromMainSender";
 import { sendHeartbeat } from "./requestDispatcher";
 
 export class Heartbeat {

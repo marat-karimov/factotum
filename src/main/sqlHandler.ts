@@ -7,9 +7,10 @@ import {
   sendRenderTable,
   sendUpdateDatabaseSchema,
   sendValidInput,
-} from "./ipcDispatcher";
+} from "./fromMainSender";
 import { sendGetSchema, sendRunSql, sendValidate } from "./requestDispatcher";
 import { TableForRender } from "../types/types";
+import { messages } from "../messages";
 
 export class SqlHandler {
   private win: BrowserWindow;
@@ -52,7 +53,7 @@ export class SqlHandler {
   };
 
   private handleSqlSuccess = async (sql: string, tableData: TableForRender) => {
-    const message = `${sql} Executed successfully`;
+    const message = messages.sqlSuccess(sql);
     sendAppendToLogs(this.win, { message, kind: "success" });
 
     await this.updateDatabaseInfo();

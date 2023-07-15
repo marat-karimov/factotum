@@ -3,12 +3,14 @@ import threading
 import time
 import argparse
 import psutil
+import sys
 from flask import Flask, request, abort
 
-from processor import DataProcessor
+from server.processor import DataProcessor
+from server.validator import SqlValidator
 
-from duckdb_engine import DuckDBEngine
-from polars_engine import PolarsEngine
+from server.duckdb_engine import DuckDBEngine
+from server.polars_engine import PolarsEngine
 
 heartbeat_timeout_sec = 30
 
@@ -45,9 +47,13 @@ def init_engine(engine):
     global processor
 
     if engine == 'duckdb':
-        processor = DataProcessor(DuckDBEngine())
+        duckdb_engine = DuckDBEngine()
+        validator = SqlValidator(duckdb_engine)
+        processor = DataProcessor(duckdb_engine, validator)
     elif engine == 'polars':
-        processor = DataProcessor(PolarsEngine())
+        polars_engine = PolarsEngine()
+        validator = SqlValidator(polars_engine)
+        processor = DataProcessor(polars_engine, validator)
     else:
         raise Exception('Unknown engine')
 
@@ -93,7 +99,7 @@ def check_heartbeat():
 
 def run_server(engine):
     host = '127.0.0.1'
-    port = 8080
+    port = 49213
 
     init_engine(engine)
 
@@ -103,7 +109,6 @@ def run_server(engine):
 
     try:
         app.run(host=host, port=port)
-        print(f'Starting server on http://{host}:{port}')
     except KeyboardInterrupt:
         print('Server stopped.')
 

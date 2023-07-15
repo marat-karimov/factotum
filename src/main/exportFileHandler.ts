@@ -3,8 +3,9 @@ import {
   sendAppendToLogs,
   sendRenderLastTable,
   sendRenderSpinner,
-} from "./ipcDispatcher";
+} from "./fromMainSender";
 import { sendWriteFile } from "./requestDispatcher";
+import { messages } from "../messages";
 
 export class ExportFileHandler {
   private win: BrowserWindow;
@@ -16,14 +17,14 @@ export class ExportFileHandler {
   public handleExportFile = async (filePath: string) => {
     sendRenderSpinner(this.win);
     sendAppendToLogs(this.win, {
-      message: `Exporting latest SQL result to ${filePath}`,
+      message: messages.exportingStart(filePath),
       kind: "info",
     });
 
     const { error } = await sendWriteFile(filePath);
 
     if (error) {
-      const message = `Failed to export ${filePath} ${error}`;
+      const message = messages.exportingFail(filePath, error);
 
       sendAppendToLogs(this.win, { message, kind: "error" });
 
@@ -36,7 +37,7 @@ export class ExportFileHandler {
   };
 
   private handleExportFileSuccess(filePath: string) {
-    const message = `Latest SQL result has been exported to ${filePath}`;
+    const message = messages.exportingSuccess(filePath);
     sendAppendToLogs(this.win, { message, kind: "success" });
     sendRenderLastTable(this.win);
   }

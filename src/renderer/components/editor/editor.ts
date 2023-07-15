@@ -3,7 +3,7 @@ import CodeMirror, {
   TextMarker,
   MarkerRange,
 } from "codemirror";
-import { sendSqlToValidate } from "../../ipcToMainSender";
+import { sendSqlToValidate } from "../../toMainSender";
 import {
   DataBaseSchema,
   EditorValuePosition,

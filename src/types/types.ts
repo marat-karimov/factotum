@@ -68,7 +68,7 @@ export interface ValidateResponse {
   error: string;
 }
 
-export enum IpcChannels {
+export enum FromMainChannels {
   AppendToLogs = "appendToLogs",
   RenderCurrentEngine = "renderCurrentEngine",
   AppendToEditor = "appendToEditor",
@@ -85,13 +85,26 @@ export enum IpcChannels {
   RenderLastTable = "renderLatestRenderedTable",
 }
 
-export interface IpcDataTypes {
-  [IpcChannels.AppendToLogs]: LogMessage;
-  [IpcChannels.RenderCurrentEngine]: Engine;
-  [IpcChannels.AppendToEditor]: string;
-  [IpcChannels.RenderMemoryUsage]: string;
-  [IpcChannels.RenderTable]: TableForRender;
-  [IpcChannels.UpdateDatabaseSchema]: DataBaseSchema;
-  [IpcChannels.ValidInput]: ValidInput;
-  [IpcChannels.InvalidInput]: InvalidInput;
+export enum ToMainChannels {
+  SqlToRun = "sqlToRun",
+  SqlToValidate = "sqlToValidate",
+  CopyToClipboard = "copyToClipboard",
+  SearchBoxHidden = "searchBoxHidden",
+}
+
+export interface FromMainDataTypes {
+  [FromMainChannels.AppendToLogs]: LogMessage;
+  [FromMainChannels.RenderCurrentEngine]: Engine;
+  [FromMainChannels.AppendToEditor]: string;
+  [FromMainChannels.RenderMemoryUsage]: string;
+  [FromMainChannels.RenderTable]: TableForRender;
+  [FromMainChannels.UpdateDatabaseSchema]: DataBaseSchema;
+  [FromMainChannels.ValidInput]: ValidInput;
+  [FromMainChannels.InvalidInput]: InvalidInput;
+}
+
+export interface ToMainDataTypes {
+  [ToMainChannels.SqlToRun]: string;
+  [ToMainChannels.SqlToValidate]: string;
+  [ToMainChannels.CopyToClipboard]: string;
 }

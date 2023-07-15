@@ -10,6 +10,7 @@ class DataEngine(ABC):
 
     AVOID_LIVE_EVALUATION = []
     UNSUPPORTED_STATEMENTS = []
+    UNSUPPORTED_EXPRESSIONS = []
 
     @abstractmethod
     def register(self, name: str, df: Any):

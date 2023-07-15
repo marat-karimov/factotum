@@ -1,4 +1,4 @@
-from engine import DataEngine
+from server.engine import DataEngine
 import polars as pl
 import pandas as pd
 import os
@@ -44,6 +44,7 @@ class PolarsEngine(DataEngine):
         self.ctx = pl.SQLContext(eager_execution=False)
         self.AVOID_LIVE_EVALUATION = ['CREATE', 'DROP', 'DELETE']
         self.UNSUPPORTED_STATEMENTS = ['INSERT']
+        self.UNSUPPORTED_EXPRESSIONS = ['LIKE']
 
     def register(self, name: str, df: pl.DataFrame):
         self.ctx.register_many({name: df})

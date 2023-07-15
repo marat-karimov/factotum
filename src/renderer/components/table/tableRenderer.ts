@@ -39,7 +39,7 @@ export class TableRenderer {
     this.tableClickHandler = new TableClickHandler();
 
     const columnDefinitions = this.getColumnDefinitions(data.columns);
-console.log('data came', data.tableData.length, data.columns.length)
+
     this.table = new Tabulator("#table-container", {
       data: data.tableData,
       columns: columnDefinitions,

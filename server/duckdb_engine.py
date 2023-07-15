@@ -1,6 +1,6 @@
 
 import polars as pl
-from engine import DataEngine
+from server.engine import DataEngine
 import duckdb
 import os
 import pandas as pd
@@ -46,6 +46,7 @@ class DuckDBEngine(DataEngine):
         self.ctx = duckdb.connect(':memory:')
         self.AVOID_LIVE_EVALUATION = ['CREATE', 'DROP', 'DELETE', 'INSERT']
         self.UNSUPPORTED_STATEMENTS = []
+        self.UNSUPPORTED_EXPRESSIONS = []
 
     def register(self, name: str, df: duckdb.DuckDBPyRelation):
         self.ctx.register(name, df)

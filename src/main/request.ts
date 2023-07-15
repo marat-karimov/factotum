@@ -3,7 +3,7 @@ import axios from "axios";
 export async function sendPost(endpoint: string, data: any): Promise<any> {
   try {
     const response = await axios.post(
-      `http://127.0.0.1:8080/${endpoint}`,
+      `http://127.0.0.1:49213/${endpoint}`,
       data
     );
     const responseData = response.data;

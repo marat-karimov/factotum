@@ -1,6 +1,6 @@
 import { TabulatorFull as Tabulator, RowComponent } from "tabulator-tables";
 import { ScrollDirection, TableSearchBox } from "./tableSearchBox";
-import { sendSearchBoxHidden } from "../../ipcToMainSender";
+import { sendSearchBoxHidden } from "../../toMainSender";
 
 const debounceDelay = 1000;
 
