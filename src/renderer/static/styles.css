@@ -43,10 +43,6 @@ html {
   line-height: 1.3;
 }
 
-/* pre {
-  margin: 0em;
-} */
-
 .right {
   display: flex;
   flex-direction: column;
@@ -67,7 +63,7 @@ html {
   max-height: 10%;
   overflow-y: auto;
   background-color: #313335;
-  line-height: 1.5;
+  line-height: 1.6;
   font-size: 14px;
 }
 
@@ -79,6 +75,7 @@ html {
 
 #empty-state-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
