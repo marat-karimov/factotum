@@ -16,7 +16,7 @@ const icon = "assets/icon.ico";
 const name = process.env.npm_package_productName
 
 const version = process.env.VERSION
-  ? process.env.CI
+  ? process.env.VERSION
   : process.env.npm_package_version;
 
 const executableName = `${name}-${version}`;
