@@ -18,8 +18,6 @@ const manufacturer = "Marat Karimov";
 
 const icon = "assets/icon.ico";
 
-const version = "1.0.0";
-
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
@@ -34,16 +32,17 @@ const config: ForgeConfig = {
       description,
       loadingGif: "assets/transparent.gif",
       setupIcon: icon,
+      version: process.env.VERSION,
     }),
     new MakerWix({
       name,
       description,
       icon,
       manufacturer,
+      version: process.env.VERSION,
       language: 1033,
       shortcutFolderName: name,
       features: { autoLaunch: true, autoUpdate: false },
-      version,
     }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
