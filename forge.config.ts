@@ -11,38 +11,39 @@ import { mainConfig } from "./webpack.main.config";
 import { rendererConfig } from "./webpack.renderer.config";
 
 const pyExecDir = process.platform + "_python";
-
-const name = "Factotum";
-const description = "SQL powered tabular data editor";
-const manufacturer = "Marat Karimov";
-
 const icon = "assets/icon.ico";
+
+const name = process.env.npm_package_productName
+
+const version = process.env.VERSION
+  ? process.env.CI
+  : process.env.npm_package_version;
+
+const executableName = `${name}-${version}`;
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     icon,
     extraResource: [pyExecDir, "config.json"],
-    appVersion: process.env.VERSION,
+    appVersion: version,
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
-      name,
-      description,
       loadingGif: "assets/transparent.gif",
       setupIcon: icon,
-      version: process.env.VERSION,
+      setupExe: `${executableName} Setup.exe`,
+      version,
+      name
     }),
     new MakerWix({
-      name,
-      description,
       icon,
-      manufacturer,
-      version: process.env.VERSION,
       language: 1033,
       shortcutFolderName: name,
       features: { autoLaunch: true, autoUpdate: false },
+      version,
+      name
     }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
