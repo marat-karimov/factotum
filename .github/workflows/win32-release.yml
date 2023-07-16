@@ -28,7 +28,8 @@ jobs:
         
       - name: Install Wix Toolset
         run: |
-          choco install wixtoolset
+          choco install wixtoolset -y --version 3.11.2
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       - name: Build Electron app
         run: npm run package
