@@ -1,5 +1,6 @@
 import type { ForgeConfig } from "@electron-forge/shared-types";
 import { MakerSquirrel } from "@electron-forge/maker-squirrel";
+import { MakerWix } from "@electron-forge/maker-wix";
 import { MakerZIP } from "@electron-forge/maker-zip";
 import { MakerDeb } from "@electron-forge/maker-deb";
 import { MakerRpm } from "@electron-forge/maker-rpm";
@@ -11,22 +12,37 @@ import { rendererConfig } from "./webpack.renderer.config";
 
 const pyExecDir = process.platform + "_python";
 
-const name = 'Factotum'
-const description = 'SQL powered tabular data editor'
+const name = "Factotum";
+const description = "SQL powered tabular data editor";
+const manufacturer = "Marat Karimov";
+
+const icon = "assets/icon.ico";
+
+const version = "1.0.0";
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    icon: 'assets/icon.ico',
+    icon,
     extraResource: [pyExecDir, "config.json"],
-    },
+  },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({
       name,
       description,
-      loadingGif: 'assets/transparent.gif',
-      setupIcon: 'assets/icon.ico',
+      loadingGif: "assets/transparent.gif",
+      setupIcon: icon,
+    }),
+    new MakerWix({
+      name,
+      description,
+      icon,
+      manufacturer,
+      language: 1033,
+      shortcutFolderName: name,
+      features: { autoLaunch: true, autoUpdate: false },
+      version,
     }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
