@@ -25,6 +25,7 @@ const config: ForgeConfig = {
     asar: true,
     icon,
     extraResource: [pyExecDir, "config.json"],
+    appVersion: process.env.VERSION,
   },
   rebuildConfig: {},
   makers: [

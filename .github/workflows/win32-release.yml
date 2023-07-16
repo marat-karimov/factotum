@@ -31,6 +31,14 @@ jobs:
           choco install wixtoolset -y --version 3.11.2
           echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
+      - name: Determine next version
+        id: version
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          VERSION=$(echo ${TAG#v} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+        shell: bash
+
       - name: Build Electron app
         run: npm run package
 
@@ -47,25 +55,19 @@ jobs:
           path: |
             test-results/
 
-      - name: Determine next version
-        id: version
-        run: |
-          VERSION=$(git describe --tags --abbrev=0 | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g') 
-          echo "::set-output name=VERSION::${VERSION}"
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.version.outputs.VERSION }}
-          release_name: Release ${{ steps.version.outputs.VERSION }}
+          tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset
-        id: upload-release-asset 
+      - name: Upload Release Asset (MSI)
+        id: upload-release-asset-msi
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -74,3 +76,16 @@ jobs:
           asset_path: ./out/make/wix/x64/Factotum.msi
           asset_name: Factotum.msi
           asset_content_type: application/x-msi
+
+      - name: Upload Release Asset (EXE)
+        id: upload-release-asset-exe
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./out/make/squirrel.windows/x64/Factotum-${{ env.VERSION }} Setup.exe
+          asset_name: Factotum-${{ env.VERSION }}.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+
+
