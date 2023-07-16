@@ -19,8 +19,6 @@ const version = process.env.VERSION
   ? process.env.VERSION
   : process.env.npm_package_version;
 
-const executableName = `${name}-${version}`;
-
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
@@ -33,7 +31,7 @@ const config: ForgeConfig = {
     new MakerSquirrel({
       loadingGif: "assets/transparent.gif",
       setupIcon: icon,
-      setupExe: `${executableName} Setup.exe`,
+      setupExe: `${name}.exe`,
       version,
       name
     }),
