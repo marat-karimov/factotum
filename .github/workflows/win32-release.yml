@@ -34,14 +34,15 @@ jobs:
           echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
 
       - name: Determine next version
+        shell: bash
         id: version
         run: |
           TAG=$(git describe --tags --abbrev=0)
           VERSION=$(echo ${TAG#v} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
-        shell: bash
-
+        
       - name: Decode PFX
+        shell: bash
         run: |
           echo "${{ secrets.PFX_BASE64 }}" | base64 --decode > certificate.pfx
         env:
