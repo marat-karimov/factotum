@@ -8,6 +8,7 @@ from flask import Flask, request, abort
 
 from server.processor import DataProcessor
 from server.validator import SqlValidator
+from server.converter import ReadConverter
 
 from server.duckdb_engine import DuckDBEngine
 from server.polars_engine import PolarsEngine
@@ -17,12 +18,14 @@ heartbeat_timeout_sec = 30
 last_heartbeat_time = time.time()
 
 processor: DataProcessor = None
+converter = ReadConverter()
 
 app = Flask(__name__)
 
 
 def kill(data=None):
     response_data = {'message': 'Server is shutting down...'}
+    converter.cleanup()
     threading.Timer(1.0, os._exit, args=(0,)).start()
     return response_data
 
@@ -47,11 +50,11 @@ def init_engine(engine):
     global processor
 
     if engine == 'duckdb':
-        duckdb_engine = DuckDBEngine()
+        duckdb_engine = DuckDBEngine(converter)
         validator = SqlValidator(duckdb_engine)
         processor = DataProcessor(duckdb_engine, validator)
     elif engine == 'polars':
-        polars_engine = PolarsEngine()
+        polars_engine = PolarsEngine(converter)
         validator = SqlValidator(polars_engine)
         processor = DataProcessor(polars_engine, validator)
     else:
@@ -93,6 +96,7 @@ def check_heartbeat():
     while True:
         if time.time() - last_heartbeat_time > heartbeat_timeout_sec:
             print('No heartbeat received. Self-destructing...')
+            converter.cleanup()
             os._exit(0)
         time.sleep(1)
 

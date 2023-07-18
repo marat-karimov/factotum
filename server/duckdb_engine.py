@@ -3,32 +3,40 @@ import polars as pl
 from server.engine import DataEngine
 import duckdb
 import os
-import pandas as pd
 from typing import Callable, Dict
+from server.converter import ReadConverter
 
-SUPPORTED_EXTENSIONS = ['.csv', '.parquet', '.xml', ".sav", ".avro", ".dta", ".xpt",
-                        '.json', '.tsv', '.xlsx', '.feather', ".sas7bdat"]
+SUPPORTED_EXTENSIONS = ['.csv', '.parquet', '.xml', ".sav", ".avro", ".dta", ".xpt", ".sas7bcat",
+                        '.json', '.tsv', '.feather', ".sas7bdat", ".xls", ".xlsx", ".xlsm", ".xlsb",
+                        ".odf", ".ods", ".odt"]
 
 WriterType = Callable[[duckdb.DuckDBPyRelation, str], None]
+ReaderType = Callable[[str, ReadConverter], duckdb.DuckDBPyRelation]
 
-READERS = {
-    '.csv': lambda path: duckdb.read_csv(path, header=True),
-    '.tsv': lambda path: duckdb.read_csv(path, header=True, sep="\t"),
+READERS: Dict[str, ReaderType] = {
+    '.csv': lambda path, conv: duckdb.read_csv(path, header=True),
+    '.tsv': lambda path, conv: duckdb.read_csv(path, header=True, sep="\t"),
     '.parquet': duckdb.read_parquet,
     '.json': duckdb.read_json,
-    '.xlsx': lambda path: duckdb.from_df(pd.read_excel(path)),
-    '.feather': lambda path: duckdb.from_df(pd.read_feather(path)),
-    '.sas7bdat': lambda path: duckdb.from_df(pd.read_sas(path, encoding='utf-8')),
-    '.xpt': lambda path: duckdb.from_df(pd.read_sas(path, encoding='utf-8')),
-    '.xml': lambda path: duckdb.from_df(pd.read_xml(path)),
-    '.sav': lambda path: duckdb.from_df(pd.read_spss(path)),
-    '.dta': lambda path: duckdb.from_df(pd.read_stata(path))
+    '.xlsx': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.xls': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.xlsm': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.xlsb': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.odf': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.ods': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.odt': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
+    '.feather': lambda path, conv: duckdb.read_parquet(conv.feather_to_parquet(path)),
+    '.sas7bdat': lambda path, conv: duckdb.read_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
+    '.xpt': lambda path, conv: duckdb.read_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
+    '.xml': lambda path, conv: duckdb.read_parquet(conv.xml_to_parquet(path)),
+    '.sav': lambda path, conv: duckdb.read_parquet(conv.spss_to_parquet(path)),
+    '.dta': lambda path, conv: duckdb.read_parquet(conv.stata_to_parquet(path))
 }
 
 
 WRITERS: Dict[str, WriterType] = {
-    '.csv': lambda rel, path: rel.write_csv(path),
-    '.tsv': lambda rel, path: rel.write_csv(path, sep="\t"),
+    '.csv': lambda rel, path: rel.write_csv(path, header=True),
+    '.tsv': lambda rel, path: rel.write_csv(path, header=True, sep="\t"),
     '.parquet': lambda rel, path: rel.write_parquet(path),
     '.json': lambda rel, path: rel.pl().write_json(path, row_oriented=True),
     '.xlsx': lambda rel, path: rel.pl().write_excel(path),
@@ -42,7 +50,8 @@ WRITERS: Dict[str, WriterType] = {
 class DuckDBEngine(DataEngine):
     """DuckDB data engine."""
 
-    def __init__(self):
+    def __init__(self, converter: ReadConverter):
+        self.converter = converter
         self.ctx = duckdb.connect(':memory:')
         self.AVOID_LIVE_EVALUATION = ['CREATE', 'DROP', 'DELETE', 'INSERT']
         self.UNSUPPORTED_STATEMENTS = []
@@ -87,7 +96,8 @@ class DuckDBEngine(DataEngine):
             raise ValueError(
                 f"Unsupported file format. Only {', '.join(SUPPORTED_EXTENSIONS)} are supported.")
 
-        rel: duckdb.DuckDBPyRelation = READERS[file_extension](file_path)
+        rel: duckdb.DuckDBPyRelation = READERS[file_extension](
+            file_path, self.converter)
 
         cols_count = len(rel.columns)
 

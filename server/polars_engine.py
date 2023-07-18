@@ -1,14 +1,35 @@
 from server.engine import DataEngine
 import polars as pl
-import pandas as pd
 import os
 from typing import Callable, Dict
+from server.converter import ReadConverter
 
-SUPPORTED_EXTENSIONS = ['.csv', '.parquet', '.xml', ".sav", ".avro", ".dta", ".xpt",
-                        '.json', '.tsv', '.xlsx', '.feather', ".sas7bdat"]
+SUPPORTED_EXTENSIONS = ['.csv', '.parquet', '.xml', ".sav", ".avro", ".dta", ".xpt", ".sas7bcat",
+                        '.json', '.tsv', '.feather', ".sas7bdat", ".xls", ".xlsx", ".xlsm", ".xlsb",
+                          ".odf", ".ods", ".odt"]
 
 WriterType = Callable[[pl.DataFrame, str], None]
-ReaderType = Callable[[str], pl.LazyFrame]
+ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
+
+READERS: Dict[str, ReaderType] = {
+    '.csv': lambda path, conv: pl.scan_csv(path, ignore_errors=True),
+    '.tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t"),
+    '.parquet': lambda path, conv: pl.scan_parquet(path),
+    '.json': lambda path, conv: pl.read_json(path),
+    '.xlsx': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.xls': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.xlsm': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.xlsb': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.odf': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.ods': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.odt': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
+    '.feather': lambda path, conv: pl.scan_parquet(conv.feather_to_parquet(path)),
+    '.sas7bdat': lambda path, conv: pl.scan_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
+    '.xpt': lambda path, conv: pl.scan_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
+    '.xml': lambda path, conv: pl.scan_parquet(conv.xml_to_parquet(path)),
+    '.sav': lambda path, conv: pl.scan_parquet(conv.spss_to_parquet(path)),
+    '.dta': lambda path, conv: pl.scan_parquet(conv.stata_to_parquet(path))
+}
 
 WRITERS: Dict[str, WriterType] = {
     '.csv': lambda result, path: result.write_csv(path),
@@ -22,25 +43,12 @@ WRITERS: Dict[str, WriterType] = {
     '.dta': lambda result, path: result.to_pandas().to_stata(path, write_index=False),
 }
 
-READERS: Dict[str, ReaderType] = {
-    '.csv': lambda path: pl.scan_csv(path, ignore_errors=True),
-    '.tsv': lambda path: pl.scan_csv(path, ignore_errors=True, separator="\t"),
-    '.parquet': lambda path: pl.scan_parquet(path),
-    '.json': lambda path: pl.read_json(path),
-    '.xlsx': lambda path: pl.read_excel(path),
-    '.feather': lambda path: pl.from_pandas(pd.read_feather(path)),
-    '.sas7bdat': lambda path: pl.from_pandas(pd.read_sas(path, encoding='utf-8')),
-    '.xpt': lambda path: pl.from_pandas(pd.read_sas(path, encoding='utf-8')),
-    '.xml': lambda path: pl.from_pandas(pd.read_xml(path)),
-    '.sav': lambda path: pl.from_pandas(pd.read_spss(path)),
-    '.dta': lambda path: pl.from_pandas(pd.read_stata(path)),
-}
-
 
 class PolarsEngine(DataEngine):
     """Polars data engine."""
 
-    def __init__(self):
+    def __init__(self, converter: ReadConverter):
+        self.converter = converter
         self.ctx = pl.SQLContext(eager_execution=False)
         self.AVOID_LIVE_EVALUATION = ['CREATE', 'DROP', 'DELETE']
         self.UNSUPPORTED_STATEMENTS = ['INSERT']
@@ -78,7 +86,7 @@ class PolarsEngine(DataEngine):
             raise ValueError(
                 f"Unsupported file format. Only {', '.join(SUPPORTED_EXTENSIONS)} are supported.")
 
-        return READERS[file_extension](file_path)
+        return READERS[file_extension](file_path, self.converter)
 
     def write_file(self, file_path: str, latest_query_result: pl.LazyFrame) -> dict:
         """Writes the result of the latest query to a file based on its extension."""
