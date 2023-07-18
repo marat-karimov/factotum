@@ -41,14 +41,21 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
         shell: bash
 
+      - name: Decode PFX
+        run: |
+          echo "${{ secrets.PFX_BASE64 }}" | base64 --decode > certificate.pfx
+        env:
+          CSC_LINK: ${{ github.workspace }}/certificate.pfx
+          CSC_KEY_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+
       - name: Build Electron app
-        run: npm run package
+        run: npm run pack
 
       - name: Run Playwright tests
         run: npm run test
 
       - name: Make executables
-        run: npm run make
+        run: npm run dist
 
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -75,19 +82,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./out/make/wix/x64/Factotum.msi
+          asset_path: ./dist/Factotum.msi
           asset_name: Factotum-${{ env.VERSION }}.msi
           asset_content_type: application/x-msi
 
-      - name: Upload Release Asset (EXE)
-        id: upload-release-asset-exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+      - name: Upload to Azure Blob Storage
+        uses: azure/CLI@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./out/make/squirrel.windows/x64/Factotum.exe
-          asset_name: Factotum-${{ env.VERSION }}.exe
-          asset_content_type: application/vnd.microsoft.portable-executable
+          inlineScript: |
+            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name ${{ env.VERSION }}/Factotum.msi --type block --file ./dist/Factotum.msi --container-name factotum
 
 

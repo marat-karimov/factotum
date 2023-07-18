@@ -6,8 +6,8 @@
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
+    "pack": "electron-forge package && electron-builder --dir --config electron-builder.config.js",
+    "dist": "electron-forge package && electron-builder --config electron-builder.config.js",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
     "setup-venv": "ts-node setup-venv.ts",
@@ -21,6 +21,7 @@
   "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^6.2.1",
+    "@electron-forge/maker-appx": "^6.2.1",
     "@electron-forge/maker-deb": "^6.2.1",
     "@electron-forge/maker-rpm": "^6.2.1",
     "@electron-forge/maker-squirrel": "^6.2.1",

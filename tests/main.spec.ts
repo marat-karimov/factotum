@@ -35,7 +35,7 @@ test("File import", async () => {
 });
 
 async function setup() {
-  const latestBuild = findLatestBuild();
+  const latestBuild = findLatestBuild('dist');
 
   const appInfo = parseElectronApp(latestBuild);
 
