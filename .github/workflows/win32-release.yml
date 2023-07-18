@@ -52,18 +52,15 @@ jobs:
       - name: Build Electron app
         run: npm run pack
 
+      - name: List dist dir
+        run: echo $(ls dist dist/win/unpacked)
+        shell: bash
+
       - name: Run Playwright tests
         run: npm run test
 
       - name: Make executables
         run: npm run dist
-
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: test-report
-          path: |
-            test-results/
 
       - name: Create Release
         id: create_release
@@ -92,5 +89,13 @@ jobs:
         with:
           inlineScript: |
             az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name ${{ env.VERSION }}/Factotum.msi --type block --file ./dist/Factotum.msi --container-name factotum
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: test-report
+          path: |
+            test-results/
 
 

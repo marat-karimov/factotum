@@ -8,7 +8,7 @@ import {
 
 import { _electron as electron } from "playwright";
 
-import {messages} from '../src/messages'
+import { messages } from "../src/messages";
 
 test("File import", async () => {
   const { app, page } = await setup();
@@ -35,9 +35,11 @@ test("File import", async () => {
 });
 
 async function setup() {
-  const latestBuild = findLatestBuild('dist');
+  const latestBuild = findLatestBuild("dist");
+  console.log("latest build", latestBuild);
 
   const appInfo = parseElectronApp(latestBuild);
+  console.log("app info", appInfo);
 
   const app = await electron.launch({
     args: [appInfo.main],
