@@ -53,7 +53,7 @@ jobs:
         run: npm run pack
 
       - name: List dist dir
-        run: echo $(ls dist dist/win/unpacked)
+        run: echo $(ls dist dist/win-unpacked)
         shell: bash
 
       - name: Run Playwright tests
@@ -85,11 +85,13 @@ jobs:
           asset_content_type: application/x-msi
 
       - name: Upload to Azure Blob Storage
-        uses: azure/CLI@v1
+        uses: Azure/powershell@v1
         with:
+          azPSVersion: '3.1.0'
           inlineScript: |
-            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name ${{ env.VERSION }}/Factotum.msi --type block --file ./dist/Factotum.msi --container-name factotum
-      
+            $context = New-AzStorageContext -StorageAccountName "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -StorageAccountKey "${{ secrets.AZURE_STORAGE_ACCESS_KEY }}"
+            Set-AzStorageBlobContent -File "./dist/Factotum.msi" -Container "factotum" -Blob "${{ env.VERSION }}/Factotum.msi" -Context $context
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         if: failure()

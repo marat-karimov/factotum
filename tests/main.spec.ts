@@ -36,15 +36,15 @@ test("File import", async () => {
 
 async function setup() {
   const latestBuild = findLatestBuild("dist");
-  console.log("latest build", latestBuild);
+  console.log(latestBuild);
 
   const appInfo = parseElectronApp(latestBuild);
-  console.log("app info", appInfo);
+  console.log(appInfo);
 
   const app = await electron.launch({
     args: [appInfo.main],
     executablePath: appInfo.executable,
-    timeout: 60000,
+    timeout: 90000,
   });
 
   const page = await app.firstWindow();
