@@ -1,4 +1,20 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
+import {
+  contextBridge,
+  ipcRenderer,
+  IpcRendererEvent,
+  nativeImage,
+} from "electron";
+import { TitlebarColor, CustomTitlebar } from "custom-electron-titlebar";
+
+window.addEventListener("DOMContentLoaded", () => {
+  const icon = nativeImage.createFromPath("assets/icon.ico");
+  new CustomTitlebar({
+    backgroundColor: TitlebarColor.fromHex("#282828"),
+    menuPosition: "left",
+    iconSize: 24,
+    icon,
+  });
+});
 
 const api: IpcApi = {
   send: (channel: string, data: any) => {

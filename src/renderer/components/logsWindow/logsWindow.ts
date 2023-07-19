@@ -14,7 +14,7 @@ export class LogsWindow {
 
     const existingValue = this.logElement.innerHTML;
     const color = this.colorMap[kind];
-    const updatedValue = `<span style="color: ${color}">${message}</span><br>${existingValue}`;
+    const updatedValue = `<span style="color: ${color}"><li class='log-item'>${message}</li></span><br>${existingValue}`;
 
     this.logElement.innerHTML = updatedValue;
   };
