@@ -41,8 +41,9 @@ jobs:
 
       - name: Run Electron App
         run: |
-          start /wait dist\win-unpacked\Factotum.exe
-          timeout /t 60 /nobreak
+          Start-Process dist\win-unpacked\Factotum.exe -Wait
+          Start-Sleep -s 60
+        shell: powershell
 
       - name: Run Playwright tests
         run: npm run test
