@@ -30,8 +30,8 @@ jobs:
 
       - name: Run Electron App
         run: |
-        start /wait dist\win-unpacked\Factotum.exe
-        timeout /t 60 /nobreak
+          start /wait dist\win-unpacked\Factotum.exe
+          timeout /t 60 /nobreak
 
       - name: Run Playwright tests
         run: npm run test
