@@ -41,7 +41,7 @@ jobs:
 
       - name: Run Electron App
         run: |
-          Start-Process dist\win-unpacked\Factotum.exe -Wait
+          Start-Process dist\win-unpacked\Factotum.exe
           Start-Sleep -s 60
         shell: powershell
 
