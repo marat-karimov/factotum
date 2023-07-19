@@ -24,6 +24,7 @@ module.exports = {
     files: [".webpack/**/*", "package.json"],
     extraResources: [pyExecDir, "config.json"],
     artifactName: `${productName}.msi`,
+    forceCodeSigning: process.env.CI ? true : false,
   },
   msi: {
     oneClick: true,

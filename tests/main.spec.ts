@@ -20,7 +20,6 @@ test("File import", async () => {
   await expect(page.locator("text=Virtual database schema here")).toBeVisible({
     timeout: 20000,
   });
-  await expect(page.locator(`text=${messages.tableEmptyState}`)).toBeVisible();
   await expect(page.locator(`text=${messages.welcome}`)).toBeVisible();
   await expect(page.locator("text=SQL engine: polars")).toBeVisible();
   await expect(page.locator("text=RAM usage:")).toBeVisible();
@@ -44,7 +43,6 @@ async function setup() {
   console.log(appInfo);
 
   const app = await electron.launch({
-    args: [appInfo.main],
     executablePath: appInfo.executable,
     timeout: 90000,
   });

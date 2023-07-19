@@ -29,6 +29,4 @@ export const messages = {
     `Bravo! Your SQL command, ${sql}, has hit all the right notes.`,
 
   noSqlSelected: "Please select an SQL statement for the next act.",
-
-  tableEmptyState: "Your data will show up here",
 };

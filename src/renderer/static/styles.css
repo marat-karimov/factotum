@@ -84,14 +84,19 @@ html {
   background-color: #282828;
 }
 
+#empty-state {
+  height: 10em;
+  width: 10em;
+}
+
 #schema-empty-state-container {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
-  width: 50%; /* adjust this as necessary */
+  width: 50%;
   font-size: 16px;
-  margin: 0 auto; /* add this line */
+  margin: 0 auto;
   text-align: center;
 }
 .tabulator-cell-selected {
