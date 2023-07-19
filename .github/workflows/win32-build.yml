@@ -35,6 +35,10 @@ jobs:
       - name: Build Electron app
         run: npm run pack
 
+      - name: List dist dir
+        run: echo $(ls . dist dist/win-unpacked)
+        shell: bash
+
       - name: Run Electron App
         run: |
           start /wait dist\win-unpacked\Factotum.exe
