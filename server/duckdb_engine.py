@@ -33,7 +33,6 @@ READERS: Dict[str, ReaderType] = {
     '.dta': lambda path, conv: duckdb.read_parquet(conv.stata_to_parquet(path))
 }
 
-
 WRITERS: Dict[str, WriterType] = {
     '.csv': lambda rel, path: rel.write_csv(path, header=True),
     '.tsv': lambda rel, path: rel.write_csv(path, header=True, sep="\t"),

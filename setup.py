@@ -10,14 +10,14 @@ build_folder = platform + "_python"
 additional_modules = []
 
 build_exe_options = {
-    "packages": ["pyarrow.vendored.version", "pyreadstat", "fastparquet"],
+    "packages": ["pyarrow.vendored.version", "pyreadstat"],
     "excludes": ["tkinter", "PyQt4.QtSql", "sqlite3", 
                                   "scipy.lib.lapack.flapack",
                                   "PyQt4.QtNetwork",
                                   "PyQt4.QtScript",
                                   "numpy.core._dotblas", 
                                   "PyQt5"],
-    "include_files": [("venv/Lib/site-packages/fastparquet.libs", "lib/fastparquet.libs"),],
+    "include_files": [],
     "includes": additional_modules,
     "build_exe": build_folder
 }

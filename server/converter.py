@@ -6,14 +6,15 @@ import hashlib
 
 
 class ReadConverter:
+    CHUNKSIZE = 50000
 
     def __init__(self):
         self.temp_dir = tempfile.mkdtemp()
 
-    def stata_to_parquet(self, dta_file_path, chunksize=10000, **kwargs):
+    def stata_to_parquet(self, dta_file_path, chunksize=CHUNKSIZE, **kwargs):
         return self._read_file(pd.read_stata, dta_file_path, chunksize, **kwargs)
 
-    def sas_to_parquet(self, sas_file_path, chunksize=10000, **kwargs):
+    def sas_to_parquet(self, sas_file_path, chunksize=CHUNKSIZE, **kwargs):
         return self._read_file(pd.read_sas, sas_file_path, chunksize, **kwargs)
 
     def xml_to_parquet(self, xml_file_path, **kwargs):
@@ -30,23 +31,23 @@ class ReadConverter:
 
     def _read_file(self, read_func, file_path, chunksize, **kwargs):
         temp_file_path = self._generate_temp_file_path(file_path)
+        wildcard_file_path = temp_file_path.replace('.parquet', '_*.parquet')
 
-        first_one = True
+        chunk_no = 0
 
         for chunk in read_func(file_path, chunksize=chunksize, **kwargs):
-            if first_one:
-                chunk.to_parquet(temp_file_path, engine='fastparquet', index=False)
-                first_one = False
-            else:
-                chunk.to_parquet(temp_file_path, engine='fastparquet', index=False, append=True)
+            chunk_temp_file_path = temp_file_path.replace(
+                '.parquet', f'_{chunk_no}.parquet')
+            chunk.to_parquet(chunk_temp_file_path, index=False)
+            chunk_no += 1
 
-        return temp_file_path
+        return wildcard_file_path
 
     def _read_file_once(self, read_func, file_path, **kwargs):
         temp_file_path = self._generate_temp_file_path(file_path)
 
         df = read_func(file_path, **kwargs)
-        df.to_parquet(temp_file_path, engine='fastparquet', index=False)
+        df.to_parquet(temp_file_path, index=False)
 
         return temp_file_path
 
@@ -59,4 +60,3 @@ class ReadConverter:
 
     def cleanup(self):
         shutil.rmtree(self.temp_dir)
-
