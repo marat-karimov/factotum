@@ -6,10 +6,17 @@ import {
 } from "electron";
 import { TitlebarColor, CustomTitlebar } from "custom-electron-titlebar";
 
+const iconPath =
+  process.env.NODE_ENV === "development"
+    ? "assets/icon.ico"
+    : "resources/assets/icon.ico";
+
 window.addEventListener("DOMContentLoaded", () => {
-  const icon = nativeImage.createFromPath("assets/icon.ico");
+  const icon = nativeImage.createFromPath(iconPath);
   new CustomTitlebar({
     backgroundColor: TitlebarColor.fromHex("#282828"),
+    menuBarBackgroundColor: TitlebarColor.fromHex("#282828"),
+    containerOverflow: "hidden",
     menuPosition: "left",
     iconSize: 24,
     icon,

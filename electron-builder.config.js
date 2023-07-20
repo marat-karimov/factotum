@@ -22,7 +22,7 @@ module.exports = {
   win: {
     target: "msi",
     files: [".webpack/**/*", "package.json"],
-    extraResources: [pyExecDir, "config.json"],
+    extraResources: [pyExecDir, "assets" ,"config.json"],
     artifactName: `${productName}.msi`,
     forceCodeSigning: process.env.CI ? true : false,
   },

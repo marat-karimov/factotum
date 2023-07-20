@@ -70,7 +70,7 @@ export class MainMenu {
   buildMenu(): Electron.Menu {
     const importFilesItem: MenuItemConstructorOptions = {
       label: "Import files",
-      id: 'import-files',
+      id: "import-files",
       accelerator: "CmdOrCtrl+O",
       click: () => this.openFileDialog(),
     };
@@ -93,7 +93,7 @@ export class MainMenu {
 
     const fileMenu: MenuItemConstructorOptions = {
       label: "File",
-      id: 'file',
+      id: "file",
       submenu: [importFilesItem, exportSqlItem, separatorItem, quitItem],
     };
 
@@ -132,10 +132,15 @@ export class MainMenu {
       submenu: [polarsItem, duckdbItem],
     };
 
-    const runSqlMenu: MenuItemConstructorOptions = {
+    const runSqlItem: MenuItemConstructorOptions = {
       label: "Run SQL",
       accelerator: "CmdOrCtrl+Enter",
       click: () => this.runSqlHandler(),
+    };
+
+    const runMenu: MenuItemConstructorOptions = {
+      label: "Run",
+      submenu: [runSqlItem],
     };
 
     const zoomIn: MenuItemConstructorOptions = {
@@ -176,7 +181,7 @@ export class MainMenu {
       editMenu,
       engineMenu,
       viewMenu,
-      runSqlMenu,
+      runMenu,
     ];
 
     const menu = Menu.buildFromTemplate(menuTemplate);
