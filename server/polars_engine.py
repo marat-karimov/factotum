@@ -70,7 +70,7 @@ class PolarsEngine(DataEngine):
 
         for table in tables:
             get_columns_sql = f'SELECT * FROM "{table}" LIMIT 0;'
-            columns = self.sql(get_columns_sql).collect().columns[0: max_cols]
+            columns = self.sql(get_columns_sql).collect().columns
             schema[table] = columns
 
         return {'schema': schema, 'error': None}

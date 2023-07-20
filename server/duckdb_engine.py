@@ -78,7 +78,7 @@ class DuckDBEngine(DataEngine):
         ).fetchall()
 
         for table in tables:
-            cols_to_display = table[1][0: max_cols]
+            cols_to_display = table[1]
             print('cols to display', len(cols_to_display))
             schema[table[0]] = cols_to_display
 

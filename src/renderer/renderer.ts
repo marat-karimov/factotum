@@ -1,7 +1,6 @@
 import "./static/codemirror.css";
 import "./static/darcula.css";
 import "./static/styles.css";
-import "./static/treejs.css";
 import "./static/tabulator.css";
 import "./static/spinner.css";
 import "./static/show-hint.css";
@@ -12,7 +11,7 @@ import "codemirror/addon/hint/sql-hint";
 
 import { SqlEditor } from "./components/editor/editor";
 
-import { SchemaTree } from "./components/schemaTree/schemaTree";
+import { SchemaTreeRenderer } from "./components/schemaTree/schemaTree";
 import { TableRenderer } from "./components/table/tableRenderer";
 
 import { renderSpinner } from "./components/spinner/spinner";
@@ -27,7 +26,7 @@ const tableRenderer = new TableRenderer();
 const editor = new SqlEditor();
 const logsWindow = new LogsWindow();
 const statusBar = new StatusBar();
-const schemaTree = new SchemaTree();
+const schemaTree = new SchemaTreeRenderer();
 
 type CommandMap = Record<FromMainChannels, (args: any) => void>;
 

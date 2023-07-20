@@ -26,7 +26,7 @@ export const messages = {
     `Take a bow! The file ${filePath} has been successfully added as a table named ${tableName}.`,
 
   sqlSuccess: (sql: string) =>
-    `Bravo! Your SQL command, ${sql}, has hit all the right notes.`,
+    `Bravo! Your SQL command, ${sql} has hit all the right notes.`,
 
   noSqlSelected: "Please select an SQL statement for the next act.",
 };
