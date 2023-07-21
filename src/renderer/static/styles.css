@@ -141,6 +141,7 @@ ul {
   height: 100%;
   color: #a9b7c6;
   cursor: default;
+  color: #697079;
 }
 
 #empty-state-container {
@@ -191,11 +192,11 @@ ul {
 
 #info-panel {
   background-color: #014180;
-  padding: 5px;
+  padding: 4px;
   font-size: 14px;
   display: flex;
   justify-content: space-between;
-  min-height: 60px;
+  min-height: 50px;
 }
 
 .corner-elements {
@@ -273,24 +274,23 @@ ul {
 
 #next-button::before {
   content: url("down.svg");
-  width: 10px;
-  height: 10px;
-  margin-right: 10px;
+  width: 9px;
+  height: 9px;
+  margin-right: 9px;
 }
 
 #prev-button::before {
   content: url("up.svg");
-  width: 10px;
-  height: 10px;
-  margin-left: 10px;
+  width: 9px;
+  height: 9px;
+  margin-left: 9px;
 }
 
 #close-button::before {
   content: url("X_bold.svg");
-  width: 10px;
-  height: 10px;
-  font-size: 14px;
-  margin-right: 10px;
+  width: 9px;
+  height: 9px;
+  margin-right: 9px;
 }
 
 #next-button:hover::before {

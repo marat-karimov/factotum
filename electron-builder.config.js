@@ -6,7 +6,10 @@ const version = process.env.VERSION
   ? process.env.VERSION
   : process.env.npm_package_version;
 
-const icon = "assets/icon.ico";
+const files = [".webpack/**/*", "package.json"]
+const extraResources = [pyExecDir, "assets", "config.json"]
+
+
 
 /**
  * @type {import('electron-builder').Configuration}
@@ -16,13 +19,13 @@ const icon = "assets/icon.ico";
 module.exports = {
   appId,
   productName,
-  icon,
+  icon: "assets/icon.ico",
   electronLanguages: "en-US",
   buildVersion: version,
   win: {
     target: "msi",
-    files: [".webpack/**/*", "package.json"],
-    extraResources: [pyExecDir, "assets" ,"config.json"],
+    files,
+    extraResources,
     artifactName: `${productName}.msi`,
     forceCodeSigning: process.env.CI ? true : false,
   },
@@ -30,4 +33,10 @@ module.exports = {
     oneClick: true,
     perMachine: false,
   },
+  mac: {
+    target: 'dmg',
+    files,
+    extraResources,
+    icon: "assets/icon.png"
+  }
 };
