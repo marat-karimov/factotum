@@ -94,10 +94,18 @@ export class EngineSwitchHandler {
   private restartBackendWithEngine(engine: Engine) {
     this.heartbeat.stopHeartbeat();
     sendKill();
-    spawnPythonProcess(engine);
-    this.heartbeat.startSendingHeartbeats();
+    this.spawnServerAndStartSendingHeartbeats(engine);
     this.reloadWindowAndSendEngineUpdate(engine);
     this.currentEngine = engine;
+  }
+
+  private spawnServerAndStartSendingHeartbeats(engine: Engine) {
+    const server = spawnPythonProcess(engine);
+    server.stdout.on("data", (data) => {
+      if (data.toString().includes("Serving Flask app")) {
+        this.heartbeat.startSendingHeartbeats();
+      }
+    });
   }
 
   private reloadWindowAndSendEngineUpdate = (engine: Engine) => {

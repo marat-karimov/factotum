@@ -6,7 +6,23 @@ export function spawnPythonProcess(
   engine: Engine
 ): ChildProcessWithoutNullStreams {
   const path = resolvePyExecPath();
-  return spawn(path, [engine]);
+
+  const server = spawn(path, [engine]);
+
+  server.stderr.on("data", (data) => {
+    console.error(`Server stderr: ${data}`);
+  });
+
+  server.on("close", (code) => {
+    console.log(`Server exited with code ${code}`);
+    if (code != 0) process.exit(0);
+  });
+
+  server.on("error", (err) => {
+    console.error("Server failed", err);
+    process.exit(0);
+  });
+  return server;
 }
 
 function resolvePyExecPath() {

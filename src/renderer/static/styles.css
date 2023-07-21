@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  font-family: monospace, monospace;
+  font-family: "Courier New", Courier, monospace;
   color: #a9b7c6;
   background-color: #282828;
 }
@@ -62,11 +62,12 @@
   height: 20px;
   cursor: default;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
 .table {
   padding-left: 10px;
-  padding-top: 3px;
+  vertical-align: middle;
 }
 
 .table.folded {
@@ -86,9 +87,12 @@
 }
 
 .column::before {
-  content: "🖹"; /* The content property is used to insert generated content */
+  content: url(column_icon.svg);
   display: inline-block;
   margin-right: 5px;
+  height: 13px;
+  width: 13px;
+  vertical-align: middle;
 }
 
 #sql-editor {
@@ -174,7 +178,7 @@ ul {
 }
 
 .tabulator-rownum-selected {
-  background-color: #323232;
+  background-color: #373737;
 }
 
 #lds-spinner {
@@ -257,12 +261,10 @@ ul {
   margin-right: 15px; /* Add space to the right of the rows matched */
 }
 
-/* CSS for arrows using Unicode characters */
 #next-button::before,
 #prev-button::before,
 #close-button::before {
   transition: color 0.3s ease-in-out;
-  font-size: 18px; /* Adjust size as necessary */
 }
 
 #close-button {
@@ -270,20 +272,27 @@ ul {
 }
 
 #next-button::before {
-  content: "🡓"; /* Up arrow */
-  margin-right: 10px; /* Add space to the right of the next button */
+  content: url("down.svg");
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
 }
 
 #prev-button::before {
-  content: "🡑"; /* Down arrow */
+  content: url("up.svg");
+  width: 10px;
+  height: 10px;
+  margin-left: 10px;
 }
 
 #close-button::before {
-  content: "✖";
+  content: url("X_bold.svg");
+  width: 10px;
+  height: 10px;
   font-size: 14px;
+  margin-right: 10px;
 }
 
-/* Dracula hover effect */
 #next-button:hover::before {
   color: #fff;
 }

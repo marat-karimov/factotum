@@ -103,20 +103,6 @@ app.whenReady().then(() => {
   });
 });
 
-server.stderr.on("data", (data) => {
-  console.error(`Server stderr: ${data}`);
-});
-
-server.on("close", (code) => {
-  console.log(`Server exited with code ${code}`);
-  if (code != 0) process.exit(0);
-});
-
-server.on("error", (err) => {
-  console.error("Server failed", err);
-  process.exit(0);
-});
-
 app.on("activate", function () {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });

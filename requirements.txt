@@ -1,5 +1,4 @@
 cx-Freeze==6.15.1
-cx-Logging==3.1.0
 lief==0.13.1
 polars==0.18.2
 xlsx2csv==0.8.1

@@ -39,7 +39,7 @@ export class Heartbeat {
     const metrics = this.app.getAppMetrics();
     let totalMemory = 0;
     metrics.forEach((metric) => {
-      totalMemory += metric.memory.privateBytes;
+      totalMemory += metric.memory.workingSetSize;
     });
     totalMemory = totalMemory / 1024;
     return totalMemory;
