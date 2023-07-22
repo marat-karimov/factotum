@@ -26,6 +26,7 @@ pids
 lib-cov
 
 win32_python
+darwin_python
 
 # Coverage directory used by tools like istanbul
 coverage
