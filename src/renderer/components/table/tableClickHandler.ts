@@ -1,3 +1,4 @@
+import { TableForRender } from "../../../types/types";
 import { ctrlCHandler } from "../../shortcutsHandlers";
 import { CellComponent, RowComponent } from "tabulator-tables";
 
@@ -5,13 +6,15 @@ const TABULATOR_CELL_SELECTED_CLASS = "tabulator-cell-selected";
 const TABULATOR_ROW_SELECTED_CLASS = "tabulator-row-selected";
 const TABULATOR_ROWNUM_SELECTED_CLASS = "tabulator-rownum-selected";
 
-export class TableHandler {
+export class TableClickHandler {
   private selectedCell: CellComponent | null = null;
   private nativeSelectedRows: RowComponent[] = [];
   private blueSelectedRows: RowComponent[] = [];
   private isCtrlPressed = false;
+  private columns: TableForRender["columns"] = [];
 
-  constructor() {
+  constructor(columns: TableForRender["columns"]) {
+    this.columns = columns;
     document.body.onkeydown = (event) => this.keydownHandler(event);
     document.body.onkeyup = (event) => this.keyupHandler(event);
   }
@@ -22,6 +25,7 @@ export class TableHandler {
     this.selectedCell = null;
     this.nativeSelectedRows = null;
     this.blueSelectedRows = null;
+    this.columns = null;
   }
 
   public handleCellClick = (_: UIEvent, cell: CellComponent) => {
@@ -60,15 +64,29 @@ export class TableHandler {
   };
 
   private sendSelectedRowsToClipBoard() {
-    const selectedRowsData = this.blueSelectedRows.map((row) => row.getData());
+    const selectedRowsData = this.getOrderedSelectedRowsData();
     const csv = this.convertToCSV(selectedRowsData);
-
     ctrlCHandler(csv);
   }
 
-  private convertToCSV(arr: any[]): string {
-    const array = [Object.keys(arr[0])].concat(arr);
-    return array.map((it) => Object.values(it).toString()).join("\n");
+  private getOrderedSelectedRowsData() {
+    return this.blueSelectedRows.map((row) => {
+      const rowData = row.getData();
+      const orderedData: Array<{ [key: string]: any }> = [];
+      this.columns.forEach((column) => {
+        orderedData.push({ [column]: rowData[column] });
+      });
+      return orderedData;
+    });
+  }
+
+  private convertToCSV(tableData: { [key: string]: any }[][]): string {
+    const header = tableData[0].map((item) => Object.keys(item)[0]);
+    const rowsData = tableData.map((row) => {
+      return row.map((item) => Object.values(item)[0]);
+    });
+    const csvData = [header].concat(rowsData);
+    return csvData.map((it) => it.toString()).join("\n");
   }
 
   private addClassName(element: HTMLElement, className: string) {

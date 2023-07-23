@@ -7,6 +7,6 @@ export class SchemaTreeRenderer {
 
     const renderer = new TreeView(state, "schema-container");
 
-    renderer.initialRender();
+    renderer.render();
   };
 }

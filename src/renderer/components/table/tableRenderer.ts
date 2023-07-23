@@ -1,5 +1,5 @@
 import { TabulatorFull as Tabulator, ColumnDefinition } from "tabulator-tables";
-import { TableHandler as TableClickHandler } from "./tableHandler";
+import { TableClickHandler as TableClickHandler } from "./tableClickHandler";
 
 import { TableSearch } from "./tableSearch";
 import { TableForRender } from "../../../types/types";
@@ -36,13 +36,14 @@ export class TableRenderer {
 
     renderSpinner();
 
-    this.tableClickHandler = new TableClickHandler();
+    this.tableClickHandler = new TableClickHandler(data.columns);
 
     const columnDefinitions = this.getColumnDefinitions(data.columns);
 
     this.table = new Tabulator("#table-container", {
       data: data.tableData,
       columns: columnDefinitions,
+      renderHorizontal: "virtual",
     });
 
     this.tableSearch = new TableSearch(this.table);

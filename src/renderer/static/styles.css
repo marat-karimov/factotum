@@ -61,7 +61,8 @@
   height: 20px;
   cursor: default;
   white-space: nowrap;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
 }
 
 .table {
@@ -69,12 +70,14 @@
   vertical-align: middle;
 }
 
-.table.folded {
-  list-style-type: "▶  ";
+.table.folded:before {
+  content: "▶";
+  margin-right: 5px;
 }
 
-.table.unfolded {
-  list-style-type: "◢  ";
+.table.unfolded::before {
+  content: "◢";
+  margin-right: 5px;
 }
 
 .placeholder.selected {
@@ -86,12 +89,13 @@
 }
 
 .column::before {
-  content: url(column_icon.svg);
+  content: url(column.svg);
   display: inline-block;
   margin-right: 5px;
   height: 13px;
   width: 13px;
   vertical-align: middle;
+  flex-shrink: 0;
 }
 
 #sql-editor {
@@ -114,8 +118,6 @@
   overflow-y: auto;
 }
 
-
-
 ul {
   margin: 0px;
   padding-left: 10px;
@@ -131,8 +133,6 @@ ul {
   height: 100%;
   color: #a9b7c6;
   cursor: default;
-  color: #697079;
-  color: #697079;
 }
 
 #empty-state-container {
@@ -184,7 +184,7 @@ ul {
 #info-panel {
   background-color: #014180;
   font-size: 14px;
-  display: inline-flex;
+  display: flex;
   justify-content: space-between;
   padding: 5px;
 }
@@ -206,7 +206,8 @@ ul {
   font-size: 14px;
 }
 
-#engine, #memory-usage {
+#engine,
+#memory-usage {
   display: inline-flex;
   align-items: center;
 }
@@ -261,7 +262,7 @@ ul {
 
 #match-container {
   display: inline-block;
-  width: 70px; 
+  width: 70px;
   text-align: center;
 }
 
@@ -294,7 +295,7 @@ ul {
 }
 
 #close-button::before {
-  content: url("X_bold.svg");
+  content: url("close.svg");
   width: 11px;
   display: block;
   margin-right: 10px;

@@ -1,25 +1,20 @@
 import { DataBaseSchema } from "../../../types/types";
 import { ctrlCHandler } from "../../shortcutsHandlers";
 
-interface Placeholder extends HTMLElement {
-  isEventAttached?: boolean;
-}
-
 interface NodeData {
   type: "table" | "column";
   name: string;
   parent?: string;
-  isFolded?: boolean;
 }
 
 export class TreeViewState {
-  private data: { [key: string]: NodeData[] };
+  public data: { [key: string]: NodeData[] };
   private foldedTables: Set<string>;
-  public selectedNodes: Set<Placeholder>;
+  public selectedNodeId: string | null;
 
   constructor(tableData: DataBaseSchema) {
     this.foldedTables = new Set<string>();
-    this.selectedNodes = new Set<Placeholder>();
+    this.selectedNodeId = null;
     this.data = this.flattenData(tableData);
   }
 
@@ -76,28 +71,36 @@ export class TreeViewState {
   getData(): { [key: string]: NodeData[] } {
     return this.data;
   }
+
+  getNodeById(id: string): NodeData | null {
+    for (const table in this.data) {
+      for (const node of this.data[table]) {
+        if (this.getNodeId(node) === id) {
+          return node;
+        }
+      }
+    }
+    return null;
+  }
+
+  getNodeId(node: NodeData): string {
+    return `${node.type}-${node.name}-${node.parent ?? ""}`;
+  }
 }
 
 export class TreeView {
   private container: HTMLElement;
-  private placeholders: Placeholder[];
+  private placeholders: HTMLElement[];
   private spacer: HTMLElement;
   private placeholderHeight: number;
   private visibleWindow: number;
   private placeholderContainer: HTMLElement;
   private state: TreeViewState;
+  private resizeTimeout: NodeJS.Timeout;
 
   constructor(state: TreeViewState, containerId: string) {
     this.container = document.getElementById(containerId);
     this.state = state;
-
-    this.placeholderHeight = this.calculatePlaceholderHeight();
-    this.visibleWindow = Math.ceil(
-      this.container.clientHeight / this.placeholderHeight
-    );
-    this.placeholders = this.createPlaceholders();
-    this.spacer = this.createSpacer();
-    this.placeholderContainer = this.setupPlaceholderContainer();
   }
 
   private calculatePlaceholderHeight(): number {
@@ -111,7 +114,7 @@ export class TreeView {
     return placeholderHeight;
   }
 
-  private createPlaceholders(): Placeholder[] {
+  private createPlaceholders(): HTMLElement[] {
     return Array.from({ length: this.visibleWindow }, () =>
       document.createElement("li")
     );
@@ -131,12 +134,20 @@ export class TreeView {
     return placeholderContainer;
   }
 
-  initialRender(): void {
+  public render(): void {
+    this.placeholderHeight = this.calculatePlaceholderHeight();
+    this.visibleWindow = Math.ceil(
+      this.container.clientHeight / this.placeholderHeight
+    );
+    this.placeholders = this.createPlaceholders();
+    this.spacer = this.createSpacer();
+    this.placeholderContainer = this.setupPlaceholderContainer();
     this.clearContainer();
     this.initializePlaceholders();
     this.appendElementsToContainer();
     this.updateVisibleNodes(0);
     this.addScrollListener();
+    this.addResizeListener();
   }
 
   private clearContainer(): void {
@@ -150,17 +161,11 @@ export class TreeView {
     });
   }
 
-  private configurePlaceholder(placeholder: Placeholder, index: number): void {
+  private configurePlaceholder(placeholder: HTMLElement, index: number): void {
     placeholder.style.height = `${this.placeholderHeight}px`;
 
     placeholder.classList.add("placeholder");
-
-    if (!placeholder.isEventAttached) {
-      placeholder.addEventListener("click", () =>
-        this.handlePlaceholderClick(placeholder, index)
-      );
-      placeholder.isEventAttached = true;
-    }
+    placeholder.onclick = () => this.handlePlaceholderClick(index);
 
     this.placeholderContainer.appendChild(placeholder);
   }
@@ -171,7 +176,16 @@ export class TreeView {
   }
 
   private addScrollListener(): void {
-    this.container.addEventListener("scroll", this.handleScroll.bind(this));
+    this.container.onscroll = () => this.handleScroll();
+  }
+
+  private addResizeListener(): void {
+    window.onresize = () => {
+      clearTimeout(this.resizeTimeout);
+      this.resizeTimeout = setTimeout(() => {
+        this.render();
+      }, 200);
+    };
   }
 
   private handleScroll(): void {
@@ -218,13 +232,17 @@ export class TreeView {
     }
   }
 
-  private setNodeData(placeholder: HTMLElement, nodeData: any): void {
+  private setNodeData(placeholder: HTMLElement, nodeData: NodeData): void {
     placeholder.textContent = nodeData.name;
     placeholder.className = "";
     placeholder.classList.add("placeholder", nodeData.type);
 
     if (nodeData.type === "table") {
       this.addTableClass(placeholder, nodeData);
+    }
+
+    if (this.state.getNodeId(nodeData) === this.state.selectedNodeId) {
+      placeholder.classList.add("selected");
     }
   }
 
@@ -234,7 +252,7 @@ export class TreeView {
     placeholder.classList.add("placeholder");
   }
 
-  private addTableClass(placeholder: HTMLElement, nodeData: any): void {
+  private addTableClass(placeholder: HTMLElement, nodeData: NodeData): void {
     if (this.state.isTableFolded(nodeData.name)) {
       placeholder.classList.add("folded");
     } else {
@@ -242,34 +260,21 @@ export class TreeView {
     }
   }
 
-  private handlePlaceholderClick(
-    placeholder: Placeholder,
-    index: number
-  ): void {
+  private handlePlaceholderClick(index: number): void {
     const dataIndex = this.calculateDataIndex(index);
     const nodeData = this.state.getNodeByIndex(dataIndex);
 
     if (nodeData?.type === "table") {
       this.state.toggleFoldedTable(nodeData.name);
       this.updateVisibleNodes(this.calculateScrollIndex());
+      this.render();
     }
 
     if (nodeData) {
-      this.deselectNodes();
-      this.selectNode(placeholder);
+      this.state.selectedNodeId = this.state.getNodeId(nodeData);
+      this.updateVisibleNodes(this.calculateScrollIndex());
       ctrlCHandler(nodeData.name);
     }
-  }
-
-  private selectNode(placeholder: Placeholder) {
-    this.state.selectedNodes.add(placeholder);
-    placeholder.classList.add("selected");
-  }
-
-  private deselectNodes() {
-    this.state.selectedNodes.forEach((placeholder) => {
-      placeholder.classList.remove("selected");
-    });
   }
 
   private calculateDataIndex(index: number): number {
@@ -284,6 +289,7 @@ export class TreeView {
 
   private adjustOverflow(): void {
     const totalHeight = this.state.countTotalNodes() * this.placeholderHeight;
+
     if (totalHeight <= this.container.clientHeight) {
       this.container.style.overflowY = "hidden";
     } else {

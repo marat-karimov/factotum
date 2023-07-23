@@ -17,7 +17,7 @@ test("File import", async () => {
     page.locator('span:text("--Your SQL editor is here")')
   ).toBeVisible();
 
-  await expect(page.locator("text=Virtual database schema here")).toBeVisible({
+  await expect(page.locator("text=Virtual database schema is here")).toBeVisible({
     timeout: 20000,
   });
   await expect(page.locator(`text=${messages.welcome}`)).toBeVisible();
