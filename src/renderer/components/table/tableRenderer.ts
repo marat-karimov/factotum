@@ -3,7 +3,7 @@ import { TableClickHandler as TableClickHandler } from "./tableClickHandler";
 
 import { TableSearch } from "./tableSearch";
 import { TableForRender } from "../../../types/types";
-import { renderSpinner } from "../spinner/spinner";
+import LdsSpinner from "../spinner/LdsSpinner.svelte";
 
 export class TableRenderer {
   private latestData: TableForRender = null;
@@ -34,7 +34,7 @@ export class TableRenderer {
   private renderTable(data: TableForRender) {
     this.cleanup();
 
-    renderSpinner();
+    new LdsSpinner({ target: document.getElementById("table-container") });
 
     this.tableClickHandler = new TableClickHandler(data.columns);
 

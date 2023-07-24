@@ -14,13 +14,13 @@ import { SqlEditor } from "./components/editor/editor";
 import { SchemaTreeRenderer } from "./components/schemaTree/schemaTree";
 import { TableRenderer } from "./components/table/tableRenderer";
 
-import { renderSpinner } from "./components/spinner/spinner";
 import { LogsWindow } from "./components/logsWindow/logsWindow";
-import { renderEmptyState } from "./components/table/tableEmptyState";
+import EmptyState from "./components/table/EmptyState.svelte";
 import { StatusBar } from "./components/statusBar/statusBar";
 import { sendSqlToRun } from "./toMainSender";
 import { DataBaseSchema, FromMainChannels } from "../types/types";
 import { messages } from "../messages";
+import LdsSpinner from "./components/spinner/LdsSpinner.svelte";
 
 const tableRenderer = new TableRenderer();
 const editor = new SqlEditor();
@@ -74,6 +74,16 @@ function getSqlToRun() {
   }
 
   sendSqlToRun(editorSelection);
+}
+
+function renderSpinner() {
+  new LdsSpinner({ target: document.getElementById("table-container") });
+}
+
+function renderEmptyState() {
+  new EmptyState({
+    target: document.getElementById("table-container"),
+  });
 }
 
 initialize();

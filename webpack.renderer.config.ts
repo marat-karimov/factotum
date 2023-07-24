@@ -1,12 +1,44 @@
-import type { Configuration } from 'webpack';
+import type { Configuration } from "webpack";
 
-import { rules } from './webpack.rules';
-import { plugins } from './webpack.plugins';
+import { rules } from "./webpack.rules";
+import { plugins } from "./webpack.plugins";
+import path from "path";
 
-rules.push({
-  test: /\.css$/,
-  use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
-});
+rules.push(
+  {
+    test: /\.css$/,
+    use: [
+      'style-loader',
+      {
+        loader: 'css-loader',
+        options: {
+          url: true,
+        },
+      },
+    ],
+  },
+  {
+    test: /\.svelte$/,
+    exclude: /node_modules/,
+    loader: "svelte-loader",
+    options: {
+      emitCss: true,
+      hotReload: true
+    },
+  },
+  {
+    test: /\.mjs$/,
+    include: /node_modules/,
+    type: "javascript/auto",
+  },
+  {
+    test: /\.(png|jpe?g|gif|svg)$/i,
+    type: 'asset/resource',
+    generator: {
+      filename: 'images/[hash][ext][query]',
+    },
+  },
+);
 
 export const rendererConfig: Configuration = {
   module: {
@@ -14,6 +46,10 @@ export const rendererConfig: Configuration = {
   },
   plugins,
   resolve: {
-    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css'],
-  },
+    alias: {
+      svelte: path.resolve("node_modules", 'svelte/src/runtime'),
+    },
+    extensions: [".svelte", ".mjs", ".js", ".ts", ".jsx", ".tsx", ".css"],
+    mainFields: ["svelte", "browser", "module", "main"],
+  }
 };
