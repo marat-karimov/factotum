@@ -33,6 +33,7 @@ module.exports = {
     oneClick: true,
     perMachine: false,
   },
+  afterSign: "electron-builder-notarize",
   mac: {
     target: [
       {
@@ -40,6 +41,8 @@ module.exports = {
         arch: ["x64", "arm64"],
       },
     ],
+    hardenedRuntime: true,
+		entitlements: "./node_modules/electron-builder-notarize/entitlements.mac.inherit.plist",
     artifactName: "${productName}-${arch}.dmg",
     files,
     extraResources,

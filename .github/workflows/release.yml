@@ -37,7 +37,7 @@ jobs:
           choco install wixtoolset -y --version 3.11.2
           echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
         
-      - name: Decode PFX for Windows
+      - name: Setup env variables for Windows
         if: runner.os == 'Windows'
         shell: bash
         run: |
@@ -45,13 +45,15 @@ jobs:
           echo "CSC_LINK=${{ github.workspace }}/certificate.pfx" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.PFX_PASSWORD }}" >> $GITHUB_ENV
 
-      - name: Decode P12 for MacOS
+      - name: Set up env variables for MacOS
         if: runner.os == 'macOS'
         shell: bash
         run: |
           echo "${{ secrets.P12_BASE64 }}" | base64 --decode > certificate.p12
           echo "CSC_LINK=${{ github.workspace }}/certificate.p12" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.P12_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> $GITHUB_ENV
+          echo "APPLE_ID_PASSWORD=${{ secrets.APPLE_ID_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build Electron app
         run: npm run pack
@@ -77,7 +79,10 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.os }}-dist
-          path: ./dist/*
+          path: |
+            ./dist/*.msi
+            ./dist/*.dmg
+
 
   release:
     needs: build
@@ -85,7 +90,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 
 
       - name: Download build artifacts
         uses: actions/download-artifact@v2
