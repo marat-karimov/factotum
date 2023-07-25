@@ -11,6 +11,8 @@ draft.py
 playwright-report
 dist/
 *.pfx
+*.cer
+*.p12
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

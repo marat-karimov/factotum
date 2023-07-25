@@ -1,0 +1,166 @@
+name: Test and Release
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.10.0
+
+      - name: Install node dependencies
+        run: yarn install
+
+      - name: Install python dependencies
+        run: npm run setup-venv
+
+      - name: Install Wix Toolset
+        if: runner.os == 'Windows'
+        run: |
+          choco install wixtoolset -y --version 3.11.2
+          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+        
+      - name: Decode PFX for Windows
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "${{ secrets.PFX_BASE64 }}" | base64 --decode > certificate.pfx
+          echo "CSC_LINK=${{ github.workspace }}/certificate.pfx" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.PFX_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Decode P12 for MacOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "${{ secrets.P12_BASE64 }}" | base64 --decode > certificate.p12
+          echo "CSC_LINK=${{ github.workspace }}/certificate.p12" >> $GITHUB_ENV
+          echo "CSC_KEY_PASSWORD=${{ secrets.P12_PASSWORD }}" >> $GITHUB_ENV
+
+      - name: Build Electron app
+        run: npm run pack
+
+      - name: List dist dir
+        run: echo $(ls dist dist/win-unpacked)
+        shell: bash
+
+      - name: Run Playwright tests
+        run: npm run test
+
+      - name: Make executables
+        run: npm run dist
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.os }}-dist
+          path: ./dist/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: dist
+
+      - name: Determine next version
+        shell: bash
+        id: version
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+          VERSION=$(echo ${TAG#v} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          tag_name: v${{ env.VERSION }}
+          release_name: Release v${{ env.VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset (MSI)
+        if: steps.version.outputs.VERSION != ''
+        id: upload-release-asset-msi
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./dist/windows-latest/Factotum.msi
+          asset_name: Factotum-${{ env.VERSION }}.msi
+          asset_content_type: application/x-msi
+
+      - name: Upload Release Asset (DMG x64)
+        if: steps.version.outputs.VERSION != ''
+        id: upload-release-asset-dmg-x64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./dist/macos-latest/Factotum-x64.dmg
+          asset_name: Factotum-${{ env.VERSION }}-x64.dmg
+          asset_content_type: application/x-diskcopy
+
+      - name: Upload Release Asset (DMG arm64)
+        if: steps.version.outputs.VERSION != ''
+        id: upload-release-asset-dmg-arm64
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./dist/macos-latest/Factotum-arm64.dmg
+          asset_name: Factotum-${{ env.VERSION }}-arm64.dmg
+          asset_content_type: application/x-diskcopy
+
+      - name: Install Azure CLI
+        run: |
+          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - name: Upload MSI to Azure Blob Storage
+        env:
+          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
+        run: |
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}.msi --type application/x-msi --file ./dist/windows-latest/Factotum.msi --container-name factotum
+
+      - name: Upload DMG x64 to Azure Blob Storage
+        env:
+          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
+        run: |
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}-x64.dmg --type application/x-diskcopy --file ./dist/macos-latest/Factotum-x64.dmg --container-name factotum
+
+      - name: Upload DMG arm64 to Azure Blob Storage
+        env:
+          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
+        run: |
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}-arm64.dmg --type application/x-diskcopy --file ./dist/macos-latest/Factotum-arm64.dmg --container-name factotum

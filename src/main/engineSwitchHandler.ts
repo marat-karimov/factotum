@@ -91,9 +91,10 @@ export class EngineSwitchHandler {
     return Boolean(response);
   };
 
-  private restartBackendWithEngine(engine: Engine) {
+  private async restartBackendWithEngine(engine: Engine) {
     this.heartbeat.stopHeartbeat();
     sendKill();
+    await new Promise(resolve => setTimeout(resolve, 1100));
     this.spawnServerAndStartSendingHeartbeats(engine);
     this.reloadWindowAndSendEngineUpdate(engine);
     this.currentEngine = engine;

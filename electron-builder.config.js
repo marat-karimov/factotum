@@ -6,10 +6,8 @@ const version = process.env.VERSION
   ? process.env.VERSION
   : process.env.npm_package_version;
 
-const files = [".webpack/**/*", "package.json"]
-const extraResources = [pyExecDir, "assets", "config.json"]
-
-
+const files = [".webpack/**/*", "package.json"];
+const extraResources = [pyExecDir, "assets", "config.json"];
 
 /**
  * @type {import('electron-builder').Configuration}
@@ -26,7 +24,7 @@ module.exports = {
     target: "msi",
     files,
     extraResources,
-    artifactName: `${productName}.msi`,
+    artifactName: "${productName}.msi",
     forceCodeSigning: process.env.CI ? true : false,
   },
   msi: {
@@ -34,9 +32,15 @@ module.exports = {
     perMachine: false,
   },
   mac: {
-    target: 'dmg',
+    target: [
+      {
+        target: "dmg",
+        arch: ["x64", "arm64"],
+      },
+    ],
+    artifactName: "${productName}-${arch}.dmg",
     files,
     extraResources,
-    icon: "assets/icon.png"
-  }
+    icon: "assets/icon.png",
+  },
 };
