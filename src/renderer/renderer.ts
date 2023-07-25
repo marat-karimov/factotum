@@ -21,6 +21,9 @@ import { sendSqlToRun } from "./toMainSender";
 import { DataBaseSchema, FromMainChannels } from "../types/types";
 import { messages } from "../messages";
 import LdsSpinner from "./components/spinner/LdsSpinner.svelte";
+import App from "./App.svelte";
+
+const app = new App({ target: document.body });
 
 const tableRenderer = new TableRenderer();
 const editor = new SqlEditor();
@@ -77,13 +80,13 @@ function getSqlToRun() {
 }
 
 function renderSpinner() {
-  new LdsSpinner({ target: document.getElementById("table-container") });
+ // new LdsSpinner({ target: document.getElementById("table-container") });
 }
 
 function renderEmptyState() {
-  new EmptyState({
-    target: document.getElementById("table-container"),
-  });
+  // new EmptyState({
+  //   target: document.getElementById("table-container"),
+  // });
 }
 
 initialize();

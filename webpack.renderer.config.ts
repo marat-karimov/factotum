@@ -1,4 +1,5 @@
 import type { Configuration } from "webpack";
+import preprocess from "svelte-preprocess";
 
 import { rules } from "./webpack.rules";
 import { plugins } from "./webpack.plugins";
@@ -8,9 +9,9 @@ rules.push(
   {
     test: /\.css$/,
     use: [
-      'style-loader',
+      "style-loader",
       {
-        loader: 'css-loader',
+        loader: "css-loader",
         options: {
           url: true,
         },
@@ -23,7 +24,8 @@ rules.push(
     loader: "svelte-loader",
     options: {
       emitCss: true,
-      hotReload: true
+      hotReload: true,
+      preprocess: preprocess(),
     },
   },
   {
@@ -33,11 +35,11 @@ rules.push(
   },
   {
     test: /\.(png|jpe?g|gif|svg)$/i,
-    type: 'asset/resource',
+    type: "asset/resource",
     generator: {
-      filename: 'images/[hash][ext][query]',
+      filename: "images/[hash][ext][query]",
     },
-  },
+  }
 );
 
 export const rendererConfig: Configuration = {
@@ -47,9 +49,9 @@ export const rendererConfig: Configuration = {
   plugins,
   resolve: {
     alias: {
-      svelte: path.resolve("node_modules", 'svelte/src/runtime'),
+      svelte: path.resolve("node_modules", "svelte/src/runtime"),
     },
     extensions: [".svelte", ".mjs", ".js", ".ts", ".jsx", ".tsx", ".css"],
     mainFields: ["svelte", "browser", "module", "main"],
-  }
+  },
 };

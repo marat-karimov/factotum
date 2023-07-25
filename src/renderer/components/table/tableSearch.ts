@@ -1,6 +1,7 @@
 import { TabulatorFull as Tabulator, RowComponent } from "tabulator-tables";
-import { ScrollDirection, TableSearchBox } from "./tableSearchBox";
+import { ScrollDirection } from "./tableSearchBox";
 import { sendSearchBoxHidden } from "../../toMainSender";
+import SearchBox from "./SearchBox.svelte";
 
 const debounceDelay = 1000;
 
@@ -8,7 +9,7 @@ export class TableSearch {
   private currentRowIndex = 0;
   private rowsMatched: RowComponent[] = [];
   private table: Tabulator;
-  private searchBox: TableSearchBox;
+  private searchBox: SearchBox;
 
   constructor(table: Tabulator) {
     this.table = table;
@@ -19,18 +20,21 @@ export class TableSearch {
   }
 
   private initSearchBox() {
-    this.searchBox = new TableSearchBox();
+    this.searchBox = new SearchBox({
+      target: document.getElementById("search-container"),
+    });
 
     this.searchBox.setCurrentMatchIndex(this.currentRowIndex);
     this.searchBox.setTotalMatchesCount(this.rowsMatched.length);
-    this.searchBox.nextButton.onclick = () => this.scrollToElement(1);
-    this.searchBox.prevButton.onclick = () => this.scrollToElement(-1);
-    this.searchBox.closeButton.onclick = () => this.hideSearchBox();
-
-    this.searchBox.searchField.oninput = this.debounce(async () => {
-      const value = this.searchBox.getSearchFieldValue();
-      await this.handleInputValue(value);
-    }, debounceDelay);
+    this.searchBox.onButtonClick({
+      nextButtonClicked: () => this.scrollToElement(1),
+      prevButtonClicked: () => this.scrollToElement(-1),
+      closeButtonClicked: () => this.hideSearchBox(),
+      searchFieldChanged: this.debounce(async () => {
+        const value = this.searchBox.getSearchFieldValue();
+        await this.handleInputValue(value);
+      }, debounceDelay),
+    });
   }
 
   public destroy() {
@@ -46,6 +50,7 @@ export class TableSearch {
 
   public renderSearchBox() {
     this.searchBox.renderSearchBox();
+    console.log('ebebe')
   }
 
   public hideSearchBox() {
