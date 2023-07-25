@@ -9,6 +9,8 @@ const version = process.env.VERSION
 const files = [".webpack/**/*", "package.json"];
 const extraResources = [pyExecDir, "assets", "config.json"];
 
+process.env['CSC_IDENTITY_AUTO_DISCOVERY'] = process.env.CI ? true : false
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration/configuration
@@ -26,7 +28,6 @@ module.exports = {
     extraResources,
     artifactName: "${productName}.msi",
     forceCodeSigning: process.env.CI ? true : false,
-    publish: 'never'
   },
   msi: {
     oneClick: true,
@@ -42,7 +43,6 @@ module.exports = {
     artifactName: "${productName}-${arch}.dmg",
     files,
     extraResources,
-    icon: "assets/icon.png",
-    publish: 'never'
+    icon: "assets/icon.png"
   },
 };
