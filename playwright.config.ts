@@ -5,14 +5,12 @@ const config: PlaywrightTestConfig = {
   globalTimeout: 10 * 60 * 1000,
   timeout: 120000,
   reporter: [["github"], ["html", { open: "never" }]],
+  retries: 1,
   expect: {
     timeout: 10000,
   },
   use: {
     actionTimeout: 10000,
-    trace: { mode: "retain-on-failure", screenshots: false },
-    screenshot: "only-on-failure",
-    video: "retain-on-failure",
   },
 };
 

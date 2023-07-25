@@ -6,7 +6,7 @@ import {
   stubDialog,
 } from "electron-playwright-helpers";
 
-import { _electron as electron } from "playwright";
+import { _electron as electron } from "playwright-core";
 
 import { messages } from "../src/messages";
 
@@ -33,6 +33,7 @@ test("File import", async () => {
   await expect(
     page.locator("text=SELECT * FROM Automobile LIMIT 100;")
   ).toHaveCount(2);
+
 });
 
 async function setup() {
@@ -43,11 +44,14 @@ async function setup() {
   console.log(appInfo);
 
   const app = await electron.launch({
+    tracesDir: 'trace',
     executablePath: appInfo.executable,
     timeout: 90000,
   });
 
   const page = await app.firstWindow();
+
+  await page.context().tracing.start({ screenshots: true, snapshots: true });
 
   return { app, page };
 }

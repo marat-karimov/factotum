@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: Setup Python
         uses: actions/setup-python@v3
@@ -65,6 +65,13 @@ jobs:
 
       - name: Make executables
         run: npm run dist
+
+      - name: Upload test artifacts
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: trace
+          path: trace/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2

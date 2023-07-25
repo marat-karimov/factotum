@@ -8,7 +8,9 @@ lerna-debug.log*
 venv/
 __pycache__
 draft.py
-playwright-report
+playwright-report/
+test-results/
+trace/
 dist/
 *.pfx
 *.cer
