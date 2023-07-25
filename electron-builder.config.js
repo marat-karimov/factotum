@@ -26,6 +26,7 @@ module.exports = {
     extraResources,
     artifactName: "${productName}.msi",
     forceCodeSigning: process.env.CI ? true : false,
+    publish: 'never'
   },
   msi: {
     oneClick: true,
@@ -42,5 +43,6 @@ module.exports = {
     files,
     extraResources,
     icon: "assets/icon.png",
+    publish: 'never'
   },
 };
