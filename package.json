@@ -23,6 +23,7 @@
     "@electron-forge/cli": "^6.2.1",
     "@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
     "@electron-forge/plugin-webpack": "^6.2.1",
+    "@electron/notarize": "^2.1.0",
     "@playwright/test": "^1.36.2",
     "@types/codemirror": "^5.60.8",
     "@types/tabulator-tables": "^5.5.0",
@@ -32,7 +33,6 @@
     "css-loader": "^6.0.0",
     "electron": "^24.3.0",
     "electron-builder": "^24.4.0",
-    "electron-builder-notarize": "^1.5.1",
     "electron-playwright-helpers": "^1.6.0",
     "eslint": "^8.0.1",
     "eslint-import-resolver-typescript": "^3.5.5",
@@ -54,7 +54,6 @@
     "electron-localshortcut": "^3.2.1",
     "electron-squirrel-startup": "^1.0.0",
     "mousetrap": "^1.6.5",
-    "tabulator-tables": "^5.5.0",
-    "treejs": "https://github.com/m-thalmann/treejs.git"
+    "tabulator-tables": "^5.5.0"
   }
 }
