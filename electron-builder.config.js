@@ -41,7 +41,7 @@ module.exports = {
         arch: ["x64", "arm64"],
       },
     ],
-    entitlement: 'entitlements.mac.inherit.plist',
+    entitlements: 'entitlements.mac.inherit.plist',
     hardenedRuntime: true,
     artifactName: "${productName}-${arch}.dmg",
     files,
