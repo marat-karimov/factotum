@@ -1,7 +1,6 @@
 import { notarize } from "@electron/notarize";
-import { AfterPackContext } from "electron-builder";
 
-const _default = async function notarizing(context: AfterPackContext) {
+export default async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== "darwin") {
     return;
@@ -11,10 +10,9 @@ const _default = async function notarizing(context: AfterPackContext) {
 
   return await notarize({
     appPath: `${appOutDir}/${appName}.app`,
-    appleId: process.env.APPLE_ID as string,
-    appleIdPassword: process.env.APPLE_ID_PASSWORD as string,
-    teamId: process.env.APPLE_TEAM_ID as string,
+    appleId: process.env.APPLE_ID,
+    appleIdPassword: process.env.APPLE_ID_PASSWORD,
+    teamId: process.env.APPLE_TEAM_ID,
     tool: "notarytool",
   });
-};
-export { _default as default };
+}

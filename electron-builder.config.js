@@ -33,7 +33,7 @@ module.exports = {
     oneClick: true,
     perMachine: false,
   },
-  afterSign: "notarize.ts",
+  afterSign: "notarize.js",
   mac: {
     target: [
       {
