@@ -21,14 +21,6 @@ jobs:
         with:
           xcode-version: '14.2'
 
-      - name: Check if notarytool available
-        if: runner.os == 'macOS'
-        run: xcrun --find notarytool
-
-      - name: Check if notarytool works
-        if: runner.os == 'macOS'
-        run: xcrun notarytool --help
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -67,7 +59,6 @@ jobs:
           echo "CSC_LINK=${{ github.workspace }}/certificate.p12" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.P12_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> $GITHUB_ENV
-          echo "APPLE_ID_PASSWORD=${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLE_APP_SPECIFIC_PASSWORD=${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
 
@@ -123,52 +114,19 @@ jobs:
           VERSION=$(echo ${TAG#v} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Create Release
+      - name: Create Release and Upload Artifacts
         id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+        uses: marvinpinto/action-automatic-releases@latest
         with:
-          tag_name: v${{ env.VERSION }}
-          release_name: Release v${{ env.VERSION }}
+          repo_token: ${{ secrets.PAT }}
+          automatic_release_tag: v${{ env.VERSION }}
+          title: Release v${{ env.VERSION }}
           draft: false
           prerelease: false
-
-      - name: Upload Release Asset (MSI)
-        if: steps.version.outputs.VERSION != ''
-        id: upload-release-asset-msi
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./dist/windows-latest/Factotum.msi
-          asset_name: Factotum-${{ env.VERSION }}.msi
-          asset_content_type: application/x-msi
-
-      - name: Upload Release Asset (DMG x64)
-        if: steps.version.outputs.VERSION != ''
-        id: upload-release-asset-dmg-x64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./dist/macos-latest/Factotum-x64.dmg
-          asset_name: Factotum-${{ env.VERSION }}-x64.dmg
-          asset_content_type: application/x-diskcopy
-
-      - name: Upload Release Asset (DMG arm64)
-        if: steps.version.outputs.VERSION != ''
-        id: upload-release-asset-dmg-arm64
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
-          asset_path: ./dist/macos-latest/Factotum-arm64.dmg
-          asset_name: Factotum-${{ env.VERSION }}-arm64.dmg
-          asset_content_type: application/x-diskcopy
+          files: |
+            ./dist/windows-latest/Factotum.msi
+            ./dist/macos-latest/Factotum-x64.dmg
+            ./dist/macos-latest/Factotum-arm64.dmg
 
       - name: Install Azure CLI
         run: |
