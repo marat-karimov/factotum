@@ -15,6 +15,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Xcode
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '13.1'
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -53,7 +59,7 @@ jobs:
           echo "CSC_LINK=${{ github.workspace }}/certificate.p12" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.P12_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> $GITHUB_ENV
-          echo "APPLE_APP_SPECIFIC_PASSWORD=${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPLE_ID_PASSWORD=${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build Electron app
         run: npm run pack
