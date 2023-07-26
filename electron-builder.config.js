@@ -9,7 +9,7 @@ const version = process.env.VERSION
 const files = [".webpack/**/*", "package.json"];
 const extraResources = [pyExecDir, "assets", "config.json"];
 
-process.env['CSC_IDENTITY_AUTO_DISCOVERY'] = process.env.CI ? true : false
+process.env["CSC_IDENTITY_AUTO_DISCOVERY"] = process.env.CI ? true : false;
 
 /**
  * @type {import('electron-builder').Configuration}
@@ -34,17 +34,18 @@ module.exports = {
     perMachine: false,
   },
   mac: {
+    notarize: { teamId: process.env.APPLE_TEAM_ID },
     target: [
       {
         target: "dmg",
         arch: ["x64", "arm64"],
       },
     ],
-    entitlements: 'entitlements.mac.inherit.plist',
+    entitlements: "entitlements.mac.inherit.plist",
     hardenedRuntime: true,
     artifactName: "${productName}-${arch}.dmg",
     files,
     extraResources,
-    icon: "assets/icon.png"
+    icon: "assets/icon.png",
   },
 };
