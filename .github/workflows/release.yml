@@ -179,18 +179,18 @@ jobs:
           AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
           AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
         run: |
-          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}.msi --type application/x-msi --file ./dist/windows-latest/Factotum.msi --container-name factotum
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}.msi --file ./dist/windows-latest/Factotum.msi --container-name factotum
 
       - name: Upload DMG x64 to Azure Blob Storage
         env:
           AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
           AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
         run: |
-          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}-x64.dmg --type application/x-diskcopy --file ./dist/macos-latest/Factotum-x64.dmg --container-name factotum
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}-x64.dmg --file ./dist/macos-latest/Factotum-x64.dmg --container-name factotum
 
       - name: Upload DMG arm64 to Azure Blob Storage
         env:
           AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
           AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
         run: |
-          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}-arm64.dmg --type application/x-diskcopy --file ./dist/macos-latest/Factotum-arm64.dmg --container-name factotum
+          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name Factotum-${{ env.VERSION }}-arm64.dmg --file ./dist/macos-latest/Factotum-arm64.dmg --container-name factotum
