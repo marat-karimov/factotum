@@ -21,6 +21,14 @@ jobs:
         with:
           xcode-version: '14.2'
 
+      - name: Check if notarytool available
+        if: runner.os == 'macOS'
+        run: xcrun --find notarytool
+
+      - name: Check if notarytool works
+        if: runner.os == 'macOS'
+        run: xcrun notarytool --help
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
