@@ -94,7 +94,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ matrix.os }}-dist
+          name: ${{ matrix.os }}
           path: |
             ./dist/*.msi
             ./dist/*.dmg
