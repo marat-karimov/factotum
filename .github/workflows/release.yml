@@ -1,4 +1,4 @@
-name: Test and Release
+name: Release
 
 on: 
   workflow_dispatch:
@@ -53,7 +53,7 @@ jobs:
           echo "CSC_LINK=${{ github.workspace }}/certificate.p12" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.P12_PASSWORD }}" >> $GITHUB_ENV
           echo "APPLE_ID=${{ secrets.APPLE_ID }}" >> $GITHUB_ENV
-          echo "APPLE_ID_PASSWORD=${{ secrets.APPLE_ID_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPLE_APP_SPECIFIC_PASSWORD=${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build Electron app
         run: npm run pack

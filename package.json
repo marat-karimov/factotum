@@ -6,7 +6,7 @@
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
-    "pack": "electron-forge package && electron-builder --dir --config electron-builder.config.js",
+    "pack": "electron-forge package && electron-builder --dir --publish never --config electron-builder.config.js",
     "dist": "electron-forge package && electron-builder --publish never --config electron-builder.config.js",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
