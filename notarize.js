@@ -1,6 +1,7 @@
-import { notarize } from "@electron/notarize";
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { notarize } = require("@electron/notarize");
 
-export default async function notarizing(context) {
+module.exports = async function notarizing(context) {
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== "darwin") {
     return;
@@ -15,4 +16,4 @@ export default async function notarizing(context) {
     teamId: process.env.APPLE_TEAM_ID,
     tool: "notarytool",
   });
-}
+};
