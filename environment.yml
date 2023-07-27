@@ -1,0 +1,24 @@
+name: venv
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - nomkl
+  - polars
+  - xlsx2csv
+  - psutil
+  - sqlparse
+  - sqlglot
+  - numpy
+  - pyarrow
+  - flask
+  - pandas
+  - lxml
+  - pyreadstat  
+  - odfpy
+  - pip
+  - pip:
+    - lief
+    - duckdb
+    - cx-Freeze
+    - openpyxl

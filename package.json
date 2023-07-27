@@ -10,7 +10,8 @@
     "dist": "electron-forge package && electron-builder --publish never --config electron-builder.config.js",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
-    "setup-venv": "ts-node setup-venv.ts",
+    "setup-venv": "conda env create -f environment.yml",
+    "build-python": "conda run -n venv python setup.py build",
     "test": "playwright test"
   },
   "keywords": [],

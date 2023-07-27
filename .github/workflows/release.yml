@@ -26,16 +26,20 @@ jobs:
         with:
           node-version: 16
 
-      - name: Setup Python
-        uses: actions/setup-python@v3
+      - name: Setup Miniconda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: 3.10.0
+          python-version: '3.11.0'
+          auto-activate-base: true
 
       - name: Install node dependencies
         run: yarn install
 
-      - name: Install python dependencies
+      - name: Install python environment
         run: npm run setup-venv
+
+      - name: Build python
+        run: npm run build-python
 
       - name: Install Wix Toolset
         if: runner.os == 'Windows'
@@ -82,14 +86,35 @@ jobs:
           name: trace
           path: trace/
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
+      - name: Upload MSI to Azure Blob Storage and get URL
+        if: runner.os == 'Windows'
+        uses: Azure/powershell@v1
         with:
-          name: ${{ matrix.os }}
-          path: |
-            ./dist/*.msi
-            ./dist/*.dmg
+          azPSVersion: '3.1.0'
+          inlineScript: |
+            $context = New-AzStorageContext -StorageAccountName "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -StorageAccountKey "${{ secrets.AZURE_STORAGE_ACCESS_KEY }}"
+            Set-AzStorageBlobContent -File "./dist/Factotum.msi" -Container "factotum" -Blob "${{ env.VERSION }}/Factotum.msi" -Context $context
+            $blob = Get-AzStorageBlob -Container "factotum" -Blob "${{ env.VERSION }}/Factotum.msi" -Context $context
+            $url = $blob.ICloudBlob.Uri.AbsoluteUri
+            echo "MSI_URL=$url" >> $GITHUB_ENV
 
+      - name: Upload DMG x64 to Azure Blob Storage and get URL
+        if: runner.os == 'macOS'
+        uses: Azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --type block --file "./dist/Factotum-x64.dmg" --container-name factotum
+            url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --container-name factotum)
+            echo "DMG_X64_URL=$url" >> $GITHUB_ENV
+
+      - name: Upload DMG arm64 to Azure Blob Storage and get URL
+        if: runner.os == 'macOS'
+        uses: Azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --type block --file "./dist/Factotum-arm64.dmg" --container-name factotum
+            url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --container-name factotum)
+            echo "DMG_ARM64_URL=$url" >> $GITHUB_ENV
 
   release:
     needs: build
@@ -101,11 +126,6 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          path: dist
-
       - name: Determine next version
         shell: bash
         id: version
@@ -114,41 +134,14 @@ jobs:
           VERSION=$(echo ${TAG#v} | awk -F. '{$NF = $NF + 1;} 1' | sed 's/ /./g')
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
-      - name: Create Release and Upload Artifacts
-        id: create_release
+      - name: Automatic Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          repo_token: ${{ secrets.PAT }}
-          automatic_release_tag: v${{ env.VERSION }}
-          title: Release v${{ env.VERSION }}
-          draft: false
+          repo_token: "${{ secrets.PAT }}"
+          automatic_release_tag: "v${{ env.VERSION }}"
           prerelease: false
-          files: |
-            ./dist/windows-latest/Factotum.msi
-            ./dist/macos-latest/Factotum-x64.dmg
-            ./dist/macos-latest/Factotum-arm64.dmg
-
-      - name: Install Azure CLI
-        run: |
-          curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-      - name: Upload MSI to Azure Blob Storage
-        env:
-          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
-        run: |
-          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name ${{ env.VERSION }}/Factotum.msi --file ./dist/windows-latest/Factotum.msi --container-name factotum
-
-      - name: Upload DMG x64 to Azure Blob Storage
-        env:
-          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
-        run: |
-          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name ${{ env.VERSION }}/Factotum-x64.dmg --file ./dist/macos-latest/Factotum-x64.dmg --container-name factotum
-
-      - name: Upload DMG arm64 to Azure Blob Storage
-        env:
-          AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-          AZURE_STORAGE_ACCESS_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
-        run: |
-          az storage blob upload --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_ACCESS_KEY --name ${{ env.VERSION }}/Factotum-arm64.dmg --file ./dist/macos-latest/Factotum-arm64.dmg --container-name factotum
+          title: "Release v${{ env.VERSION }}"
+          body: |
+            Windows x64 installer [Factotum.msi](${{ env.MSI_URL }})
+            MacOS Intel [Factotum-x64.dmg](${{ env.DMG_X64_URL }})
+            MacOS Apple Silicon [Factotum-arm64.dmg](${{ env.DMG_ARM64_URL }})
