@@ -47,7 +47,7 @@ jobs:
 
       - name: Build python
         shell: bash
-        run: npm run build-python
+        run: python setup.py build
 
       - name: Install Wix Toolset
         if: runner.os == 'Windows'
