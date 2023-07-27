@@ -46,6 +46,7 @@ jobs:
         run: yarn install
 
       - name: Build python
+        shell: bash
         run: npm run build-python
 
       - name: Install Wix Toolset
