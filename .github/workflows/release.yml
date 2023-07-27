@@ -96,38 +96,29 @@ jobs:
 
       - name: Upload MSI to Azure Blob Storage and get URL
         if: runner.os == 'Windows'
-        uses: Azure/powershell@v1
+        uses: azure/CLI@v1
         with:
-          azPSVersion: '3.1.0'
           inlineScript: |
-            $context = New-AzStorageContext -StorageAccountName "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -StorageAccountKey "${{ secrets.AZURE_STORAGE_ACCESS_KEY }}"
-            Set-AzStorageBlobContent -File "./dist/Factotum.msi" -Container "factotum" -Blob "${{ env.VERSION }}/Factotum.msi" -Context $context
-            $blob = Get-AzStorageBlob -Container "factotum" -Blob "${{ env.VERSION }}/Factotum.msi" -Context $context
-            $url = $blob.ICloudBlob.Uri.AbsoluteUri
+            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum.msi" --file "./dist/Factotum.msi" --container-name factotum
+            url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum.msi" --container-name factotum)
             echo "MSI_URL=$url" >> $GITHUB_ENV
 
       - name: Upload DMG x64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
-        uses: Azure/powershell@v1
+        uses: azure/CLI@v1
         with:
-          azPSVersion: '3.1.0'
           inlineScript: |
-            $context = New-AzStorageContext -StorageAccountName "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -StorageAccountKey "${{ secrets.AZURE_STORAGE_ACCESS_KEY }}"
-            Set-AzStorageBlobContent -File "./dist/Factotum-x64.dmg" -Container "factotum" -Blob "${{ env.VERSION }}/Factotum-x64.dmg" -Context $context
-            $blob = Get-AzStorageBlob -Container "factotum" -Blob "${{ env.VERSION }}/Factotum-x64.dmg" -Context $context
-            $url = $blob.ICloudBlob.Uri.AbsoluteUri
+            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --file "./dist/Factotum-x64.dmg" --container-name factotum
+            url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --container-name factotum)
             echo "DMG_X64_URL=$url" >> $GITHUB_ENV
 
       - name: Upload DMG arm64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
-        uses: Azure/powershell@v1
+        uses: azure/CLI@v1
         with:
-          azPSVersion: '3.1.0'
           inlineScript: |
-            $context = New-AzStorageContext -StorageAccountName "${{ secrets.AZURE_STORAGE_ACCOUNT }}" -StorageAccountKey "${{ secrets.AZURE_STORAGE_ACCESS_KEY }}"
-            Set-AzStorageBlobContent -File "./dist/Factotum-arm64.dmg" -Container "factotum" -Blob "${{ env.VERSION }}/Factotum-arm64.dmg" -Context $context
-            $blob = Get-AzStorageBlob -Container "factotum" -Blob "${{ env.VERSION }}/Factotum-arm64.dmg" -Context $context
-            $url = $blob.ICloudBlob.Uri.AbsoluteUri
+            az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --file "./dist/Factotum-arm64.dmg" --container-name factotum
+            url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --container-name factotum)
             echo "DMG_ARM64_URL=$url" >> $GITHUB_ENV
 
   release:
