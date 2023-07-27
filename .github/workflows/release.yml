@@ -42,12 +42,12 @@ jobs:
           environment-file: environment.yml
           init-shell: bash powershell
 
+      - name: Build python
+        shell: powershell
+        run: python setup.py build
+
       - name: Install node dependencies
         run: yarn install
-
-      - name: Build python
-        shell: bash
-        run: python setup.py build
 
       - name: Install Wix Toolset
         if: runner.os == 'Windows'
