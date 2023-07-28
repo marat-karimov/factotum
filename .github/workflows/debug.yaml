@@ -44,12 +44,11 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.PAT }}
+      MSI_URL: ${{ needs.build.outputs.MSI_URL }}
 
     steps:
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT }}
-        MSI_URL: ${{ needs.build.outputs.MSI_URL }}
-
       - name: Print vars
         run: |
           echo $MSI_URL
