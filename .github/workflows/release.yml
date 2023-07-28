@@ -17,6 +17,9 @@ jobs:
       MSI_URL: ${{ steps.upload_msi.outputs.MSI_URL }}
       DMG_X64_URL: ${{ steps.upload_dmg_x64.outputs.DMG_X64_URL }}
       DMG_ARM64_URL: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_URL }}
+    env:
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
 
     steps:
       - name: Set VERSION variable
@@ -27,7 +30,6 @@ jobs:
       - name: Login to Azure CLI
         run: |
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
-          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -107,24 +109,24 @@ jobs:
         if: runner.os == 'Windows'
         id: upload_msi
         run: |
-          az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --name "${{ env.VERSION }}/Factotum.msi" --file "./dist/Factotum.msi" --container-name factotum
-          url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --name "${{ env.VERSION }}/Factotum.msi" --container-name factotum)
+          az storage blob upload --name "${{ env.VERSION }}/Factotum.msi" --file "./dist/Factotum.msi" --container-name factotum
+          url=$(az storage blob url --name "${{ env.VERSION }}/Factotum.msi" --container-name factotum)
           echo "MSI_URL=$url" >> $GITHUB_ENV
 
       - name: Upload DMG x64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
         id: upload_dmg_x64
         run: |
-          az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --file "./dist/Factotum-x64.dmg" --container-name factotum
-          url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --container-name factotum)
+          az storage blob upload --name "${{ env.VERSION }}/Factotum-x64.dmg" --file "./dist/Factotum-x64.dmg" --container-name factotum
+          url=$(az storage blob url --name "${{ env.VERSION }}/Factotum-x64.dmg" --container-name factotum)
           echo "DMG_X64_URL=$url" >> $GITHUB_ENV
 
       - name: Upload DMG arm64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
         id: upload_dmg_arm64
         run: |
-          az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --file "./dist/Factotum-arm64.dmg" --container-name factotum
-          url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --container-name factotum)
+          az storage blob upload --name "${{ env.VERSION }}/Factotum-arm64.dmg" --file "./dist/Factotum-arm64.dmg" --container-name factotum
+          url=$(az storage blob url --name "${{ env.VERSION }}/Factotum-arm64.dmg" --container-name factotum)
           echo "DMG_ARM64_URL=$url" >> $GITHUB_ENV
 
 
