@@ -14,7 +14,7 @@ jobs:
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
     outputs:
-      MSI_URL: ${{ steps.upload_msi.outputs.MSI_URL }}
+      MSI_NAME: ${{ steps.upload_msi.outputs.MSI_NAME }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
@@ -37,8 +37,7 @@ jobs:
         run: |
           name="1.0.14/Factotum.msi"
           url=$(az storage blob url --name $name --container-name factotum)
-          echo "$url"
-          echo "MSI_URL=$url" >> $GITHUB_OUTPUT
+          echo "MSI_NAME=$name" >> $GITHUB_OUTPUT
 
 
   release:
@@ -46,12 +45,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.PAT }}
-      MSI_URL: ${{ needs.build.outputs.MSI_URL }}
+      MSI_NAME: ${{ needs.build.outputs.MSI_NAME }}
 
     steps:
       - name: Print vars
         run: |
-          echo "$MSI_URL"
+          echo $MSI_NAME
           echo "aaaaa"
 
       - name: Check out code
@@ -60,7 +59,7 @@ jobs:
       - name: Create GitHub Release
         run: |
           version=${{ github.event.inputs.version }}
-          echo $MSI_URL
+          echo $MSI_NAME
           gh release create "v${version}" --repo ${{ github.repository }} --title "Release v${version}" --notes "
-          Windows x64 Installer [Factotum.msi]($MSI_URL)
+          Windows x64 Installer [Factotum.msi](https://factotum.blob.core.windows.net/factotum/${MSI_NAME})
           "
