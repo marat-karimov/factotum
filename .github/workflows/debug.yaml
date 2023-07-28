@@ -15,6 +15,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     outputs:
       MSI_URL: ${{ steps.deb.outputs.VERSION }}
+    env:
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
 
     steps:
       - name: Set VERSION variable
@@ -22,6 +25,20 @@ jobs:
         id: deb
         run: |
           echo "VERSION=https://factotum.blob.core.windows.net/factotum/1.0.14/Factotum.msi" >> $GITHUB_OUTPUT
+
+      - name: Login to Azure CLI
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: Upload MSI to Azure Blob Storage and get URL
+        if: runner.os == 'Windows'
+        id: upload_msi
+        shell: bash
+        run: |
+          name="1.0.14/Factotum.msi"
+          url=$(az storage blob url --name $name --container-name factotum)
+          echo url
+          echo "MSI_URL=$url" >> $GITHUB_OUTPUT
 
 
   release:
