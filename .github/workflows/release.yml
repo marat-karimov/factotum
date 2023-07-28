@@ -108,6 +108,7 @@ jobs:
       - name: Upload MSI to Azure Blob Storage and get URL
         if: runner.os == 'Windows'
         id: upload_msi
+        shell: bash
         run: |
           az storage blob upload --name "${{ env.VERSION }}/Factotum.msi" --file "./dist/Factotum.msi" --container-name factotum
           url=$(az storage blob url --name "${{ env.VERSION }}/Factotum.msi" --container-name factotum)
