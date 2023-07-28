@@ -27,7 +27,7 @@ module.exports = {
     files,
     extraResources,
     artifactName: "${productName}.msi",
-    forceCodeSigning: process.env.CI ? true : false,
+   // forceCodeSigning: process.env.CI ? true : false,
   },
   msi: {
     oneClick: true,
