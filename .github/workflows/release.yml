@@ -14,9 +14,9 @@ jobs:
         os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     outputs:
-      MSI_URL: ${{ steps.upload_msi.outputs.MSI_URL }}
-      DMG_X64_URL: ${{ steps.upload_dmg_x64.outputs.DMG_X64_URL }}
-      DMG_ARM64_URL: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_URL }}
+      MSI_NAME: ${{ steps.upload_msi.outputs.MSI_NAME }}
+      DMG_X64_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_NAME }}
+      DMG_ARM64_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_NAME }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
@@ -112,8 +112,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum.msi"
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
-          url=$(az storage blob url --name $name --container-name factotum)
-          echo "MSI_URL=$url" >> $GITHUB_OUTPUT
+          echo "MSI_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DMG x64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
@@ -121,8 +120,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum-x64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
-          url=$(az storage blob url --name $name --container-name factotum)
-          echo "DMG_X64_URL=$url" >> $GITHUB_OUTPUT
+          echo "DMG_X64_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DMG arm64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
@@ -130,8 +128,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum-arm64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
-          url=$(az storage blob url --name $name --container-name factotum)
-          echo "DMG_ARM64_URL=$url" >> $GITHUB_OUTPUT
+          echo "DMG_ARM64_NAME=$name" >> $GITHUB_OUTPUT
 
 
   release:
@@ -145,13 +142,14 @@ jobs:
       - name: Create GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
-          MSI_URL: ${{ needs.build.outputs.MSI_URL }}
-          DMG_X64_URL: ${{ needs.build.outputs.DMG_X64_URL }}
-          DMG_ARM64_URL: ${{ needs.build.outputs.DMG_ARM64_URL }}
+          MSI_NAME: ${{ needs.build.outputs.MSI_NAME }}
+          DMG_X64_NAME: ${{ needs.build.outputs.DMG_X64_NAME }}
+          DMG_ARM64_NAME: ${{ needs.build.outputs.DMG_ARM64_NAME }}
         run: |
           version=${{ github.event.inputs.version }}
+          base_url="https://factotum.blob.core.windows.net/factotum/"
           gh release create "v${version}" --repo ${{ github.repository }} --title "Release v${version}" --notes "
-          Windows x64 Installer [Factotum.msi]($MSI_URL)
-          MacOS Intel [Factotum-x64.dmg]($DMG_X64_URL)
-          MacOS Apple Silicon [Factotum-arm64.dmg]($DMG_ARM64_URL)
+          Windows x64 Installer [Factotum.msi](${base_url}${MSI_NAME})
+          MacOS Intel [Factotum-x64.dmg](${base_url}{$DMG_X64_NAME})
+          MacOS Apple Silicon [Factotum-arm64.dmg](${base_url}{$DMG_ARM64_NAME})
           "
