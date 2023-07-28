@@ -37,7 +37,7 @@ jobs:
         run: |
           name="1.0.14/Factotum.msi"
           url=$(az storage blob url --name $name --container-name factotum)
-          echo $url
+          echo "$url"
           echo "MSI_URL=$url" >> $GITHUB_OUTPUT
 
 
@@ -51,7 +51,7 @@ jobs:
     steps:
       - name: Print vars
         run: |
-          echo $MSI_URL
+          echo "$MSI_URL"
           echo "aaaaa"
 
       - name: Check out code
