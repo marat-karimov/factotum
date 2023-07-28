@@ -14,7 +14,7 @@ jobs:
         os: [windows-latest]
     runs-on: ${{ matrix.os }}
     outputs:
-      MSI_URL: ${{ steps.deb.outputs.VERSION }}
+      MSI_URL: ${{ steps.upload_msi.outputs.MSI_URL }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
