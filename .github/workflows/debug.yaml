@@ -21,7 +21,7 @@ jobs:
         shell: bash
         id: deb
         run: |
-          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          echo "VERSION=https://factotum.blob.core.windows.net/factotum/1.0.14/Factotum.msi" >> $GITHUB_OUTPUT
 
 
   release:
@@ -34,6 +34,11 @@ jobs:
 
       - name: Create GitHub Release
         env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           MSI_URL: ${{ needs.build.outputs.MSI_URL }}
         run: |
+          version=${{ github.event.inputs.version }}
           echo $MSI_URL
+          gh release create "v${version}" --repo ${{ github.repository }} --title "Release v${version}" --notes "
+          Windows x64 Installer [Factotum.msi]($MSI_URL)
+          "
