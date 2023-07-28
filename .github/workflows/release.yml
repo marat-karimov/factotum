@@ -20,6 +20,17 @@ jobs:
         run: |
           echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
+      - name: Install Azure CLI
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install azure-cli
+
+      - name: Login to Azure CLI
+        if: runner.os == 'macOS'
+        run: |
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
@@ -102,17 +113,6 @@ jobs:
             az storage blob upload --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum.msi" --file "./dist/Factotum.msi" --container-name factotum
             url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum.msi" --container-name factotum)
             echo "MSI_URL=$url" >> $GITHUB_ENV
-
-      - name: Install Azure CLI
-        if: runner.os == 'macOS'
-        run: |
-          brew update
-          brew install azure-cli
-
-      - name: Login to Azure CLI
-        if: runner.os == 'macOS'
-        run: |
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Upload DMG x64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
