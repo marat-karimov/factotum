@@ -144,13 +144,12 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.PAT }}
+          GITHUB_TOKEN: ${{ secrets.PAT }}
           MSI_URL: ${{ needs.build.outputs.MSI_URL }}
           DMG_X64_URL: ${{ needs.build.outputs.DMG_X64_URL }}
           DMG_ARM64_URL: ${{ needs.build.outputs.DMG_ARM64_URL }}
         run: |
           version=${{ github.event.inputs.version }}
-          gh auth login --with-token <<< "${GH_TOKEN}"
           gh release create "v${version}" --repo ${{ github.repository }} --title "Release v${version}" --notes "
           Windows x64 Installer [Factotum.msi]($MSI_URL)
           MacOS Intel [Factotum-x64.dmg]($DMG_X64_URL)
