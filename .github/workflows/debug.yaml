@@ -46,13 +46,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+        MSI_URL: ${{ needs.build.outputs.MSI_URL }}
+
+      - name: Print vars
+        run: |
+          echo $MSI_URL
+          echo "aaaaa"
+
       - name: Check out code
         uses: actions/checkout@v2
 
       - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          MSI_URL: ${{ needs.build.outputs.MSI_URL }}
         run: |
           version=${{ github.event.inputs.version }}
           echo $MSI_URL
