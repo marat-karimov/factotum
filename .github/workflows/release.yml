@@ -149,4 +149,4 @@ jobs:
           Windows x64 Installer [Factotum.msi]($MSI_URL)
           MacOS Intel [Factotum-x64.dmg]($DMG_X64_URL)
           MacOS Apple Silicon [Factotum-arm64.dmg]($DMG_ARM64_URL)
-        "
+          "
