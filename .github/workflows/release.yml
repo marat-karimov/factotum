@@ -13,6 +13,10 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    outputs:
+      MSI_URL: ${{ steps.upload_msi.outputs.MSI_URL }}
+      DMG_X64_URL: ${{ steps.upload_dmg_x64.outputs.DMG_X64_URL }}
+      DMG_ARM64_URL: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_URL }}
 
     steps:
       - name: Set VERSION variable
@@ -101,6 +105,7 @@ jobs:
 
       - name: Upload MSI to Azure Blob Storage and get URL
         if: runner.os == 'Windows'
+        id: upload_msi
         run: |
           az storage blob upload --name "${{ env.VERSION }}/Factotum.msi" --file "./dist/Factotum.msi" --container-name factotum
           url=$(az storage blob url --name "${{ env.VERSION }}/Factotum.msi" --container-name factotum)
@@ -108,6 +113,7 @@ jobs:
 
       - name: Upload DMG x64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
+        id: upload_dmg_x64
         run: |
           az storage blob upload --name "${{ env.VERSION }}/Factotum-x64.dmg" --file "./dist/Factotum-x64.dmg" --container-name factotum
           url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-x64.dmg" --container-name factotum)
@@ -115,6 +121,7 @@ jobs:
 
       - name: Upload DMG arm64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
+        id: upload_dmg_arm64
         run: |
           az storage blob upload --name "${{ env.VERSION }}/Factotum-arm64.dmg" --file "./dist/Factotum-arm64.dmg" --container-name factotum
           url=$(az storage blob url --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} --account-key ${{ secrets.AZURE_STORAGE_ACCESS_KEY }} --name "${{ env.VERSION }}/Factotum-arm64.dmg" --container-name factotum)
@@ -126,19 +133,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 
+      - name: Check out code
+        uses: actions/checkout@v2
 
-      - name: Automatic Release
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: "${{ secrets.PAT }}"
-          automatic_release_tag: "v${{ env.VERSION }}"
-          prerelease: false
-          title: "Release v${{ env.VERSION }}"
-          body: |
-            Windows x64 Installer [Factotum.msi](${{ env.MSI_URL }})
-            MacOS Intel [Factotum-x64.dmg](${{ env.DMG_X64_URL }})
-            MacOS Apple Silicon [Factotum-arm64.dmg](${{ env.DMG_ARM64_URL }})
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
+          MSI_URL: ${{ needs.build.outputs.MSI_URL }}
+          DMG_X64_URL: ${{ needs.build.outputs.DMG_X64_URL }}
+          DMG_ARM64_URL: ${{ needs.build.outputs.DMG_ARM64_URL }}
+        run: |
+          version=${{ github.event.inputs.version }}
+          gh auth login --with-token <<< "${GH_TOKEN}"
+          gh release create "v${version}" --repo ${{ github.repository }} --title "Release v${version}" --notes "
+          Windows x64 Installer [Factotum.msi]($MSI_URL)
+          MacOS Intel [Factotum-x64.dmg]($DMG_X64_URL)
+          MacOS Apple Silicon [Factotum-arm64.dmg]($DMG_ARM64_URL)
+        "
