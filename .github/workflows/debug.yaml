@@ -1,0 +1,39 @@
+name: Debug
+
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'     
+        required: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    outputs:
+      MSI_URL: ${{ steps.deb.outputs.VERSION }}
+
+    steps:
+      - name: Set VERSION variable
+        shell: bash
+        id: deb
+        run: |
+          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Create GitHub Release
+        env:
+          MSI_URL: ${{ needs.build.outputs.MSI_URL }}
+        run: |
+          echo $MSI_URL

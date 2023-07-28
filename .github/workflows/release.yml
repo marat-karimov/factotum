@@ -113,7 +113,7 @@ jobs:
           name="${{ env.VERSION }}/Factotum.msi"
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
           url=$(az storage blob url --name $name --container-name factotum)
-          echo "MSI_URL=$url" >> $GITHUB_ENV
+          echo "MSI_URL=$url" >> $GITHUB_OUTPUT
 
       - name: Upload DMG x64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
@@ -122,7 +122,7 @@ jobs:
           name="${{ env.VERSION }}/Factotum-x64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
           url=$(az storage blob url --name $name --container-name factotum)
-          echo "DMG_X64_URL=$url" >> $GITHUB_ENV
+          echo "DMG_X64_URL=$url" >> $GITHUB_OUTPUT
 
       - name: Upload DMG arm64 to Azure Blob Storage and get URL
         if: runner.os == 'macOS'
@@ -131,7 +131,7 @@ jobs:
           name="${{ env.VERSION }}/Factotum-arm64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
           url=$(az storage blob url --name $name --container-name factotum)
-          echo "DMG_ARM64_URL=$url" >> $GITHUB_ENV
+          echo "DMG_ARM64_URL=$url" >> $GITHUB_OUTPUT
 
 
   release:
