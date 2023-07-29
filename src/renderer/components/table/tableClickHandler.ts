@@ -121,11 +121,11 @@ export class TableClickHandler {
   }
 
   private keydownHandler = (event: KeyboardEvent) => {
-    this.isCtrlPressed = event.ctrlKey;
+    this.isCtrlPressed = event.ctrlKey || event.metaKey;
   };
 
   private keyupHandler = (event: KeyboardEvent) => {
-    if (event.key === "Control") {
+    if (event.key === "Control" || event.key === "Meta") {
       this.isCtrlPressed = false;
     }
   };

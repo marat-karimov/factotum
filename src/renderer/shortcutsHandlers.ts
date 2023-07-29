@@ -1,11 +1,9 @@
 import { sendCopyToClipboard } from "./toMainSender";
+import Mousetrap from "mousetrap";
 
 export function ctrlCHandler(value: unknown) {
-  // Check if the Ctrl+C has been pressed
-  document.onkeydown = function (e) {
-    if (e.ctrlKey && e.key == "c") {
-      // send data to be copied to the main process
-      sendCopyToClipboard(String(value))
-    }
-  };
+  Mousetrap.bind(["ctrl+c", "command+c"], () => {
+    sendCopyToClipboard(String(value));
+  });
+  Mousetrap.unbind(["ctrl", "command"]);
 }

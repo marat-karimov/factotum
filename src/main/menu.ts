@@ -104,9 +104,33 @@ export class MainMenu {
       click: () => this.searchHandler(),
     };
 
+    const undoItem: MenuItemConstructorOptions = {
+      label: "Undo",
+      accelerator: "CmdOrCtrl+Z",
+      role: "undo",
+    };
+
+    const redoItem: MenuItemConstructorOptions = {
+      label: "Redo",
+      accelerator: "Shift+CmdOrCtrl+Z",
+      role: "redo",
+    };
+
+    const pasteItem: MenuItemConstructorOptions = {
+      label: "Paste",
+      accelerator: "CmdOrCtrl+V",
+      role: "paste",
+    };
+
+    const copyItem: MenuItemConstructorOptions = {
+      label: "Copy",
+      accelerator: "CmdOrCtrl+C",
+      role: "copy",
+    };
+
     const editMenu: MenuItemConstructorOptions = {
       label: "Edit",
-      submenu: [searchItem],
+      submenu: [undoItem, redoItem, copyItem, pasteItem, searchItem],
     };
 
     const polarsItem: MenuItemConstructorOptions = {
