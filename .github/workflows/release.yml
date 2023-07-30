@@ -221,7 +221,7 @@ jobs:
           automatic_release_tag: "v${{ env.VERSION }}"
           draft: false
           prerelease: false
-          title: "Release ${{ env.VERSION }}."
+          title: "Release ${{ env.VERSION }}"
           files: |
             ./Factotum-${{ env.VERSION }}.msi
             ./Factotum-x64-${{ env.VERSION }}.dmg
