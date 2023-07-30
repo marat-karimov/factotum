@@ -60,6 +60,7 @@ jobs:
 
       - name: Build python
         if: runner.os == 'Linux'
+        shell: bash
         run: python setup.py build
 
       - name: Install node dependencies
