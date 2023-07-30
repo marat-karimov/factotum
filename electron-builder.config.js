@@ -19,7 +19,6 @@ process.env["CSC_IDENTITY_AUTO_DISCOVERY"] = process.env.CI ? true : false;
 module.exports = {
   appId,
   productName,
-  icon: "assets/icon.ico",
   electronLanguages: "en-US",
   buildVersion: version,
   win: {
@@ -28,6 +27,7 @@ module.exports = {
     extraResources,
     artifactName: "${productName}.msi",
    // forceCodeSigning: process.env.CI ? true : false,
+   icon: "assets/icon.ico"
   },
   msi: {
     oneClick: true,
@@ -46,6 +46,14 @@ module.exports = {
     artifactName: "${productName}-${arch}.dmg",
     files,
     extraResources,
-    icon: "assets/icon.png",
+    icon: "assets/icon.icns",
   },
+  linux: {
+    target: ['deb', 'rpm'],
+    files,
+    extraResources,
+    category: 'Science',
+    icon: "assets/icon.icns",
+    artifactName: "${productName}-${arch}.${ext}",
+  }
 };

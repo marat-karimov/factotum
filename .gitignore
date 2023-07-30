@@ -31,6 +31,7 @@ lib-cov
 
 win32_python
 darwin_python
+linux_python
 
 # Coverage directory used by tools like istanbul
 coverage

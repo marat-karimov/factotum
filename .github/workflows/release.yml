@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-latest, windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     outputs:
       MSI_NAME: ${{ steps.upload_msi.outputs.MSI_NAME }}
@@ -88,10 +88,6 @@ jobs:
       - name: Build Electron app
         run: npm run pack
 
-      - name: List dist dir
-        run: echo $(ls dist dist/win-unpacked)
-        shell: bash
-
       - name: Run Playwright tests
         run: npm run test
 
@@ -105,7 +101,7 @@ jobs:
           name: trace
           path: trace/
 
-      - name: Upload MSI to Azure Blob Storage and get URL
+      - name: Upload MSI to Azure Blob Storage
         if: runner.os == 'Windows'
         id: upload_msi
         shell: bash
@@ -114,7 +110,7 @@ jobs:
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
           echo "MSI_NAME=$name" >> $GITHUB_OUTPUT
 
-      - name: Upload DMG x64 to Azure Blob Storage and get URL
+      - name: Upload DMG x64 to Azure Blob Storage
         if: runner.os == 'macOS'
         id: upload_dmg_x64
         run: |
@@ -122,13 +118,31 @@ jobs:
           az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
           echo "DMG_X64_NAME=$name" >> $GITHUB_OUTPUT
 
-      - name: Upload DMG arm64 to Azure Blob Storage and get URL
+      - name: Upload DMG arm64 to Azure Blob Storage
         if: runner.os == 'macOS'
         id: upload_dmg_arm64
         run: |
           name="${{ env.VERSION }}/Factotum-arm64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
           echo "DMG_ARM64_NAME=$name" >> $GITHUB_OUTPUT
+
+      - name: Upload DEB to Azure Blob Storage
+        if: runner.os == 'Ubuntu'
+        id: upload_deb
+        shell: bash
+        run: |
+          name="${{ env.VERSION }}/Factotum-amd64.deb"
+          az storage blob upload --name $name --file "./dist/Factotum-amd64.deb" --container-name factotum --overwrite
+          echo "DEB_NAME=$name" >> $GITHUB_OUTPUT
+
+      - name: Upload RPM to Azure Blob Storage
+        if: runner.os == 'Ubuntu'
+        id: upload_rpm
+        shell: bash
+        run: |
+          name="${{ env.VERSION }}/Factotum-x86_64.rpm"
+          az storage blob upload --name $name --file "./dist/Factotum-x86_64.rpm" --container-name factotum --overwrite
+          echo "RPM_NAME=$name" >> $GITHUB_OUTPUT
 
 
   release:
@@ -143,6 +157,8 @@ jobs:
           MSI_NAME: ${{ needs.build.outputs.MSI_NAME }}
           DMG_X64_NAME: ${{ needs.build.outputs.DMG_X64_NAME }}
           DMG_ARM64_NAME: ${{ needs.build.outputs.DMG_ARM64_NAME }}
+          DEB_NAME: ${{ needs.build.outputs.DEB_NAME }}
+          RPM_NAME: ${{ needs.build.outputs.RPM_NAME }}
         run: |
           version=${{ github.event.inputs.version }}
           base_url="https://factotum.blob.core.windows.net/factotum/"
@@ -150,4 +166,6 @@ jobs:
           Windows x64 Installer [Factotum.msi](${base_url}${MSI_NAME})
           MacOS Intel [Factotum-x64.dmg](${base_url}${DMG_X64_NAME})
           MacOS Apple Silicon [Factotum-arm64.dmg](${base_url}${DMG_ARM64_NAME})
+          Ubuntu x64 [Factotum-amd64.deb](${base_url}${DEB_NAME})
+          RHEL x64 [Factotum-x86_64.rpm](${base_url}${RPM_NAME})
           "

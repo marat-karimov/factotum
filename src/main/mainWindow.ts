@@ -30,6 +30,7 @@ export function createWindow() {
     win.webContents.openDevTools();
   }
 
+  win.setMenuBarVisibility(false)
   attachTitlebarToWindow(win);
   return win;
 }

@@ -21,7 +21,22 @@ window.addEventListener("DOMContentLoaded", () => {
     iconSize: 24,
     icon,
   });
+  adjustTitleBarForLinux();
 });
+
+function adjustTitleBarForLinux() {
+  if (process.platform === "linux") {
+    const controls = document.querySelector(
+      ".cet-window-controls"
+    ) as HTMLElement;
+    const title = document.querySelector(".cet-title") as HTMLElement;
+    const cetIcon = document.querySelector(".cet-icon") as HTMLElement;
+
+    controls.style.display = "none";
+    title.style.display = "none";
+    cetIcon.style.display = "none";
+  }
+}
 
 const api: IpcApi = {
   send: (channel: string, data: any) => {
