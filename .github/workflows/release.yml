@@ -160,6 +160,8 @@ jobs:
       DMG_ARM64_BLOB_NAME: ${{ needs.build.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ needs.build.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ needs.build.outputs.RPM_BLOB_NAME }}
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
 
     steps:
 
