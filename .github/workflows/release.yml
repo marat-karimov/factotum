@@ -61,7 +61,7 @@ jobs:
       - name: Build python
         if: runner.os == 'Linux'
         shell: bash -el {0}
-        run: npm run build-python
+        run: python setup.py build
 
       - name: Install node dependencies
         run: yarn install
