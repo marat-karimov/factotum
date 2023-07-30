@@ -94,7 +94,9 @@ jobs:
         run: npm run pack
 
       - name: Run Playwright tests
-        run: npm run test
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: npm run test
 
       - name: Make executables
         run: npm run dist
