@@ -94,9 +94,12 @@ jobs:
         run: npm run pack
 
       - name: Run Playwright tests
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: npx playwright test
+        if: runner.os == 'Windows' || runner.os == 'macOS'
+        run: npm run test
+
+      - name: Run Playwright tests
+        if: runner.os == 'Ubuntu'
+        run: xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' npm run test
 
       - name: Make executables
         run: npm run dist
