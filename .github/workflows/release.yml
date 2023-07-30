@@ -14,11 +14,11 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     outputs:
-      MSI_NAME: ${{ steps.upload_msi.outputs.MSI_NAME }}
-      DMG_X64_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_NAME }}
-      DMG_ARM64_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_NAME }}
-      DEB_NAME: ${{ steps.upload_deb.outputs.DEB_NAME }}
-      RPM_NAME: ${{ steps.upload_rpm.outputs.RPM_NAME }}
+      MSI_BLOB_NAME: ${{ steps.upload_msi.outputs.MSI_BLOB_NAME }}
+      DMG_X64_BLOB_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_BLOB_NAME }}
+      DMG_ARM64_BLOB_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_BLOB_NAME }}
+      DEB_BLOB_NAME: ${{ steps.upload_deb.outputs.DEB_BLOB_NAME }}
+      RPM_BLOB_NAME: ${{ steps.upload_rpm.outputs.RPM_BLOB_NAME }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
@@ -112,7 +112,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum.msi"
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
-          echo "MSI_NAME=$name" >> $GITHUB_OUTPUT
+          echo "MSI_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DMG x64 to Azure Blob Storage
         if: runner.os == 'macOS'
@@ -120,7 +120,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum-x64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
-          echo "DMG_X64_NAME=$name" >> $GITHUB_OUTPUT
+          echo "DMG_X64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DMG arm64 to Azure Blob Storage
         if: runner.os == 'macOS'
@@ -128,7 +128,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum-arm64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
-          echo "DMG_ARM64_NAME=$name" >> $GITHUB_OUTPUT
+          echo "DMG_ARM64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DEB to Azure Blob Storage
         if: runner.os == 'Linux'
@@ -137,7 +137,7 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum-amd64.deb"
           az storage blob upload --name $name --file "./dist/Factotum-amd64.deb" --container-name factotum --overwrite
-          echo "DEB_NAME=$name" >> $GITHUB_OUTPUT
+          echo "DEB_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload RPM to Azure Blob Storage
         if: runner.os == 'Linux'
@@ -146,30 +146,62 @@ jobs:
         run: |
           name="${{ env.VERSION }}/Factotum-x86_64.rpm"
           az storage blob upload --name $name --file "./dist/Factotum-x86_64.rpm" --container-name factotum --overwrite
-          echo "RPM_NAME=$name" >> $GITHUB_OUTPUT
+          echo "RPM_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
 
   release:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.inputs.version }}
+      GITHUB_TOKEN: ${{ secrets.PAT }}
+      MSI_BLOB_NAME: ${{ needs.build.outputs.MSI_BLOB_NAME }}
+      DMG_X64_BLOB_NAME: ${{ needs.build.outputs.DMG_X64_BLOB_NAME }}
+      DMG_ARM64_BLOB_NAME: ${{ needs.build.outputs.DMG_ARM64_BLOB_NAME }}
+      DEB_BLOB_NAME: ${{ needs.build.outputs.DEB_BLOB_NAME }}
+      RPM_BLOB_NAME: ${{ needs.build.outputs.RPM_BLOB_NAME }}
 
     steps:
 
-      - name: Create GitHub Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
-          MSI_NAME: ${{ needs.build.outputs.MSI_NAME }}
-          DMG_X64_NAME: ${{ needs.build.outputs.DMG_X64_NAME }}
-          DMG_ARM64_NAME: ${{ needs.build.outputs.DMG_ARM64_NAME }}
-          DEB_NAME: ${{ needs.build.outputs.DEB_NAME }}
-          RPM_NAME: ${{ needs.build.outputs.RPM_NAME }}
+      - name: Login to Azure CLI
         run: |
-          version=${{ github.event.inputs.version }}
-          base_url="https://factotum.blob.core.windows.net/factotum/"
-          gh release create "v${version}" --repo ${{ github.repository }} --title "Release v${version}" --notes "
-          Windows x64 Installer [Factotum.msi](${base_url}${MSI_NAME})
-          MacOS Intel [Factotum-x64.dmg](${base_url}${DMG_X64_NAME})
-          MacOS Apple Silicon [Factotum-arm64.dmg](${base_url}${DMG_ARM64_NAME})
-          Ubuntu x64 [Factotum-amd64.deb](${base_url}${DEB_NAME})
-          RHEL x64 [Factotum-x86_64.rpm](${base_url}${RPM_NAME})
-          "
+          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+      
+      # - name: Download MSI from Azure Blob Storage
+      #   run: |
+      #     az storage blob download --name $MSI_BLOB_NAME --file "./Factotum-${VERSION}.msi" --container-name factotum
+
+      # - name: Download DMG x64 from Azure Blob Storage
+      #   run: |
+      #     az storage blob download --name $DMG_X64_BLOB_NAME --file "./Factotum-x64-${VERSION}.dmg" --container-name factotum
+      #     az storage blob delete --name $DMG_X64_BLOB_NAME --container-name factotum
+
+      # - name: Download DMG arm64 from Azure Blob Storage
+      #   run: |
+      #     az storage blob download --name $DMG_ARM64_BLOB_NAME --file "./Factotum-arm64-${VERSION}.dmg" --container-name factotum
+      #     az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
+
+      - name: Download DEB from Azure Blob Storage
+        run: |
+          az storage blob download --name $DEB_BLOB_NAME--file "./Factotum-amd64-${VERSION}.deb" --container-name factotum
+          az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
+
+      - name: Download RPM from Azure Blob Storage
+        run: |
+          az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64-${VERSION}.rpm" --container-name factotum
+          az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
+
+      - name: Create Release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: ${VERSION}
+          draft: false
+          prerelease: false
+          title: "Release ${VERSION}."
+          files: |
+            ./Factotum-${VERSION}.msi
+            ./Factotum-x64-${VERSION}.dmg
+            ./Factotum-arm64-${VERSION}.dmg
+            ./Factotum-amd64-${VERSION}.deb
+            ./Factotum-x86_64-${VERSION}.rpm
