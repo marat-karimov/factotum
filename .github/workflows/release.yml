@@ -24,10 +24,6 @@ jobs:
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
 
     steps:
-      - name: Set VERSION variable
-        shell: bash
-        run: |
-          echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
 
       - name: Login to Azure CLI
         run: |
@@ -50,6 +46,12 @@ jobs:
       - name: Update package.json version
         run: |
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
+      - name: Set VERSION variable
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Setup Micromamba
         uses: mamba-org/setup-micromamba@v1
@@ -155,7 +157,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ github.event.inputs.version }}
       GITHUB_TOKEN: ${{ secrets.PAT }}
       MSI_BLOB_NAME: ${{ needs.build.outputs.MSI_BLOB_NAME }}
       DMG_X64_BLOB_NAME: ${{ needs.build.outputs.DMG_X64_BLOB_NAME }}
@@ -178,6 +179,12 @@ jobs:
       - name: Update package.json version
         run: |
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
+      - name: Set VERSION variable
+        shell: bash
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Login to Azure CLI
         run: |
@@ -211,20 +218,20 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.PAT }}"
-          automatic_release_tag: "v${{ VERSION }}
+          automatic_release_tag: "v${{ env.VERSION }}"
           draft: false
           prerelease: false
-          title: "Release ${VERSION}."
+          title: "Release ${{ env.VERSION }}."
           files: |
-            ./Factotum-${ VERSION }.msi
-            ./Factotum-x64-${ VERSION }.dmg
-            ./Factotum-arm64-${ VERSION }.dmg
-            ./Factotum-amd64-${ VERSION }.deb
-            ./Factotum-x86_64-${ VERSION }.rpm
+            ./Factotum-${{ env.VERSION }}.msi
+            ./Factotum-x64-${{ env.VERSION }}.dmg
+            ./Factotum-arm64-${{ env.VERSION }}.dmg
+            ./Factotum-amd64-${{ env.VERSION }}.deb
+            ./Factotum-x86_64-${{ env.VERSION }}.rpm
 
       - name: Commit and push new version
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git commit -am "Update version to ${{ github.event.inputs.version }}"
+          git commit -am "Update version to ${{ env.VERSION }}"
           git push
