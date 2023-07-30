@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     outputs:
       MSI_BLOB_NAME: ${{ steps.upload_msi.outputs.MSI_BLOB_NAME }}
@@ -57,7 +57,7 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: environment.yml
-          init-shell: bash powershell
+          init-shell: bash
 
       - name: Build python
         shell: bash -el {0}
@@ -190,9 +190,9 @@ jobs:
         run: |
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
       
-      # - name: Download MSI from Azure Blob Storage
-      #   run: |
-      #     az storage blob download --name $MSI_BLOB_NAME --file "./Factotum-${VERSION}.msi" --container-name factotum
+      - name: Download MSI from Azure Blob Storage
+        run: |
+          az storage blob download --name $MSI_BLOB_NAME --file "./Factotum-${VERSION}.msi" --container-name factotum
 
       # - name: Download DMG x64 from Azure Blob Storage
       #   run: |
@@ -204,15 +204,15 @@ jobs:
       #     az storage blob download --name $DMG_ARM64_BLOB_NAME --file "./Factotum-arm64-${VERSION}.dmg" --container-name factotum
       #     az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
 
-      - name: Download DEB from Azure Blob Storage
-        run: |
-          az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64-${VERSION}.deb" --container-name factotum
-          az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
+      # - name: Download DEB from Azure Blob Storage
+      #   run: |
+      #     az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64-${VERSION}.deb" --container-name factotum
+      #     az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
 
-      - name: Download RPM from Azure Blob Storage
-        run: |
-          az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64-${VERSION}.rpm" --container-name factotum
-          az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
+      # - name: Download RPM from Azure Blob Storage
+      #   run: |
+      #     az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64-${VERSION}.rpm" --container-name factotum
+      #     az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
 
       - name: Create Release
         uses: marvinpinto/action-automatic-releases@latest
