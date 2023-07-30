@@ -59,7 +59,7 @@ jobs:
         run: python setup.py build
 
       - name: Build python
-        if: runner.os == 'Ubuntu'
+        if: runner.os == 'Linux'
         run: python setup.py build
 
       - name: Install node dependencies
@@ -94,12 +94,9 @@ jobs:
         run: npm run pack
 
       - name: Run Playwright tests
-        if: runner.os == 'Windows' || runner.os == 'macOS'
-        run: npm run test
-
-      - name: Run Playwright tests
-        if: runner.os == 'Ubuntu'
-        run: xvfb-run --auto-servernum --server-args='-screen 0 1024x768x24' npm run test
+        uses: coactions/setup-xvfb@v1
+        with:
+          run: npm run test
 
       - name: Make executables
         run: npm run dist
@@ -137,7 +134,7 @@ jobs:
           echo "DMG_ARM64_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DEB to Azure Blob Storage
-        if: runner.os == 'Ubuntu'
+        if: runner.os == 'Linux'
         id: upload_deb
         shell: bash
         run: |
@@ -146,7 +143,7 @@ jobs:
           echo "DEB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload RPM to Azure Blob Storage
-        if: runner.os == 'Ubuntu'
+        if: runner.os == 'Linux'
         id: upload_rpm
         shell: bash
         run: |
