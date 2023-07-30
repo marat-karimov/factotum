@@ -183,7 +183,7 @@ jobs:
 
       - name: Download DEB from Azure Blob Storage
         run: |
-          az storage blob download --name $DEB_BLOB_NAME--file "./Factotum-amd64-${VERSION}.deb" --container-name factotum
+          az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64-${VERSION}.deb" --container-name factotum
           az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
 
       - name: Download RPM from Azure Blob Storage
