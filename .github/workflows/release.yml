@@ -17,8 +17,8 @@ jobs:
       MSI_NAME: ${{ steps.upload_msi.outputs.MSI_NAME }}
       DMG_X64_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_NAME }}
       DMG_ARM64_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_NAME }}
-      DEB_NAME: ${{ steps.upload_msi.outputs.DEB_NAME }}
-      RPM_NAME: ${{ steps.upload_msi.outputs.RPM_NAME }}
+      DEB_NAME: ${{ steps.upload_deb.outputs.DEB_NAME }}
+      RPM_NAME: ${{ steps.upload_rpm.outputs.RPM_NAME }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCESS_KEY }}
