@@ -54,7 +54,12 @@ jobs:
           init-shell: bash powershell
 
       - name: Build python
+        if: runner.os == 'Windows' || runner.os == 'macOS'
         shell: powershell
+        run: python setup.py build
+
+      - name: Build python
+        if: runner.os == 'Ubuntu'
         run: python setup.py build
 
       - name: Install node dependencies
