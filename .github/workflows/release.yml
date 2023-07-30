@@ -35,8 +35,6 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Setup Xcode
         if: runner.os == 'macOS'
@@ -48,6 +46,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
 
       - name: Setup Micromamba
         uses: mamba-org/setup-micromamba@v1
@@ -165,6 +167,18 @@ jobs:
 
     steps:
 
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ github.event.inputs.version }} --no-git-tag-version
+
       - name: Login to Azure CLI
         run: |
           az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
@@ -196,14 +210,21 @@ jobs:
       - name: Create Release
         uses: marvinpinto/action-automatic-releases@latest
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${VERSION}
+          repo_token: "${{ secrets.PAT }}"
+          automatic_release_tag: "v${{ VERSION }}
           draft: false
           prerelease: false
           title: "Release ${VERSION}."
           files: |
-            ./Factotum-${VERSION}.msi
-            ./Factotum-x64-${VERSION}.dmg
-            ./Factotum-arm64-${VERSION}.dmg
-            ./Factotum-amd64-${VERSION}.deb
-            ./Factotum-x86_64-${VERSION}.rpm
+            ./Factotum-${ VERSION }.msi
+            ./Factotum-x64-${ VERSION }.dmg
+            ./Factotum-arm64-${ VERSION }.dmg
+            ./Factotum-amd64-${ VERSION }.deb
+            ./Factotum-x86_64-${ VERSION }.rpm
+
+      - name: Commit and push new version
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -am "Update version to ${{ github.event.inputs.version }}"
+          git push
