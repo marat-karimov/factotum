@@ -1,7 +1,7 @@
 {
   "name": "factotum",
   "productName": "Factotum",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "SQL powered tabular data viewer and editor",
   "main": ".webpack/main",
   "scripts": {
