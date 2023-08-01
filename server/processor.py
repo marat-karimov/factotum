@@ -70,7 +70,7 @@ class DataProcessor:
 
     @handle_exceptions
     def get_schema(self, data=None):
-        return self.engine.get_schema(max_cols=self.MAX_COLS_TO_DISPLAY)
+        return self.engine.get_schema()
 
     @handle_exceptions
     def run_sql(self, data: Dict[str, str]):
