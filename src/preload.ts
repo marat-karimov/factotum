@@ -5,38 +5,7 @@ import {
   nativeImage,
 } from "electron";
 import { TitlebarColor, CustomTitlebar } from "custom-electron-titlebar";
-
-const iconPath =
-  process.env.NODE_ENV === "development"
-    ? "assets/icon.ico"
-    : "resources/assets/icon.ico";
-
-window.addEventListener("DOMContentLoaded", () => {
-  const icon = nativeImage.createFromPath(iconPath);
-  new CustomTitlebar({
-    backgroundColor: TitlebarColor.fromHex("#282828"),
-    menuBarBackgroundColor: TitlebarColor.fromHex("#282828"),
-    containerOverflow: "hidden",
-    menuPosition: "left",
-    iconSize: 24,
-    icon,
-  });
-  adjustTitleBarForLinux();
-});
-
-function adjustTitleBarForLinux() {
-  if (process.platform === "linux") {
-    const controls = document.querySelector(
-      ".cet-window-controls"
-    ) as HTMLElement;
-    const title = document.querySelector(".cet-title") as HTMLElement;
-    const cetIcon = document.querySelector(".cet-icon") as HTMLElement;
-
-    controls.style.display = "none";
-    title.style.display = "none";
-    cetIcon.style.display = "none";
-  }
-}
+import { FromMainToPreloader } from "./types/types";
 
 const api: IpcApi = {
   send: (channel: string, data: any) => {
@@ -53,3 +22,41 @@ const api: IpcApi = {
 };
 
 contextBridge.exposeInMainWorld("api", api);
+
+const iconPath =
+  process.env.NODE_ENV === "development"
+    ? "assets/icon.ico"
+    : "resources/assets/icon.ico";
+
+let titlebar: CustomTitlebar = null;
+
+window.addEventListener("DOMContentLoaded", () => {
+  const icon = nativeImage.createFromPath(iconPath);
+  titlebar = new CustomTitlebar({
+    backgroundColor: TitlebarColor.fromHex("#282828"),
+    menuBarBackgroundColor: TitlebarColor.fromHex("#282828"),
+    containerOverflow: "hidden",
+    menuPosition: "left",
+    iconSize: 24,
+    icon,
+  });
+  adjustTitleBarForLinux();
+});
+
+ipcRenderer.on(FromMainToPreloader.RefreshMenu, () => {
+  titlebar.refreshMenu();
+});
+
+function adjustTitleBarForLinux() {
+  if (process.platform === "linux") {
+    const controls = document.querySelector(
+      ".cet-window-controls"
+    ) as HTMLElement;
+    const title = document.querySelector(".cet-title") as HTMLElement;
+    const cetIcon = document.querySelector(".cet-icon") as HTMLElement;
+
+    controls.style.display = "none";
+    title.style.display = "none";
+    cetIcon.style.display = "none";
+  }
+}

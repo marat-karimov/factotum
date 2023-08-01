@@ -73,13 +73,13 @@
 .table.folded:before {
   content: "▶";
   margin-right: 5px;
-  align-self: baseline;
+  align-self: inherit;
 }
 
 .table.unfolded::before {
   content: "◢";
   margin-right: 5px;
-  align-self: baseline;
+  align-self: inherit;
 }
 
 .placeholder.selected {

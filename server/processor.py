@@ -3,7 +3,6 @@ from typing import Dict, Callable, Any
 from functools import wraps
 import ntpath
 from polars.exceptions import PolarsPanicError
-from flask import jsonify
 from server.validator import SqlValidator
 
 from server.engine import DataEngine
@@ -19,9 +18,9 @@ def handle_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
         except (Exception, PolarsPanicError) as e:
             error_message = f"Error in {func.__name__}: {str(e)}"
             if func.__name__ in ['export_file', 'import_file', 'run_sql']:
-                return jsonify({'error': error_message})
+                return {'error': error_message}
             elif func.__name__ == 'get_schema':
-                return jsonify({'schema': {}, 'error': error_message})
+                return {'schema': {}, 'error': error_message}
             else:
                 raise e
 
@@ -78,11 +77,11 @@ class DataProcessor:
         sql = data['sql']
         result = self.engine.sql(sql)
         if self.engine.is_empty(result):
-            return jsonify({'tableData': None, 'columns': None, 'error': None})
+            return {'tableData': None, 'columns': None, 'error': None}
         df = self.engine.to_dataframe(
             self.MAX_ROWS_TO_DISPLAY, self.MAX_COLS_TO_DISPLAY, result)
         self.latest_query_result = result
-        return jsonify({'tableData': df.to_dicts(), 'columns': df.columns, 'error': None})
+        return {'tableData': df.to_dicts(), 'columns': df.columns, 'error': None}
 
     def validate(self, data: Dict):
         return self.validator.validate(data)

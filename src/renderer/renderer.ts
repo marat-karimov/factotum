@@ -19,7 +19,7 @@ import { LogsWindow } from "./components/logsWindow/logsWindow";
 import { renderEmptyState } from "./components/table/tableEmptyState";
 import { StatusBar } from "./components/statusBar/statusBar";
 import { sendSqlToRun } from "./toMainSender";
-import { DataBaseSchema, FromMainChannels } from "../types/types";
+import { DataBaseSchema, FromMainToRenderer } from "../types/types";
 import { messages } from "../messages";
 
 const tableRenderer = new TableRenderer();
@@ -28,31 +28,31 @@ const logsWindow = new LogsWindow();
 const statusBar = new StatusBar();
 const schemaTree = new SchemaTreeRenderer();
 
-type CommandMap = Record<FromMainChannels, (args: any) => void>;
+type CommandMap = Record<FromMainToRenderer, (args: any) => void>;
 
 const commandMap: CommandMap = {
-  [FromMainChannels.InvalidInput]: editor.handleInvalidInput,
-  [FromMainChannels.ValidInput]: editor.handleValidInput,
-  [FromMainChannels.GetSqlToRun]: getSqlToRun,
-  [FromMainChannels.RenderCurrentEngine]: statusBar.renderCurrentEngine,
-  [FromMainChannels.RenderMemoryUsage]: statusBar.renderMemoryUsage,
-  [FromMainChannels.UpdateDatabaseSchema]: updateDatabaseSchema,
-  [FromMainChannels.AppendToLogs]: logsWindow.appendToLogs,
-  [FromMainChannels.RenderTable]: tableRenderer.renderNewTable,
-  [FromMainChannels.RenderLastTable]: tableRenderer.renderLatestTable,
-  [FromMainChannels.AppendToEditor]: editor.appendToEditor,
-  [FromMainChannels.RenderSpinner]: renderSpinner,
-  [FromMainChannels.RenderEmptyState]: renderEmptyState,
-  [FromMainChannels.RenderSearchBox]: tableRenderer.renderSearchBox,
-  [FromMainChannels.HideSearchBox]: tableRenderer.hideSearchBox,
+  [FromMainToRenderer.InvalidInput]: editor.handleInvalidInput,
+  [FromMainToRenderer.ValidInput]: editor.handleValidInput,
+  [FromMainToRenderer.GetSqlToRun]: getSqlToRun,
+  [FromMainToRenderer.RenderCurrentEngine]: statusBar.renderCurrentEngine,
+  [FromMainToRenderer.RenderMemoryUsage]: statusBar.renderMemoryUsage,
+  [FromMainToRenderer.UpdateDatabaseSchema]: updateDatabaseSchema,
+  [FromMainToRenderer.AppendToLogs]: logsWindow.appendToLogs,
+  [FromMainToRenderer.RenderTable]: tableRenderer.renderNewTable,
+  [FromMainToRenderer.RenderLastTable]: tableRenderer.renderLatestTable,
+  [FromMainToRenderer.AppendToEditor]: editor.appendToEditor,
+  [FromMainToRenderer.RenderSpinner]: renderSpinner,
+  [FromMainToRenderer.RenderEmptyState]: renderEmptyState,
+  [FromMainToRenderer.RenderSearchBox]: tableRenderer.renderSearchBox,
+  [FromMainToRenderer.HideSearchBox]: tableRenderer.hideSearchBox,
 };
 
 function initialize() {
   renderEmptyState();
   Object.keys(commandMap).forEach((command) => {
     window.api.receive(
-      command as FromMainChannels,
-      commandMap[command as FromMainChannels]
+      command as FromMainToRenderer,
+      commandMap[command as FromMainToRenderer]
     );
   });
 }

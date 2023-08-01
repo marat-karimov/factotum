@@ -1,21 +1,21 @@
-import { ToMainChannels, ToMainDataTypes } from "../types/types";
+import { FromRendererToMain, ToMainDataTypes } from "../types/types";
 
-export function sendSqlToRun(value: ToMainDataTypes[ToMainChannels.SqlToRun]) {
-  window.api.send(ToMainChannels.SqlToRun, value);
+export function sendSqlToRun(value: ToMainDataTypes[FromRendererToMain.SqlToRun]) {
+  window.api.send(FromRendererToMain.SqlToRun, value);
 }
 
 export function sendSqlToValidate(
-  value: ToMainDataTypes[ToMainChannels.SqlToValidate]
+  value: ToMainDataTypes[FromRendererToMain.SqlToValidate]
 ) {
-  window.api.send(ToMainChannels.SqlToValidate, value);
+  window.api.send(FromRendererToMain.SqlToValidate, value);
 }
 
 export function sendSearchBoxHidden() {
-  window.api.send(ToMainChannels.SearchBoxHidden);
+  window.api.send(FromRendererToMain.SearchBoxHidden);
 }
 
 export function sendCopyToClipboard(
-  value: ToMainDataTypes[ToMainChannels.CopyToClipboard]
+  value: ToMainDataTypes[FromRendererToMain.CopyToClipboard]
 ) {
-  window.api.send(ToMainChannels.CopyToClipboard, value);
+  window.api.send(FromRendererToMain.CopyToClipboard, value);
 }

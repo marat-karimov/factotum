@@ -68,7 +68,7 @@ export interface ValidateResponse {
   error: string;
 }
 
-export enum FromMainChannels {
+export enum FromMainToRenderer {
   AppendToLogs = "appendToLogs",
   RenderCurrentEngine = "renderCurrentEngine",
   AppendToEditor = "appendToEditor",
@@ -85,7 +85,11 @@ export enum FromMainChannels {
   RenderLastTable = "renderLatestRenderedTable",
 }
 
-export enum ToMainChannels {
+export enum FromMainToPreloader {
+  RefreshMenu = "refreshMenu",
+}
+
+export enum FromRendererToMain {
   SqlToRun = "sqlToRun",
   SqlToValidate = "sqlToValidate",
   CopyToClipboard = "copyToClipboard",
@@ -93,18 +97,18 @@ export enum ToMainChannels {
 }
 
 export interface FromMainDataTypes {
-  [FromMainChannels.AppendToLogs]: LogMessage;
-  [FromMainChannels.RenderCurrentEngine]: Engine;
-  [FromMainChannels.AppendToEditor]: string;
-  [FromMainChannels.RenderMemoryUsage]: string;
-  [FromMainChannels.RenderTable]: TableForRender;
-  [FromMainChannels.UpdateDatabaseSchema]: DataBaseSchema;
-  [FromMainChannels.ValidInput]: ValidInput;
-  [FromMainChannels.InvalidInput]: InvalidInput;
+  [FromMainToRenderer.AppendToLogs]: LogMessage;
+  [FromMainToRenderer.RenderCurrentEngine]: Engine;
+  [FromMainToRenderer.AppendToEditor]: string;
+  [FromMainToRenderer.RenderMemoryUsage]: string;
+  [FromMainToRenderer.RenderTable]: TableForRender;
+  [FromMainToRenderer.UpdateDatabaseSchema]: DataBaseSchema;
+  [FromMainToRenderer.ValidInput]: ValidInput;
+  [FromMainToRenderer.InvalidInput]: InvalidInput;
 }
 
 export interface ToMainDataTypes {
-  [ToMainChannels.SqlToRun]: string;
-  [ToMainChannels.SqlToValidate]: string;
-  [ToMainChannels.CopyToClipboard]: string;
+  [FromRendererToMain.SqlToRun]: string;
+  [FromRendererToMain.SqlToValidate]: string;
+  [FromRendererToMain.CopyToClipboard]: string;
 }

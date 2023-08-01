@@ -1,82 +1,93 @@
 import { BrowserWindow } from "electron";
-import { FromMainChannels, FromMainDataTypes } from "../types/types";
+import {
+  FromMainToRenderer,
+  FromMainDataTypes,
+  FromMainToPreloader,
+} from "../types/types";
 
 export function sendAppendToLogs(
   mainWindow: BrowserWindow,
-  data: FromMainDataTypes[FromMainChannels.AppendToLogs]
+  data: FromMainDataTypes[FromMainToRenderer.AppendToLogs]
 ) {
-  mainWindow.webContents.send(FromMainChannels.AppendToLogs, data);
+  mainWindow.webContents.send(FromMainToRenderer.AppendToLogs, data);
 }
 
 export function sendRenderCurrentEngine(
   mainWindow: BrowserWindow,
-  engine: FromMainDataTypes[FromMainChannels.RenderCurrentEngine]
+  engine: FromMainDataTypes[FromMainToRenderer.RenderCurrentEngine]
 ) {
-  mainWindow.webContents.send(FromMainChannels.RenderCurrentEngine, engine);
+  mainWindow.webContents.send(FromMainToRenderer.RenderCurrentEngine, engine);
 }
 
 export function sendAppendToEditor(
   mainWindow: BrowserWindow,
-  sql: FromMainDataTypes[FromMainChannels.AppendToEditor]
+  sql: FromMainDataTypes[FromMainToRenderer.AppendToEditor]
 ) {
-  mainWindow.webContents.send(FromMainChannels.AppendToEditor, sql);
+  mainWindow.webContents.send(FromMainToRenderer.AppendToEditor, sql);
 }
 
 export function sendRenderMemoryUsage(
   mainWindow: BrowserWindow,
-  memoryUsage: FromMainDataTypes[FromMainChannels.RenderMemoryUsage]
+  memoryUsage: FromMainDataTypes[FromMainToRenderer.RenderMemoryUsage]
 ) {
-  mainWindow.webContents.send(FromMainChannels.RenderMemoryUsage, memoryUsage);
+  mainWindow.webContents.send(
+    FromMainToRenderer.RenderMemoryUsage,
+    memoryUsage
+  );
 }
 
 export function sendRenderSearchBox(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send(FromMainChannels.RenderSearchBox);
+  mainWindow.webContents.send(FromMainToRenderer.RenderSearchBox);
 }
 
 export function sendHideSearchBox(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send(FromMainChannels.HideSearchBox);
+  mainWindow.webContents.send(FromMainToRenderer.HideSearchBox);
 }
 
 export function sendRenderTable(
   mainWindow: BrowserWindow,
-  data: FromMainDataTypes[FromMainChannels.RenderTable]
+  data: FromMainDataTypes[FromMainToRenderer.RenderTable]
 ) {
-  mainWindow.webContents.send(FromMainChannels.RenderTable, data);
+  mainWindow.webContents.send(FromMainToRenderer.RenderTable, data);
 }
 
 export function sendRenderEmptyState(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send(FromMainChannels.RenderEmptyState);
+  mainWindow.webContents.send(FromMainToRenderer.RenderEmptyState);
 }
 
 export function sendUpdateDatabaseSchema(
   mainWindow: BrowserWindow,
-  schema: FromMainDataTypes[FromMainChannels.UpdateDatabaseSchema]
+  schema: FromMainDataTypes[FromMainToRenderer.UpdateDatabaseSchema]
 ) {
-  mainWindow.webContents.send(FromMainChannels.UpdateDatabaseSchema, schema);
+  mainWindow.webContents.send(FromMainToRenderer.UpdateDatabaseSchema, schema);
 }
 
 export function sendGetSqlToRun(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send(FromMainChannels.GetSqlToRun);
+  mainWindow.webContents.send(FromMainToRenderer.GetSqlToRun);
 }
 
 export function sendValidInput(
   mainWindow: BrowserWindow,
-  validInput: FromMainDataTypes[FromMainChannels.ValidInput]
+  validInput: FromMainDataTypes[FromMainToRenderer.ValidInput]
 ) {
-  mainWindow.webContents.send(FromMainChannels.ValidInput, validInput);
+  mainWindow.webContents.send(FromMainToRenderer.ValidInput, validInput);
 }
 
 export function sendInvalidInput(
   mainWindow: BrowserWindow,
-  invalidInput: FromMainDataTypes[FromMainChannels.InvalidInput]
+  invalidInput: FromMainDataTypes[FromMainToRenderer.InvalidInput]
 ) {
-  mainWindow.webContents.send(FromMainChannels.InvalidInput, invalidInput);
+  mainWindow.webContents.send(FromMainToRenderer.InvalidInput, invalidInput);
 }
 
 export function sendRenderSpinner(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send(FromMainChannels.RenderSpinner);
+  mainWindow.webContents.send(FromMainToRenderer.RenderSpinner);
 }
 
 export function sendRenderLastTable(mainWindow: BrowserWindow) {
-  mainWindow.webContents.send(FromMainChannels.RenderLastTable);
+  mainWindow.webContents.send(FromMainToRenderer.RenderLastTable);
+}
+
+export function sendRefreshMenu(mainWindow: BrowserWindow) {
+  mainWindow.webContents.send(FromMainToPreloader.RefreshMenu);
 }

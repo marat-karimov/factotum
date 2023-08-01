@@ -11,7 +11,7 @@ import * as localshortcut from "electron-localshortcut";
 import { MainMenu } from "./menu";
 import { spawnPythonProcess } from "./spawnPython";
 import { createWindow } from "./mainWindow";
-import { Engine, ToMainChannels } from "../types/types";
+import { Engine, FromRendererToMain } from "../types/types";
 
 import { SqlHandler } from "./sqlHandler";
 import { ImportFilesHandler } from "./importFileHandler";
@@ -24,6 +24,7 @@ import {
   sendGetSqlToRun,
   sendHideSearchBox,
   sendRenderCurrentEngine,
+  sendRefreshMenu,
   sendRenderSearchBox,
 } from "./fromMainSender";
 
@@ -59,6 +60,7 @@ app.whenReady().then(() => {
       message: messages.welcome,
       kind: "info",
     });
+    sendRefreshMenu(mainWindow)
     sendRenderCurrentEngine(mainWindow, defaultEngine);
   });
 
@@ -86,18 +88,18 @@ app.whenReady().then(() => {
   sqlHandler.setMainMenu(mainMenu);
   engineSwitch.setMainMenu(mainMenu);
 
-  ipcMain.on(ToMainChannels.SqlToValidate, sqlHandler.handleSqlToValidate);
-  ipcMain.on(ToMainChannels.SqlToRun, sqlHandler.handleSqlToRun);
+  ipcMain.on(FromRendererToMain.SqlToValidate, sqlHandler.handleSqlToValidate);
+  ipcMain.on(FromRendererToMain.SqlToRun, sqlHandler.handleSqlToRun);
   ipcMain.on(
-    ToMainChannels.CopyToClipboard,
+    FromRendererToMain.CopyToClipboard,
     (_: Electron.IpcMainEvent, data: string) => {
       clipboard.writeText(data);
     }
   );
-  ipcMain.on(ToMainChannels.SearchBoxHidden, () => unregisterEsc(mainWindow));
+  ipcMain.on(FromRendererToMain.SearchBoxHidden, () => unregisterEsc(mainWindow));
 
   server.stdout.on("data", (data) => {
-    if (data.toString().includes("Serving Flask app")) {
+    if (data.toString().includes("Starting Factotum server")) {
       heartbeat.startSendingHeartbeats();
     }
   });

@@ -3,6 +3,7 @@ import {
   sendAppendToLogs,
   sendInvalidInput,
   sendRenderEmptyState,
+  sendRefreshMenu,
   sendRenderSpinner,
   sendRenderTable,
   sendUpdateDatabaseSchema,
@@ -66,6 +67,7 @@ export class SqlHandler {
 
     sendRenderTable(this.win, tableData);
     this.updateExportFileMenuItemEnabledState(true);
+    sendRefreshMenu(this.win)
   };
 
   private updateExportFileMenuItemEnabledState(value: boolean) {
