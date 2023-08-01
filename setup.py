@@ -17,7 +17,7 @@ build_exe_options = {
                                   "PyQt4.QtScript",
                                   "numpy.core._dotblas", 
                                   "PyQt5"],
-    "include_files": [],
+    "include_files": ["config.json"],
     "includes": additional_modules,
     "build_exe": build_folder
 }
