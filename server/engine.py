@@ -7,8 +7,6 @@ import os
 
 
 class DataEngine(ABC):
-    """Interface for data engine."""
-
     AVOID_LIVE_EVALUATION = []
     UNSUPPORTED_STATEMENTS = []
     UNSUPPORTED_EXPRESSIONS = []
@@ -46,9 +44,6 @@ class DataEngine(ABC):
         return os.path.splitext(file_path)[1].replace('.', '')
 
     def validate_file_path(self, file_path: str, supported_formats: List[str]):
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"The file '{file_path}' does not exist.")
-
         file_extension = self.get_file_ext(file_path)
 
         if file_extension not in supported_formats:
