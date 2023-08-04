@@ -805,6 +805,14 @@
   resolved "https://registry.yarnpkg.com/@types/tabulator-tables/-/tabulator-tables-5.32.1.tgz#116c772e6fca1cb3eaf924f6a26645da0748e34d"
   integrity sha512-sLbwDdWZCd7PFL6J0vc3JRNZ2znZjEwF/P+0Mw0lSdc+oY2PlXo+4cCLHc2QpatV5AuCfWMu7OY3kKrYRNqpnQ==
 
+"@types/tar@^6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@types/tar/-/tar-6.1.5.tgz#90ccb3b6a35430e7427410d50eed564e85feaaff"
+  integrity sha512-qm2I/RlZij5RofuY7vohTpYNaYcrSQlN2MyjucQc7ZweDwaEWkdN/EeNh6e9zjK6uEm6PwjdMXkcj05BxZdX1Q==
+  dependencies:
+    "@types/node" "*"
+    minipass "^4.0.0"
+
 "@types/tern@*":
   version "0.23.4"
   resolved "https://registry.yarnpkg.com/@types/tern/-/tern-0.23.4.tgz#03926eb13dbeaf3ae0d390caf706b2643a0127fb"
@@ -4400,6 +4408,11 @@ minipass@^3.0.0:
   integrity sha512-DxiNidxSEK+tHG6zOIklvNOwm3hvCrbUrdtzY74U6HKTJxvIDfOUL5W5P2Ghd3DTkhhKPYGqeNUIh5qcM4YBfw==
   dependencies:
     yallist "^4.0.0"
+
+minipass@^4.0.0:
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-4.2.8.tgz#f0010f64393ecfc1d1ccb5f582bcaf45f48e1a3a"
+  integrity sha512-fNzuVyifolSLFL4NzpF+wEF4qrgqaaKX0haXPQEdQ7NKAN+WecoKMHV09YcuL/DHxrUsYQOK3MiuDf7Ip2OXfQ==
 
 minipass@^5.0.0:
   version "5.0.0"
