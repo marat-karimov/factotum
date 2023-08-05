@@ -53,18 +53,30 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Setup Micromamba
-        uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-file: environment.yml
-          init-shell: bash
+      # - name: Setup Micromamba
+      #   uses: mamba-org/setup-micromamba@v1
+      #   with:
+      #     environment-file: environment.yml
+      #     init-shell: bash
 
-      - name: Build python
-        shell: bash -el {0}
-        run: python setup.py build
+      # - name: Build python
+      #   shell: bash -el {0}
+      #   run: python setup.py build
 
       - name: Install node dependencies
         run: yarn install
+
+      - name: Setup Micromamba
+        shell: bash
+        run: npm run setup-micromamba
+
+      - name: Setup venv
+        shell: bash
+        run: npm run setup-venv
+
+      - name: Build server
+        shell: bash
+        run: npm run build-server
 
       - name: Install Wix Toolset
         if: runner.os == 'Windows'
