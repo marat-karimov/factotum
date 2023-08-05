@@ -43,6 +43,6 @@ console.log("micromamba downloaded successfully.");
 console.log("Extracting micromamba...");
 process.chdir(installDir);
 execSync(
-  `tar -xvj --force-local -f ./micromamba.tar.bz2 --strip-components=1 ${inArchivePath}`
+  `tar -xvj --force-local -f ./micromamba.tar.bz2 ${inArchivePath}`
 );
 console.log("micromamba extracted successfully.");
