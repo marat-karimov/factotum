@@ -11,8 +11,9 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx .",
     "setup-micromamba": "ts-node setup-micromamba.ts",
-    "setup-venv": "./micromamba/bin/micromamba create -f environment.yml -y",
-    "build-python": "./micromamba/bin/micromamba run -n venv python setup.py build",
+    "setup-venv": "./micromamba/bin/micromamba create --prefix ./micromamba/envs/venv -f environment.yml -y",
+    "start-python": "./micromamba/envs/venv/python main.py",
+    "build-python": "./micromamba/envs/venv/python setup.py build",
     "test": "playwright test"
   },
   "keywords": [],

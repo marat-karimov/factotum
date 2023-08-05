@@ -30,7 +30,7 @@ executables = [Executable(script="main.py",
 setup(
     name="Factotum",
     version="1.0",
-    description="SQL powered tabular data editor",
+    description="Factotum Server",
     options={"build_exe": build_exe_options},
     executables=executables
 )
