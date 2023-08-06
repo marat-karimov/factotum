@@ -42,7 +42,7 @@ console.log("micromamba downloaded successfully.");
 
 console.log("Extracting micromamba...");
 process.chdir(installDir);
-execSync(`tar -xvj --force-local -f ./micromamba.tar.bz2 ${inArchivePath}`);
+execSync(`tar -xvj -f ./micromamba.tar.bz2 ${inArchivePath}`);
 console.log("micromamba extracted successfully.");
 
 if (os.platform() === "win32") {
