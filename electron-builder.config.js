@@ -2,10 +2,6 @@ const pyExecDir = process.platform + "_python";
 const productName = process.env.npm_package_productName;
 const appId = process.env.npm_package_name;
 
-const version = process.env.VERSION
-  ? process.env.VERSION
-  : process.env.npm_package_version;
-
 const files = [".webpack/**/*", "package.json"];
 const extraResources = [pyExecDir, "assets", "config.json"];
 
@@ -20,13 +16,12 @@ module.exports = {
   appId,
   productName,
   electronLanguages: "en-US",
-  buildVersion: version,
   win: {
     target: "msi",
     files,
     extraResources,
     artifactName: "${productName}.msi",
-   // forceCodeSigning: process.env.CI ? true : false,
+    forceCodeSigning: process.env.CI ? true : false,
    icon: "assets/icon.ico"
   },
   msi: {
