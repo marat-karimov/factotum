@@ -22,7 +22,8 @@ module.exports = {
     extraResources,
     artifactName: "${productName}.msi",
     forceCodeSigning: process.env.CI ? true : false,
-   icon: "assets/icon.ico"
+    signExts: [".exe", ".dll"],
+    icon: "assets/icon.ico",
   },
   msi: {
     oneClick: true,
@@ -44,11 +45,11 @@ module.exports = {
     icon: "assets/icon.icns",
   },
   linux: {
-    target: ['deb', 'rpm'],
+    target: ["deb", "rpm"],
     files,
     extraResources,
-    category: 'Science',
+    category: "Science",
     icon: "assets/icon.icns",
     artifactName: "${productName}-${arch}.${ext}",
-  }
+  },
 };
