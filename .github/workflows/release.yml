@@ -16,7 +16,6 @@ jobs:
     outputs:
       MSI_BLOB_NAME: ${{ steps.upload_msi.outputs.MSI_BLOB_NAME }}
       DMG_X64_BLOB_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_BLOB_NAME }}
-      DMG_ARM64_BLOB_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ steps.upload_deb.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ steps.upload_rpm.outputs.RPM_BLOB_NAME }}
     env:
@@ -53,16 +52,6 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      # - name: Setup Micromamba
-      #   uses: mamba-org/setup-micromamba@v1
-      #   with:
-      #     environment-file: environment.yml
-      #     init-shell: bash
-
-      # - name: Build python
-      #   shell: bash -el {0}
-      #   run: python setup.py build
-
       - name: Install node dependencies
         run: yarn install
 
@@ -95,6 +84,9 @@ jobs:
           echo "${{ secrets.PFX_BASE64 }}" | base64 --decode > certificate.pfx
           echo "CSC_LINK=${{ github.workspace }}/certificate.pfx" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.PFX_PASSWORD }}" >> $GITHUB_ENV
+          echo "APPX_PUBLISHER=${{ secrets.APPX_PUBLISHER }}" >> $GITHUB_ENV
+          echo "APPX_IDENTITY_NAME=${{ secrets.APPX_IDENTITY_NAME }}" >> $GITHUB_ENV
+          echo "APPX_APPLICATION_ID=${{ secrets.APPX_APPLICATION_ID }}" >> $GITHUB_ENV
 
       - name: Set up env variables for MacOS
         if: runner.os == 'macOS'
@@ -134,6 +126,14 @@ jobs:
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
           echo "MSI_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
+      - name: Upload APPX to Azure Blob Storage
+        if: runner.os == 'Windows'
+        id: upload_appx
+        shell: bash
+        run: |
+          name="${{ env.VERSION }}/Factotum.appx"
+          az storage blob upload --name $name --file "./dist/Factotum.appx" --container-name factotum --overwrite
+
       - name: Upload DMG x64 to Azure Blob Storage
         if: runner.os == 'macOS'
         id: upload_dmg_x64
@@ -141,14 +141,6 @@ jobs:
           name="${{ env.VERSION }}/Factotum-x64.dmg"
           az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
           echo "DMG_X64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
-
-      - name: Upload DMG arm64 to Azure Blob Storage
-        if: runner.os == 'macOS'
-        id: upload_dmg_arm64
-        run: |
-          name="${{ env.VERSION }}/Factotum-arm64.dmg"
-          az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
-          echo "DMG_ARM64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DEB to Azure Blob Storage
         if: runner.os == 'Linux'
@@ -176,7 +168,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.PAT }}
       MSI_BLOB_NAME: ${{ needs.build.outputs.MSI_BLOB_NAME }}
       DMG_X64_BLOB_NAME: ${{ needs.build.outputs.DMG_X64_BLOB_NAME }}
-      DMG_ARM64_BLOB_NAME: ${{ needs.build.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ needs.build.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ needs.build.outputs.RPM_BLOB_NAME }}
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
@@ -209,16 +200,12 @@ jobs:
       - name: Download MSI from Azure Blob Storage
         run: |
           az storage blob download --name $MSI_BLOB_NAME --file "./Factotum-${VERSION}.msi" --container-name factotum
+          az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
 
       - name: Download DMG x64 from Azure Blob Storage
         run: |
           az storage blob download --name $DMG_X64_BLOB_NAME --file "./Factotum-x64-${VERSION}.dmg" --container-name factotum
           az storage blob delete --name $DMG_X64_BLOB_NAME --container-name factotum
-
-      - name: Download DMG arm64 from Azure Blob Storage
-        run: |
-          az storage blob download --name $DMG_ARM64_BLOB_NAME --file "./Factotum-arm64-${VERSION}.dmg" --container-name factotum
-          az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
 
       - name: Download DEB from Azure Blob Storage
         run: |
@@ -241,7 +228,6 @@ jobs:
           files: |
             ./Factotum-${{ env.VERSION }}.msi
             ./Factotum-x64-${{ env.VERSION }}.dmg
-            ./Factotum-arm64-${{ env.VERSION }}.dmg
             ./Factotum-amd64-${{ env.VERSION }}.deb
             ./Factotum-x86_64-${{ env.VERSION }}.rpm
 

@@ -1,6 +1,7 @@
 const pyExecDir = process.platform + "_python";
 const productName = process.env.npm_package_productName;
 const appId = process.env.npm_package_name;
+const author = process.env.npm_package_author_name;
 
 const files = [".webpack/**/*", "package.json"];
 const extraResources = [pyExecDir, "assets", "config.json"];
@@ -17,10 +18,10 @@ module.exports = {
   productName,
   electronLanguages: "en-US",
   win: {
-    target: "msi",
+    target: ["msi", "appx"],
     files,
     extraResources,
-    artifactName: "${productName}.msi",
+    artifactName: "${productName}.${ext}",
     forceCodeSigning: process.env.CI ? true : false,
     signExts: [".exe", ".dll"],
     icon: "assets/icon.ico",
@@ -29,12 +30,18 @@ module.exports = {
     oneClick: true,
     perMachine: false,
   },
+  appx: {
+    applicationId: process.env.APPX_APPLICATION_ID,
+    identityName: process.env.APPX_IDENTITY_NAME,
+    publisher: process.env.APPX_PUBLISHER,
+    publisherDisplayName: author,
+  },
   mac: {
     notarize: { teamId: process.env.APPLE_TEAM_ID },
     target: [
       {
         target: "dmg",
-        arch: ["x64", "arm64"],
+        arch: process.env.CI ? "x64": "arm64",
       },
     ],
     entitlements: "entitlements.mac.inherit.plist",
