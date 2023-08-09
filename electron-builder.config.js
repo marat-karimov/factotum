@@ -18,11 +18,10 @@ module.exports = {
   productName,
   electronLanguages: "en-US",
   win: {
-    target: ["msi", "appx"],
+    target: ["appx", "msi"],
     files,
     extraResources,
     artifactName: "${productName}.${ext}",
-    forceCodeSigning: process.env.CI ? true : false,
     signExts: [".exe", ".dll"],
     icon: "assets/icon.ico",
   },
