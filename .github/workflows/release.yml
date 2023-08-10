@@ -110,6 +110,10 @@ jobs:
       - name: Make executables
         run: npm run dist
 
+      - name: Make appx for Microsoft Store
+        if: runner.os == 'Windows'
+        run: npm run dist:appx
+
       - name: Upload test artifacts
         uses: actions/upload-artifact@v2
         if: failure()
