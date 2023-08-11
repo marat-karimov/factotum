@@ -1,6 +1,8 @@
 # Factotum
 
-Factotum is a simple app designed to make it easier to work with a variety of data file formats. Import your data files as tables into a temporary database and harness the full power of SQL. Say goodbye to the tedious task of manipulating challenging data files directly.
+Factotum is a simple app designed to make it easier to work with a variety of data file formats. Import your data files as tables into a temporary database and use the full power of SQL.
+
+![Factotum application](assets/screenshot.png)
 
 ## Technical Overview
 
