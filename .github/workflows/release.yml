@@ -84,9 +84,6 @@ jobs:
           echo "${{ secrets.PFX_BASE64 }}" | base64 --decode > certificate.pfx
           echo "CSC_LINK=${{ github.workspace }}/certificate.pfx" >> $GITHUB_ENV
           echo "CSC_KEY_PASSWORD=${{ secrets.PFX_PASSWORD }}" >> $GITHUB_ENV
-          echo "APPX_PUBLISHER=${{ secrets.APPX_PUBLISHER }}" >> $GITHUB_ENV
-          echo "APPX_IDENTITY_NAME=${{ secrets.APPX_IDENTITY_NAME }}" >> $GITHUB_ENV
-          echo "APPX_APPLICATION_ID=${{ secrets.APPX_APPLICATION_ID }}" >> $GITHUB_ENV
 
       - name: Set up env variables for MacOS
         if: runner.os == 'macOS'
@@ -109,10 +106,6 @@ jobs:
 
       - name: Make executables
         run: npm run dist
-
-      - name: Make appx for Microsoft Store
-        if: runner.os == 'Windows'
-        run: npm run dist:appx
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v2

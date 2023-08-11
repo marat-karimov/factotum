@@ -1,11 +1,11 @@
+require('dotenv').config()
+
 const pyExecDir = process.platform + "_python";
 const productName = process.env.npm_package_productName;
 const appId = process.env.npm_package_name;
 
 const files = [".webpack/**/*", "package.json"];
 const extraResources = [pyExecDir, "assets", "config.json"];
-
-process.env["CSC_IDENTITY_AUTO_DISCOVERY"] = process.env.CI ? true : false;
 
 /**
  * @type {import('electron-builder').Configuration}
