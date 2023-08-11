@@ -37,25 +37,25 @@ To get started with Factotum in a development environment, follow these steps:
 
 ### 1. Install Node Dependencies:
 
-```bash
+```
 yarn
 ```
 
 ### 2. Install Python Dependencies:
 
-```bash
+```
 npm run setup-micromamba
 npm run setup-venv
 ```
 
 ### 3. Build Python Server:
 
-```bash
+```
 npm run build-server
 ```
 
 ### 4. Start Factotum:
 
-```bash
+```
 npm start
 ```
