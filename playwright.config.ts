@@ -1,7 +1,7 @@
 import { PlaywrightTestConfig } from "@playwright/test";
 
 const config: PlaywrightTestConfig = {
-  testDir: "./tests",
+  testDir: "./tests/e2e",
   globalTimeout: 10 * 60 * 1000,
   timeout: 120000,
   reporter: [["github"], ["html", { open: "never" }]],

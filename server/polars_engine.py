@@ -29,7 +29,7 @@ READERS: Dict[str, ReaderType] = {
 
 WRITERS: Dict[str, WriterType] = {
     'csv': lambda result, path: result.write_csv(path),
-    'tsv': lambda result, path: result.write_csv(path, sep="\t"),
+    'tsv': lambda result, path: result.write_csv(path, separator="\t"),
     'parquet': lambda result, path: result.write_parquet(path),
     'json': lambda result, path: result.write_json(path, row_oriented=True),
     'xlsx': lambda result, path: result.write_excel(path),

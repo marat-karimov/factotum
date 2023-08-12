@@ -102,7 +102,7 @@ jobs:
       - name: Run Playwright tests
         uses: coactions/setup-xvfb@v1
         with:
-          run: npm run test
+          run: npm run test:e2e
 
       - name: Make executables
         run: npm run dist

@@ -76,7 +76,7 @@ endpoint_to_function = {
 
 
 class RequestHandler(BaseHTTPRequestHandler):
-    def _set_response(self, status_code=200, content_type='text/plain'):
+    def _set_response(self, status_code=200, content_type='application/json'):
         self.send_response(status_code)
         self.send_header('Content-type', content_type)
         self.end_headers()
@@ -102,7 +102,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         timestamp = time.strftime('[%Y-%m-%d %H:%M:%S]')
-        super().log_message(f'{timestamp} {format}', *args)
+        print(f'{timestamp}', *args, flush=True)
 
 
 def check_heartbeat():

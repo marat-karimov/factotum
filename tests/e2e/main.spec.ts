@@ -8,7 +8,7 @@ import {
 
 import { _electron as electron } from "playwright-core";
 
-import { messages } from "../src/messages";
+import { messages } from "../../src/messages";
 
 test("File import", async () => {
   const { app, page } = await setup();
@@ -25,13 +25,13 @@ test("File import", async () => {
   await expect(page.locator("text=RAM usage:")).toBeVisible();
 
   await stubDialog(app, "showOpenDialog", {
-    filePaths: ["./tests/assets/Automobile.csv"],
+    filePaths: ["./tests/assets/test.csv"],
   });
 
   await clickMenuItemById(app, "import-files");
 
   await expect(
-    page.locator("text=SELECT * FROM Automobile LIMIT 100;")
+    page.locator("text=SELECT * FROM test LIMIT 100;")
   ).toHaveCount(2);
 
 });
