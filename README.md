@@ -25,6 +25,7 @@ Factotum provides compatibility with the following data file formats:
 - **Extensible Markup Language (XML):** `.xml`
 - **Statistical Package for the Social Sciences (SPSS):** `.sav`
 - **Stata Data Format:** `.dta`
+- **Hierarchical Data Format (HDF):** `.h5`, `.hdf5`
 
 ## SQL Engines
 

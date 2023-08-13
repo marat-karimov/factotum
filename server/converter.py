@@ -32,6 +32,9 @@ class ReadConverter:
     def orc_to_parquet(self, orc_file_path, **kwargs):
         return self._read_file_once(pd.read_orc, orc_file_path, **kwargs)
     
+    def hdf_to_parquet(self, hdf_file_path, **kwargs):
+        return self._read_file_once(pd.read_hdf, hdf_file_path, **kwargs)
+    
     def avro_to_parquet(self, avro_file_path, **kwargs):
         return self._read_file_once(pdx.read_avro, avro_file_path, **kwargs)
 

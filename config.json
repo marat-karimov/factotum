@@ -13,7 +13,8 @@
         { "name": "Statistical Analysis System(SAS)", "extensions": ["sas7bdat", "xpt"] },
         { "name": "Extensible Markup Language(XML)", "extensions": ["xml"] },
         { "name": "Statistical Package for the Social Sciences(SPSS)", "extensions": ["sav"] },
-        { "name": "Stata Data Format", "extensions": ["dta"] }       
+        { "name": "Stata Data Format", "extensions": ["dta"] },
+        { "name": "Hierarchical Data Format (HDF)", "extensions": ["h5", "hdf5"] }    
       ],
       "write_files": [
         { "name": "Comma Separated", "extensions": ["csv"] },
@@ -25,6 +26,7 @@
         { "name": "JSON", "extensions": ["json"] },
         { "name": "Feather", "extensions": ["feather"] },
         { "name": "Extensible Markup Language", "extensions": ["xml"] },
-        { "name": "Stata Data Format", "extensions": ["dta"] }
+        { "name": "Stata Data Format", "extensions": ["dta"] },
+        { "name": "Hierarchical Data Format (HDF)", "extensions": ["h5", "hdf5"] }
       ]
   }

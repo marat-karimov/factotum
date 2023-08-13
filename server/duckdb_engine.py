@@ -29,7 +29,9 @@ READERS: Dict[str, ReaderType] = {
     'xpt': lambda path, conv: duckdb.read_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
     'xml': lambda path, conv: duckdb.read_parquet(conv.xml_to_parquet(path)),
     'sav': lambda path, conv: duckdb.read_parquet(conv.spss_to_parquet(path)),
-    'dta': lambda path, conv: duckdb.read_parquet(conv.stata_to_parquet(path))
+    'dta': lambda path, conv: duckdb.read_parquet(conv.stata_to_parquet(path)),
+    'h5': lambda path, conv: duckdb.read_parquet(conv.hdf_to_parquet(path)),
+    'hdf5': lambda path, conv: duckdb.read_parquet(conv.hdf_to_parquet(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -43,6 +45,8 @@ WRITERS: Dict[str, WriterType] = {
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
     'xml': lambda rel, path: rel.to_df().to_xml(path, index=False),
     'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),
+    'h5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
+    'hdf5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
 }
 
 assert set(read_formats) == set(READERS.keys()), \

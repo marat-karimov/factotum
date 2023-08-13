@@ -52,9 +52,7 @@ jobs:
           run: npm run test:e2e
 
       - name: Run API tests
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: npm run test:api
+        run: npm run test:api
 
       - name: Upload test artifacts
         uses: actions/upload-artifact@v2

@@ -11,6 +11,7 @@
     "lint": "eslint --ext .ts,.tsx .",
     "setup-micromamba": "ts-node setup-micromamba.ts",
     "setup-venv": "./micromamba/bin/micromamba create --prefix ./micromamba/envs/venv -f environment.yml -y",
+    "update-venv": "./micromamba/bin/micromamba update --prefix ./micromamba/envs/venv -f environment.yml -y",
     "server": "run-script-os",
     "server:win32": "./micromamba/envs/venv/python main.py",
     "server:nix": "./micromamba/envs/venv/bin/python main.py",
