@@ -40,7 +40,7 @@ WRITERS: Dict[str, WriterType] = {
     'parquet': lambda rel, path: rel.write_parquet(path),
     'json': lambda rel, path: rel.pl().write_json(path, row_oriented=True),
     'xlsx': lambda rel, path: rel.pl().write_excel(path),
-    'avro': lambda rel, path: pdx.to_avro(path, rel.to_df),
+    'avro': lambda rel, path: pdx.to_avro(path, rel.to_df()),
     'orc': lambda rel, path: rel.to_df().to_orc(path, index=False),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
     'xml': lambda rel, path: rel.to_df().to_xml(path, index=False),

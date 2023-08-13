@@ -16,6 +16,8 @@ micromamba
 .DS_Store
 .vscode
 
+test-output/
+
 win32_python/
 darwin_python/
 linux_python/

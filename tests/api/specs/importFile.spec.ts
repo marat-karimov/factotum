@@ -1,5 +1,4 @@
 import { spawnPythonProcess } from "../../../src/main/spawnPython";
-import request from "supertest";
 import { waitForServerToStart, closeServer } from "../helpers/server";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import {
@@ -9,11 +8,10 @@ import {
 } from "../../../src/types/types";
 import { globSync } from "glob";
 import path from "path";
+import { makeRequest } from "../helpers/request";
 
 const engines = ["polars", "duckdb"];
 const testFiles = globSync("tests/assets/test.*");
-
-const host = "http://127.0.0.1:49213";
 
 describe.each(engines)("Engine: %s", (engine) => {
   let server: ChildProcessWithoutNullStreams;
@@ -47,8 +45,3 @@ describe.each(engines)("Engine: %s", (engine) => {
     expect(runSqlResponse.tableData).toBeTruthy();
   });
 });
-
-async function makeRequest(endpoint: string, payload: any) {
-  const response = await request(host).post(endpoint).send(payload);
-  return response.body;
-}
