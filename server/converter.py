@@ -3,6 +3,7 @@ import pandas as pd
 import tempfile
 import shutil
 import hashlib
+import pandavro as pdx
 
 
 class ReadConverter:
@@ -28,6 +29,9 @@ class ReadConverter:
 
     def excel_to_parquet(self, excel_file_path, **kwargs):
         return self._read_file_once(pd.read_excel, excel_file_path, **kwargs)
+    
+    def avro_to_parquet(self, avro_file_path, **kwargs):
+        return self._read_file_once(pdx.read_avro, avro_file_path, **kwargs)
 
     def _read_file(self, read_func, file_path, chunksize, **kwargs):
         temp_file_path = self._generate_temp_file_path(file_path)

@@ -3,6 +3,7 @@ import polars as pl
 from typing import Callable, Dict
 from server.converter import ReadConverter
 from server.read_config import read_formats, write_formats
+import pandavro as pdx
 
 WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
@@ -12,6 +13,7 @@ READERS: Dict[str, ReaderType] = {
     'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t"),
     'parquet': lambda path, conv: pl.scan_parquet(path),
     'json': lambda path, conv: pl.read_json(path),
+    'avro': lambda path, conv: pl.scan_parquet(conv.avro_to_parquet(path)),
     'xlsx': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
     'xls': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
     'xlsm': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
@@ -33,7 +35,7 @@ WRITERS: Dict[str, WriterType] = {
     'parquet': lambda result, path: result.write_parquet(path),
     'json': lambda result, path: result.write_json(path, row_oriented=True),
     'xlsx': lambda result, path: result.write_excel(path),
-    'avro': lambda result, path: result.write_avro(path),
+    'avro': lambda result, path: pdx.to_avro(path, result.to_pandas()),
     'feather': lambda result, path: result.to_pandas().to_feather(path, version=1),
     'xml': lambda result, path: result.to_pandas().to_xml(path, index=False),
     'dta': lambda result, path: result.to_pandas().to_stata(path, write_index=False),

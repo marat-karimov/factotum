@@ -5,6 +5,7 @@ import duckdb
 from typing import Callable, Dict
 from server.converter import ReadConverter
 from server.read_config import read_formats, write_formats
+import pandavro as pdx
 
 WriterType = Callable[[duckdb.DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, ReadConverter], duckdb.DuckDBPyRelation]
@@ -14,6 +15,7 @@ READERS: Dict[str, ReaderType] = {
     'tsv': lambda path, conv: duckdb.read_csv(path, header=True, sep="\t"),
     'parquet': lambda path, conv: duckdb.read_parquet(path),
     'json': lambda path, conv: duckdb.read_json(path),
+    'avro': lambda path, conv: duckdb.read_parquet(conv.avro_to_parquet(path)),
     'xlsx': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
     'xls': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
     'xlsm': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
@@ -35,7 +37,7 @@ WRITERS: Dict[str, WriterType] = {
     'parquet': lambda rel, path: rel.write_parquet(path),
     'json': lambda rel, path: rel.pl().write_json(path, row_oriented=True),
     'xlsx': lambda rel, path: rel.pl().write_excel(path),
-    'avro': lambda rel, path: rel.pl().write_avro(path),
+    'avro': lambda rel, path: pdx.to_avro(path, rel.to_df),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
     'xml': lambda rel, path: rel.to_df().to_xml(path, index=False),
     'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),

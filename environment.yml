@@ -18,6 +18,8 @@ dependencies:
   - xlsxwriter
   - pyxlsb
   - xlrd
+  - pandavro
+  - python-snappy
   - pip
   - pip:
     - lief
