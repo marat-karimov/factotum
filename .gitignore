@@ -16,8 +16,6 @@ micromamba
 .DS_Store
 .vscode
 
-test-output/
-
 test-output/*
 !test-output/.gitkeep
 
