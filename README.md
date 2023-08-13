@@ -17,6 +17,8 @@ Factotum provides compatibility with the following data file formats:
 - **Microsoft Excel:** `.xls`, `.xlsx`, `.xlsm`, `.xlsb`
 - **OpenOffice Formats:** `.odf`, `.ods`, `.odt`
 - **Apache Parquet:** `.parquet`
+- **Apache AVRO:** `.avro`
+- **Apache ORC:** `.orc`
 - **JavaScript Object Notation (JSON):** `.json`
 - **Feather Binary Format:** `.feather`
 - **Statistical Analysis System (SAS):** `.sas7bdat`, `.xpt`
