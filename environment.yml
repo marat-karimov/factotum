@@ -16,6 +16,8 @@ dependencies:
   - pyreadstat  
   - odfpy
   - xlsxwriter
+  - pyxlsb
+  - xlrd
   - pip
   - pip:
     - lief
