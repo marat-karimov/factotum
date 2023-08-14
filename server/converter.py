@@ -4,6 +4,7 @@ import tempfile
 import shutil
 import hashlib
 import pandavro as pdx
+from server.orc import read_orc
 
 class ReadConverter:
     CHUNKSIZE = 50000
@@ -11,59 +12,56 @@ class ReadConverter:
     def __init__(self):
         self.temp_dir = tempfile.mkdtemp()
 
-    def stata_to_parquet(self, dta_file_path, chunksize=CHUNKSIZE, **kwargs):
-        return self._read_file(pd.read_stata, dta_file_path, chunksize, **kwargs)
+    def stata_to_csv(self, path, chunksize=CHUNKSIZE, **kwargs):
+        return self._read_file_chunks(pd.read_stata, path, chunksize, **kwargs)
 
-    def sas_to_parquet(self, sas_file_path, chunksize=CHUNKSIZE, **kwargs):
-        return self._read_file(pd.read_sas, sas_file_path, chunksize, **kwargs)
+    def sas_to_csv(self, path, chunksize=CHUNKSIZE, **kwargs):
+        return self._read_file_chunks(pd.read_sas, path, chunksize, **kwargs)
 
-    def xml_to_parquet(self, xml_file_path, **kwargs):
-        return self._read_file_once(pd.read_xml, xml_file_path, **kwargs)
+    def xml_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_xml, path, **kwargs)
 
-    def spss_to_parquet(self, spss_file_path, **kwargs):
-        return self._read_file_once(pd.read_spss, spss_file_path, **kwargs)
+    def spss_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_spss, path, **kwargs)
 
-    def feather_to_parquet(self, feather_file_path, **kwargs):
-        return self._read_file_once(pd.read_feather, feather_file_path, **kwargs)
+    def feather_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_feather, path, **kwargs)
 
-    def excel_to_parquet(self, excel_file_path, **kwargs):
-        return self._read_file_once(pd.read_excel, excel_file_path, **kwargs)
+    def excel_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_excel, path, **kwargs)
     
-    def orc_to_parquet(self, orc_file_path, **kwargs):
-        return self._read_file_once(pd.read_orc, orc_file_path, **kwargs)
+    def orc_to_csv(self, path, **kwargs):
+        return self._read_file_once(read_orc, path, **kwargs)
     
-    def hdf_to_parquet(self, hdf_file_path, **kwargs):
-        return self._read_file_once(pd.read_hdf, hdf_file_path, **kwargs)
+    def hdf_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_hdf, path, **kwargs)
     
-    def avro_to_parquet(self, avro_file_path, **kwargs):
-        return self._read_file_once(pdx.read_avro, avro_file_path, **kwargs)
+    def avro_to_csv(self, path, **kwargs):
+        return self._read_file_once(pdx.read_avro, path, **kwargs)
 
-    def _read_file(self, read_func, file_path, chunksize, **kwargs):
-        temp_file_path = self._generate_temp_file_path(file_path)
-        wildcard_file_path = temp_file_path.replace('.parquet', '_*.parquet')
+    def _read_file_chunks(self, read_func, path, chunksize, **kwargs):
+        temp_file_path = self._generate_temp_file_path(path)
+    
+        first_chunk = True
 
-        chunk_no = 0
-
-        for chunk in read_func(file_path, chunksize=chunksize, **kwargs):
-            chunk_temp_file_path = temp_file_path.replace(
-                '.parquet', f'_{chunk_no}.parquet')
-            chunk.to_parquet(chunk_temp_file_path, index=False)
-            chunk_no += 1
-
-        return wildcard_file_path
-
-    def _read_file_once(self, read_func, file_path, **kwargs):
-        temp_file_path = self._generate_temp_file_path(file_path)
-
-        df = read_func(file_path, **kwargs)
-        df.to_parquet(temp_file_path, index=False)
+        for chunk in read_func(path, chunksize=chunksize, **kwargs):
+            chunk.to_csv(temp_file_path, mode='a', header=first_chunk, index=False)
+            first_chunk = False
 
         return temp_file_path
 
-    def _generate_temp_file_path(self, file_path):
-        file_name = os.path.basename(file_path)
-        hash_name = hashlib.sha256(file_name.encode()).hexdigest()
-        temp_file_path = os.path.join(self.temp_dir, hash_name + ".parquet")
+    def _read_file_once(self, read_func, path, **kwargs):
+        temp_file_path = self._generate_temp_file_path(path)
+
+        df = read_func(path, **kwargs)
+        df.to_csv(temp_file_path, index=False)
+        del df
+
+        return temp_file_path
+
+    def _generate_temp_file_path(self, path):
+        hash_name = hashlib.sha256(path.encode()).hexdigest()
+        temp_file_path = os.path.join(self.temp_dir, hash_name + ".csv")
 
         return temp_file_path
 

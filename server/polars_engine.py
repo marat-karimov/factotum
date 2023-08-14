@@ -4,6 +4,7 @@ from typing import Callable, Dict
 from server.converter import ReadConverter
 from server.read_config import read_formats, write_formats
 import pandavro as pdx
+from server.orc import write_orc
 
 WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
@@ -13,23 +14,23 @@ READERS: Dict[str, ReaderType] = {
     'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t"),
     'parquet': lambda path, conv: pl.scan_parquet(path),
     'json': lambda path, conv: pl.read_json(path),
-    'avro': lambda path, conv: pl.scan_parquet(conv.avro_to_parquet(path)),
-    'orc': lambda path, conv: pl.scan_parquet(conv.orc_to_parquet(path)),
-    'xlsx': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'xls': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'xlsm': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'xlsb': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'odf': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'ods': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'odt': lambda path, conv: pl.scan_parquet(conv.excel_to_parquet(path)),
-    'feather': lambda path, conv: pl.scan_parquet(conv.feather_to_parquet(path)),
-    'sas7bdat': lambda path, conv: pl.scan_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
-    'xpt': lambda path, conv: pl.scan_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
-    'xml': lambda path, conv: pl.scan_parquet(conv.xml_to_parquet(path)),
-    'sav': lambda path, conv: pl.scan_parquet(conv.spss_to_parquet(path)),
-    'dta': lambda path, conv: pl.scan_parquet(conv.stata_to_parquet(path)),
-    'h5': lambda path, conv: pl.scan_parquet(conv.hdf_to_parquet(path)),
-    'hdf5': lambda path, conv: pl.scan_parquet(conv.hdf_to_parquet(path))
+    'avro': lambda path, conv: pl.scan_csv(conv.avro_to_csv(path)),
+    'orc': lambda path, conv: pl.scan_csv(conv.orc_to_csv(path)),
+    'xlsx': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'xls': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'xlsm': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'xlsb': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'odf': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'ods': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'odt': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
+    'feather': lambda path, conv: pl.scan_csv(conv.feather_to_csv(path)),
+    'sas7bdat': lambda path, conv: pl.scan_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conv: pl.scan_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xml': lambda path, conv: pl.scan_csv(conv.xml_to_csv(path)),
+    'sav': lambda path, conv: pl.scan_csv(conv.spss_to_csv(path)),
+    'dta': lambda path, conv: pl.scan_csv(conv.stata_to_csv(path)),
+    'h5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
+    'hdf5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -39,7 +40,7 @@ WRITERS: Dict[str, WriterType] = {
     'json': lambda result, path: result.write_json(path, row_oriented=True),
     'xlsx': lambda result, path: result.write_excel(path),
     'avro': lambda result, path: pdx.to_avro(path, result.to_pandas()),
-    'orc': lambda result, path: result.to_pandas().to_orc(path, index=False),
+    'orc': lambda result, path: write_orc(path, result.to_pandas()),
     'feather': lambda result, path: result.to_pandas().to_feather(path, version=1),
     'xml': lambda result, path: result.to_pandas().to_xml(path, index=False),
     'dta': lambda result, path: result.to_pandas().to_stata(path, write_index=False),

@@ -6,6 +6,7 @@ from typing import Callable, Dict
 from server.converter import ReadConverter
 from server.read_config import read_formats, write_formats
 import pandavro as pdx
+from server.orc import write_orc
 
 WriterType = Callable[[duckdb.DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, ReadConverter], duckdb.DuckDBPyRelation]
@@ -15,23 +16,23 @@ READERS: Dict[str, ReaderType] = {
     'tsv': lambda path, conv: duckdb.read_csv(path, header=True, sep="\t"),
     'parquet': lambda path, conv: duckdb.read_parquet(path),
     'json': lambda path, conv: duckdb.read_json(path),
-    'avro': lambda path, conv: duckdb.read_parquet(conv.avro_to_parquet(path)),
-    'orc': lambda path, conv: duckdb.read_parquet(conv.orc_to_parquet(path)),
-    'xlsx': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'xls': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'xlsm': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'xlsb': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'odf': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'ods': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'odt': lambda path, conv: duckdb.read_parquet(conv.excel_to_parquet(path)),
-    'feather': lambda path, conv: duckdb.read_parquet(conv.feather_to_parquet(path)),
-    'sas7bdat': lambda path, conv: duckdb.read_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
-    'xpt': lambda path, conv: duckdb.read_parquet(conv.sas_to_parquet(path, encoding='utf-8')),
-    'xml': lambda path, conv: duckdb.read_parquet(conv.xml_to_parquet(path)),
-    'sav': lambda path, conv: duckdb.read_parquet(conv.spss_to_parquet(path)),
-    'dta': lambda path, conv: duckdb.read_parquet(conv.stata_to_parquet(path)),
-    'h5': lambda path, conv: duckdb.read_parquet(conv.hdf_to_parquet(path)),
-    'hdf5': lambda path, conv: duckdb.read_parquet(conv.hdf_to_parquet(path))
+    'avro': lambda path, conv: duckdb.read_csv(conv.avro_to_csv(path)),
+    'orc': lambda path, conv: duckdb.read_csv(conv.orc_to_csv(path)),
+    'xlsx': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'xls': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'xlsm': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'xlsb': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'odf': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'ods': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'odt': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
+    'feather': lambda path, conv: duckdb.read_csv(conv.feather_to_csv(path)),
+    'sas7bdat': lambda path, conv: duckdb.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conv: duckdb.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xml': lambda path, conv: duckdb.read_csv(conv.xml_to_csv(path)),
+    'sav': lambda path, conv: duckdb.read_csv(conv.spss_to_csv(path)),
+    'dta': lambda path, conv: duckdb.read_csv(conv.stata_to_csv(path)),
+    'h5': lambda path, conv: duckdb.read_csv(conv.hdf_to_csv(path)),
+    'hdf5': lambda path, conv: duckdb.read_csv(conv.hdf_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -41,7 +42,7 @@ WRITERS: Dict[str, WriterType] = {
     'json': lambda rel, path: rel.pl().write_json(path, row_oriented=True),
     'xlsx': lambda rel, path: rel.pl().write_excel(path),
     'avro': lambda rel, path: pdx.to_avro(path, rel.to_df()),
-    'orc': lambda rel, path: rel.to_df().to_orc(path, index=False),
+    'orc': lambda rel, path: write_orc(path, rel.to_df()),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
     'xml': lambda rel, path: rel.to_df().to_xml(path, index=False),
     'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),

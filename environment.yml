@@ -21,6 +21,7 @@ dependencies:
   - pandavro
   - python-snappy
   - pytables=3.7
+  - pyorc
   - pip
   - pip:
     - lief

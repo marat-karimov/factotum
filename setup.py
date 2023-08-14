@@ -10,7 +10,7 @@ build_folder = platform + "_python"
 additional_modules = []
 
 build_exe_options = {
-    "packages": ["pyarrow.vendored.version", "pyreadstat", "pyarrow.orc"],
+    "packages": ["pyarrow.vendored.version", "pyreadstat"],
     "excludes": ["tkinter", "PyQt4.QtSql", "sqlite3", 
                                   "scipy.lib.lapack.flapack",
                                   "PyQt4.QtNetwork",
