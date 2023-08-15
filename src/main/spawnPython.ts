@@ -14,10 +14,8 @@ export function spawnPythonProcess(
   });
 
   server.on("close", (code) => {
-    if (!(code === null || code === 0)) {
-      console.log(`Server exited with code ${code}`);
-      process.exit(0);
-    }
+    console.log(`Server exited with code ${code}`);
+    if (code !== 0) process.exit(0)
   });
 
   server.on("error", (err) => {
