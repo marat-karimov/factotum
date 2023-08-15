@@ -3,6 +3,7 @@ import {
   ExportFileResponse,
   HeartbeatResponse,
   ImportFileResponse,
+  KillResponse,
   RunSqlResponse,
   ValidateResponse,
 } from "../types/types";
@@ -22,6 +23,10 @@ export function sendRunSql(sql: string): Promise<RunSqlResponse> {
 
 export function sendGetSchema(): Promise<DataBaseSchemaResponse> {
   return sendPost("get_schema", {});
+}
+
+export function sendKill(): Promise<KillResponse> {
+  return sendPost("kill", {});
 }
 
 export function sendHeartbeat(): Promise<HeartbeatResponse> {

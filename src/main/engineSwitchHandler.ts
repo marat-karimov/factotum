@@ -1,6 +1,6 @@
 import { BrowserWindow, MessageBoxOptions, dialog } from "electron";
 import { sendAppendToLogs, sendRenderCurrentEngine } from "./fromMainSender";
-import { ChildProcessWithoutNullStreams } from "child_process";
+import { sendKill } from "./requestDispatcher";
 import { Heartbeat } from "./heartbeat";
 import { spawnPythonProcess } from "./spawnPython";
 import { Engine } from "../types/types";
@@ -11,18 +11,15 @@ export class EngineSwitchHandler {
   private currentEngine: Engine;
   private heartbeat: Heartbeat;
   private mainMenu: Electron.Menu;
-  private server: ChildProcessWithoutNullStreams;
 
   constructor(
     mainWindow: BrowserWindow,
     currentEngine: Engine,
-    heartbeat: Heartbeat,
-    server: ChildProcessWithoutNullStreams
+    heartbeat: Heartbeat
   ) {
     this.currentEngine = currentEngine;
     this.win = mainWindow;
     this.heartbeat = heartbeat;
-    this.server = server;
   }
 
   public handleEngineSwitch = async (
@@ -96,7 +93,8 @@ export class EngineSwitchHandler {
 
   private async restartBackendWithEngine(engine: Engine) {
     this.heartbeat.stopHeartbeat();
-    this.server.kill("SIGTERM");
+    sendKill();
+    await new Promise(resolve => setTimeout(resolve, 1100));
     this.spawnServerAndStartSendingHeartbeats(engine);
     this.reloadWindowAndSendEngineUpdate(engine);
     this.currentEngine = engine;

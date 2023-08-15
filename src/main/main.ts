@@ -28,6 +28,7 @@ import {
   sendRenderSearchBox,
 } from "./fromMainSender";
 
+import { sendKill } from "./requestDispatcher";
 import { messages } from "../messages";
 
 if (require("electron-squirrel-startup")) {
@@ -70,8 +71,7 @@ app.whenReady().then(() => {
   const engineSwitch = new EngineSwitchHandler(
     mainWindow,
     defaultEngine,
-    heartbeat,
-    server
+    heartbeat
   );
 
   const mainMenuBuilder = new MainMenu({
@@ -110,5 +110,5 @@ app.on("activate", function () {
 });
 
 app.on("window-all-closed", () => app.quit());
-app.on("before-quit", () => server.kill('SIGTERM'));
+app.on("before-quit", () => sendKill());
 app.on("will-quit", () => globalShortcut.unregisterAll());

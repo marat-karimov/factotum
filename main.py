@@ -12,7 +12,7 @@ from server.converter import ReadConverter
 
 from server.duckdb_engine import DuckDBEngine
 from server.polars_engine import PolarsEngine
-import signal
+import sys
 
 heartbeat_timeout_sec = 30
 
@@ -22,10 +22,11 @@ processor: DataProcessor = None
 converter = ReadConverter()
 
 
-def kill(signum, frame):
-    print('Received termination signal')
+def kill(data=None):
+    response_data = {'message': 'Server is shutting down...'}
     converter.cleanup()
-    os._exit(0)
+    threading.Timer(1.0, os._exit, args=(0,)).start()
+    return response_data
 
 
 def get_memory_usage():
@@ -69,6 +70,7 @@ def init_engine(engine):
 
 
 endpoint_to_function = {
+    '/kill': kill,
     '/heartbeat': heartbeat,
 }
 
@@ -138,5 +140,4 @@ def run_server():
 
 
 if __name__ == '__main__':
-    signal.signal(signal.SIGTERM, kill)
     run_server()

@@ -57,6 +57,10 @@ export interface HeartbeatResponse {
   memory_usage_mb: number;
 }
 
+export interface KillResponse {
+  message: string;
+}
+
 export interface ValidateResponse {
   result: boolean;
   sql: string;
