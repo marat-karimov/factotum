@@ -1,5 +1,6 @@
-import json
+import server.config
 import os
+import json
 import threading
 import time
 import argparse
@@ -12,7 +13,6 @@ from server.converter import ReadConverter
 
 from server.duckdb_engine import DuckDBEngine
 from server.polars_engine import PolarsEngine
-import sys
 
 heartbeat_timeout_sec = 30
 
