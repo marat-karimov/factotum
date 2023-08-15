@@ -19,10 +19,8 @@ export function closeServer(
   server: ChildProcessWithoutNullStreams
 ): Promise<void> {
   return new Promise((resolve) => {
-    server.on("close", (code) => {
-      if (code === null || code === 0) {
-        resolve();
-      }
+    server.on("close", () => {
+      resolve();
     });
 
     server.kill();

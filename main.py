@@ -1,4 +1,3 @@
-import server.config
 import os
 import json
 import threading
