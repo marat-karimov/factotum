@@ -23,7 +23,6 @@ module.exports = {
     artifactName: "${productName}.${ext}",
     signExts: [".exe", ".dll"],
     icon: "assets/icon.ico",
-    signingHashAlgorithms: ["sha256"],
   },
   msi: {
     oneClick: true,
