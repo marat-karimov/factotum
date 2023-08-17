@@ -14,28 +14,26 @@ const extensions = allowedWriteFormats
 
 const outputDir = path.join(__dirname, "../../../test-output");
 
-describe.each(engines)(
-  "Engine: %s",
-  (engine) => {
-    let server: ChildProcessWithoutNullStreams;
+describe.each(engines)("Engine: %s", (engine) => {
+  let server: ChildProcessWithoutNullStreams;
 
-    beforeAll(async () => {
-      server = spawnPythonProcess(engine as Engine);
-      await waitForServerToStart(server);
-      await makeRequest("/import_file", { file_path: "tests/assets/test.csv" });
-      await makeRequest("/run_sql", { sql: `select * from test` });
-    }, 10000);
+  beforeAll(async () => {
+    server = spawnPythonProcess(engine as Engine);
+    await waitForServerToStart(server);
 
-    afterAll(async () => {
-      await closeServer(server);
+    // Import file and run sql
+    await makeRequest("/import_file", { file_path: "tests/assets/test.csv" });
+    await makeRequest("/run_sql", { sql: `select * from test` });
+  });
+
+  afterAll(async () => {
+    await closeServer(server);
+  });
+
+  test.each(extensions)("Export to: %s", async (extension) => {
+    const response: ExportFileResponse = await makeRequest("/export_file", {
+      file_path: `${outputDir}/test.${extension}`,
     });
-
-    test.each(extensions)("Export to: %s", async (extension) => {
-      const response: ExportFileResponse = await makeRequest("/export_file", {
-        file_path: `${outputDir}/test.${extension}`,
-      });
-      expect(response.error).toBeNull();
-    });
-  },
-  10000
-);
+    expect(response.error).toBeNull();
+  });
+});

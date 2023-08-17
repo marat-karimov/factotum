@@ -44,4 +44,4 @@ describe.each(engines)("Engine: %s", (engine) => {
     expect(runSqlResponse.error).toBeNull();
     expect(runSqlResponse.tableData).toBeTruthy();
   });
-}, 10000);
+});
