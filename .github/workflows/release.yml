@@ -104,6 +104,9 @@ jobs:
         with:
           run: npm run test:e2e
 
+      - name: Run API tests
+        run: npm run test:api
+
       - name: Make executables
         run: npm run dist
 
@@ -122,14 +125,6 @@ jobs:
           name="${{ env.VERSION }}/Factotum.msi"
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
           echo "MSI_BLOB_NAME=$name" >> $GITHUB_OUTPUT
-
-      - name: Upload APPX to Azure Blob Storage
-        if: runner.os == 'Windows'
-        id: upload_appx
-        shell: bash
-        run: |
-          name="${{ env.VERSION }}/Factotum.appx"
-          az storage blob upload --name $name --file "./dist/Factotum.appx" --container-name factotum --overwrite
 
       - name: Upload DMG x64 to Azure Blob Storage
         if: runner.os == 'macOS'
@@ -196,22 +191,22 @@ jobs:
       
       - name: Download MSI from Azure Blob Storage
         run: |
-          az storage blob download --name $MSI_BLOB_NAME --file "./Factotum-${VERSION}.msi" --container-name factotum
+          az storage blob download --name $MSI_BLOB_NAME --file "./Factotum.msi" --container-name factotum
           az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
 
       - name: Download DMG x64 from Azure Blob Storage
         run: |
-          az storage blob download --name $DMG_X64_BLOB_NAME --file "./Factotum-x64-${VERSION}.dmg" --container-name factotum
+          az storage blob download --name $DMG_X64_BLOB_NAME --file "./Factotum-x64.dmg" --container-name factotum
           az storage blob delete --name $DMG_X64_BLOB_NAME --container-name factotum
 
       - name: Download DEB from Azure Blob Storage
         run: |
-          az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64-${VERSION}.deb" --container-name factotum
+          az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64.deb" --container-name factotum
           az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
 
       - name: Download RPM from Azure Blob Storage
         run: |
-          az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64-${VERSION}.rpm" --container-name factotum
+          az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64.rpm" --container-name factotum
           az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
 
       - name: Create Release
@@ -223,10 +218,10 @@ jobs:
           prerelease: false
           title: "Release ${{ env.VERSION }}"
           files: |
-            ./Factotum-${{ env.VERSION }}.msi
-            ./Factotum-x64-${{ env.VERSION }}.dmg
-            ./Factotum-amd64-${{ env.VERSION }}.deb
-            ./Factotum-x86_64-${{ env.VERSION }}.rpm
+            ./Factotum.msi
+            ./Factotum-x64.dmg
+            ./Factotum-amd64.deb
+            ./Factotum-x86_64.rpm
 
       - name: Commit and push new version
         run: |
