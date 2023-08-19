@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-if getattr(sys, 'frozen', False):
+if getattr(sys.modules['__main__'], '__compiled__', False):
     exe_path = os.path.dirname(sys.executable)
     config_path = os.path.join(exe_path, 'config.json')
 else:

@@ -3,6 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
+  - nuitka
   - nomkl
   - polars
   - xlsx2csv
@@ -26,5 +27,4 @@ dependencies:
   - pip:
     - lief
     - duckdb
-    - cx-Freeze
     - openpyxl

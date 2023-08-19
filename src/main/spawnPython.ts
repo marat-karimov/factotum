@@ -29,8 +29,8 @@ export function spawnPythonProcess(
 
 function resolvePyExecPath() {
   const platform = process.platform;
-  const pyExecName = platform === "win32" ? "Factotum.exe" : "Factotum";
-  const pyExecDir = platform + "_python";
+  const pyExecName = platform === "win32" ? "server.exe" : "server.bin";
+  const pyExecDir = "server.dist";
   const pyExecPath =
     process.env.NODE_ENV === "development"
       ? join(__dirname, `../../${pyExecDir}`, pyExecName)

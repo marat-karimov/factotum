@@ -1,11 +1,11 @@
 require('dotenv').config()
 
-const pyExecDir = process.platform + "_python";
+const pyExecDir = "server.dist";
 const productName = process.env.npm_package_productName;
 const appId = process.env.npm_package_name;
 
 const files = [".webpack/**/*", "package.json"];
-const extraResources = [pyExecDir, "assets", "config.json"];
+const extraResources = [{ from: pyExecDir, to: pyExecDir }, "assets", "config.json"];
 
 /**
  * @type {import('electron-builder').Configuration}

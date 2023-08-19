@@ -5,6 +5,7 @@ import shutil
 import hashlib
 import pandavro as pdx
 from server.orc import read_orc
+import pyreadstat
 
 class ReadConverter:
     CHUNKSIZE = 50000

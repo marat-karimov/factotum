@@ -23,6 +23,9 @@ win32_python/
 darwin_python/
 linux_python/
 
+server.build
+server.dist
+
 node_modules/
 .eslintcache
 *.tgz
