@@ -6,6 +6,8 @@ import path from "path";
 import { allowedWriteFormats } from "../../../src/main/loadConfig";
 import { makeRequest } from "../helpers/request";
 
+import fs from "fs";
+
 const engines = ["polars", "duckdb"];
 
 const extensions = allowedWriteFormats
@@ -13,6 +15,10 @@ const extensions = allowedWriteFormats
   .flat() as string[];
 
 const outputDir = path.join(__dirname, "../../../test-output");
+
+if (!fs.existsSync(outputDir)) {
+  fs.mkdirSync(outputDir);
+}
 
 describe.each(engines)("Engine: %s", (engine) => {
   let server: ChildProcessWithoutNullStreams;

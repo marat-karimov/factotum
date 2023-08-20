@@ -16,8 +16,7 @@ micromamba
 .DS_Store
 .vscode
 
-test-output/*
-!test-output/.gitkeep
+test-output/
 
 win32_python/
 darwin_python/
