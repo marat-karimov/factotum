@@ -15,7 +15,7 @@
     "server": "run-script-os",
     "server:win32": "./micromamba/envs/venv/python main.py",
     "server:nix": "./micromamba/envs/venv/bin/python main.py",
-    "build-server": "./micromamba/bin/micromamba run --prefix ./micromamba/envs/venv python setup.py build",
+    "build-server": "./micromamba/bin/micromamba run --prefix ./micromamba/envs/venv nuitka --nofollow-import-to=snappy  --include-data-file=config.json=config.json --standalone server.py",
     "test:e2e": "playwright test",
     "test:api": "NODE_ENV=development jest"
   },
