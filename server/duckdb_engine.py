@@ -30,7 +30,7 @@ READERS: Dict[str, ReaderType] = {
     'xpt': lambda path, conv: duckdb.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
     'xml': lambda path, conv: duckdb.read_csv(conv.xml_to_csv(path)),
     'sav': lambda path, conv: duckdb.read_csv(conv.spss_to_csv(path)),
-    'dta': lambda path, conv: duckdb.read_csv(conv.stata_to_csv(path)),
+    'dta': lambda path, conv: duckdb.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conv: duckdb.read_csv(conv.hdf_to_csv(path)),
     'hdf5': lambda path, conv: duckdb.read_csv(conv.hdf_to_csv(path))
 }

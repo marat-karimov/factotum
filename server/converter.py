@@ -43,7 +43,7 @@ class ReadConverter:
         temp_file_path = self._generate_temp_file_path(path)
     
         first_chunk = True
-
+        
         for chunk in read_func(path, chunksize=chunksize, **kwargs):
             chunk.to_csv(temp_file_path, mode='a', header=first_chunk, index=False)
             first_chunk = False
