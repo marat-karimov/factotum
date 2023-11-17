@@ -28,4 +28,5 @@ dependencies:
     - cx-Freeze
     - openpyxl
     - pytest
+    - requests
     - numpy==1.23.5
