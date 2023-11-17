@@ -9,9 +9,8 @@ dependencies:
   - psutil
   - sqlparse
   - sqlglot
-  - numpy
   - pyarrow
-  - pandas
+  - pandas=2.0.3
   - lxml
   - pyreadstat  
   - odfpy
@@ -28,3 +27,5 @@ dependencies:
     - duckdb
     - cx-Freeze
     - openpyxl
+    - pytest
+    - numpy==1.23.5

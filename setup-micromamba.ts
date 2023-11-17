@@ -4,6 +4,7 @@ import path from "path";
 import { execSync } from "child_process";
 
 const baseUrl = "https://micromamba.snakepit.net/api/micromamba";
+const version = "1.4.9";
 const platformArch = `${os.platform()}-${os.arch()}`;
 const inArchivePath =
   os.platform() === "win32" ? "Library/bin/micromamba.exe" : "bin/micromamba";
@@ -11,19 +12,19 @@ let url: string;
 
 switch (platformArch) {
   case "darwin-x64":
-    url = `${baseUrl}/osx-64/latest`;
+    url = `${baseUrl}/osx-64/${version}`;
     break;
   case "darwin-arm64":
-    url = `${baseUrl}/osx-arm64/latest`;
+    url = `${baseUrl}/osx-arm64/${version}`;
     break;
   case "linux-x64":
-    url = `${baseUrl}/linux-64/latest`;
+    url = `${baseUrl}/linux-64/${version}`;
     break;
   case "linux-arm64":
-    url = `${baseUrl}/linux-aarch64/latest`;
+    url = `${baseUrl}/linux-aarch64/${version}`;
     break;
   case "win32-x64":
-    url = `${baseUrl}/win-64/latest`;
+    url = `${baseUrl}/win-64/${version}`;
     break;
   default:
     throw new Error(`Unsupported platform: ${platformArch}`);
