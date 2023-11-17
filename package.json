@@ -13,8 +13,11 @@
     "setup-venv": "./micromamba/bin/micromamba create --prefix ./micromamba/envs/venv -f environment.yml -y",
     "update-venv": "./micromamba/bin/micromamba update --prefix ./micromamba/envs/venv -f environment.yml -y",
     "server": "run-script-os",
+    "server:test": "run-script-os",
     "server:win32": "./micromamba/envs/venv/python main.py",
     "server:nix": "./micromamba/envs/venv/bin/python main.py",
+    "server:test:nix": "./micromamba/envs/venv/bin/pytest -v -s",
+    "server:test:win32": "./micromamba/envs/venv/Scripts/pytest -v -s",
     "build-server": "./micromamba/bin/micromamba run --prefix ./micromamba/envs/venv python setup.py build",
     "test:e2e": "playwright test",
     "test:api": "NODE_ENV=development jest"
