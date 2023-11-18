@@ -1,6 +1,5 @@
 import pytest
 import subprocess
-import time
 import sys
 
 venv_dir = "./micromamba/envs/venv"
@@ -10,10 +9,13 @@ python_exec = f"{venv_dir}/python" if sys.platform == 'win32' else f"{venv_dir}/
 @pytest.fixture(scope="class")
 def start_server(request):
     engine = request.param
-    server = subprocess.Popen([python_exec, "main.py", engine])
+    server = subprocess.Popen(
+        [python_exec, "main.py", engine], stdout=subprocess.PIPE, text=True, bufsize=1)
 
-    # TODO: Implement a robust server readiness check here
-    time.sleep(1)
+    # Wait until server is ready
+    for line in iter(server.stdout.readline, ''):
+        if "Starting Factotum server" in line:
+            break
 
     yield server
 
