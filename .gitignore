@@ -17,6 +17,7 @@ micromamba
 .vscode
 
 test-output/
+server/tests/output/
 
 win32_python/
 darwin_python/
