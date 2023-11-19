@@ -3,9 +3,9 @@ from typing import Dict, Callable, Any
 from functools import wraps
 import ntpath
 from polars.exceptions import PolarsPanicError
-from server.validator import SqlValidator
+from server.src.validator import SqlValidator
 
-from server.engine import DataEngine
+from server.src.engine import DataEngine
 
 
 def handle_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:

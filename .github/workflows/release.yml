@@ -69,7 +69,7 @@ jobs:
 
       - name: Build server
         shell: bash
-        run: npm run build-server
+        run: npm run server:build
 
       - name: Install Wix Toolset
         if: runner.os == 'Windows'

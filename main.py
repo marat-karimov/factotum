@@ -5,13 +5,13 @@ import argparse
 import psutil
 from dataclasses import dataclass
 
-from server.http_server import CustomHTTPServer, RequestHandler
+from server.src.http_server import CustomHTTPServer, RequestHandler
 
-from server.processor import DataProcessor
-from server.validator import SqlValidator
-from server.converter import ReadConverter
-from server.duckdb_engine import DuckDBEngine
-from server.polars_engine import PolarsEngine
+from server.src.processor import DataProcessor
+from server.src.validator import SqlValidator
+from server.src.converter import ReadConverter
+from server.src.duckdb_engine import DuckDBEngine
+from server.src.polars_engine import PolarsEngine
 
 heartbeat_timeout_sec = 30
 

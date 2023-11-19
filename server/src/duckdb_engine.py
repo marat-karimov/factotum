@@ -1,12 +1,12 @@
 
 import polars as pl
-from server.engine import DataEngine
+from server.src.engine import DataEngine
 import duckdb
 from typing import Callable, Dict
-from server.converter import ReadConverter
-from server.read_config import read_formats, write_formats
+from server.src.converter import ReadConverter
+from server.src.read_config import read_formats, write_formats
 import pandavro as pdx
-from server.orc import write_orc
+from server.src.orc import write_orc
 
 WriterType = Callable[[duckdb.DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, ReadConverter], duckdb.DuckDBPyRelation]
