@@ -4,7 +4,6 @@ import shutil
 from glob import glob
 
 from .helpers.make_request import make_request
-from .helpers.start_server import start_server
 from ..src.read_config import write_formats
 
 engines = ["polars", "duckdb"]
@@ -27,18 +26,17 @@ def create_output_dir():
 
 
 @pytest.fixture(scope="class")
-def import_file_and_run_sql(start_server):
+def run_sql(import_file):
     """
-    Fixture makes file import and runs sql.
+    Fixture makes file import using import_file fixture and runs sql.
     """
-    make_request("/import_file", {"file_path": "tests/assets/test.csv"})
     make_request("/run_sql", {"sql": "select * from test"})
 
 
 @pytest.mark.parametrize("start_server", engines, indirect=True)
 class TestEngine:
     @pytest.mark.parametrize("extension", write_formats)
-    def test_export_file_endpoint(self, create_output_dir, start_server, import_file_and_run_sql, extension):
+    def test_export_file_endpoint(self, create_output_dir, start_server, run_sql, extension):
         """
         Tests the export_file endpoint.
         Asserts that there is no error in response and that the file was created.

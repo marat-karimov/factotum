@@ -2,6 +2,8 @@ import pytest
 import subprocess
 import sys
 
+from .helpers.make_request import make_request
+
 venv_dir = "./micromamba/envs/venv"
 python_exec = f"{venv_dir}/python" if sys.platform == 'win32' else f"{venv_dir}/bin/python"
 
@@ -21,3 +23,11 @@ def start_server(request):
 
     server.terminate()
     server.wait()
+
+
+@pytest.fixture(scope="class")
+def import_file(start_server):
+    """
+    Fixture makes file import.
+    """
+    make_request("/import_file", {"file_path": "tests/assets/test.csv"})
