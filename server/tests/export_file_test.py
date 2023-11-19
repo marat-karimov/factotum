@@ -5,7 +5,7 @@ from glob import glob
 
 from .helpers.make_request import make_request
 from .helpers.start_server import start_server
-from ..read_config import write_formats
+from ..src.read_config import write_formats
 
 engines = ["polars", "duckdb"]
 test_files = glob("tests/assets/test.*")

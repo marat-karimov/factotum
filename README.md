@@ -54,7 +54,7 @@ npm run setup-venv
 ### 3. Build Python Server:
 
 ```
-npm run build-server
+npm run server:build
 ```
 
 ### 4. Start Factotum:

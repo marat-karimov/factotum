@@ -4,7 +4,7 @@ import tempfile
 import shutil
 import hashlib
 import pandavro as pdx
-from server.orc import read_orc
+from server.src.orc import read_orc
 
 class ReadConverter:
     CHUNKSIZE = 50000
