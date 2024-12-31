@@ -33,7 +33,7 @@ module.exports = {
     target: [
       {
         target: "dmg",
-        arch: process.env.CI ? "x64" : "arm64",
+        arch: "arm64",
       },
     ],
     entitlements: "entitlements.mac.inherit.plist",
