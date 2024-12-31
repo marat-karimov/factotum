@@ -1,5 +1,4 @@
-from typing import List, Any
-from functools import wraps
+from typing import List
 import polars as pl
 from abc import ABC, abstractmethod
 import duckdb
@@ -40,8 +39,21 @@ class DataEngine(ABC):
         pass
 
     @staticmethod
-    def get_file_ext(file_path: str):
-        return os.path.splitext(file_path)[1].replace('.', '')
+    def get_file_ext(path: str):
+        if os.path.isdir(path):
+            extensions = set(
+                os.path.splitext(file)[1].replace('.', '') 
+                for file in os.listdir(path) 
+                if os.path.isfile(os.path.join(path, file))
+            )
+
+            extensions.discard('')
+            
+            if len(extensions) > 1:
+                raise ValueError(f"Files in the imported directory have different extensions: {extensions}")
+            return next(iter(extensions), None)
+        else:
+            return os.path.splitext(path)[1].replace('.', '')
 
     def validate_file_path(self, file_path: str, supported_formats: List[str]):
         file_extension = self.get_file_ext(file_path)

@@ -19,7 +19,7 @@ def start_server(request):
         if "Starting Factotum server" in line:
             break
 
-    yield server
+    yield {"server": server, "engine": engine}
 
     server.terminate()
     server.wait()
@@ -30,4 +30,9 @@ def import_file(start_server):
     """
     Fixture makes file import.
     """
-    make_request("/import_file", {"file_path": "tests/assets/test.csv"})
+
+    file_path = "tests/assets/test.csv"
+
+    make_request("/import_file", {"file_path": file_path})
+
+    return file_path

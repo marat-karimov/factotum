@@ -7,12 +7,13 @@ from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats
 import pandavro as pdx
 from server.src.orc import write_orc
+import os
 
 WriterType = Callable[[duckdb.DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, ReadConverter], duckdb.DuckDBPyRelation]
 
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conv: duckdb.read_csv(path, header=True),
+    'csv': lambda path, conv: duckdb.read_csv(path, header=True, filename=True),
     'tsv': lambda path, conv: duckdb.read_csv(path, header=True, sep="\t"),
     'parquet': lambda path, conv: duckdb.read_parquet(path),
     'json': lambda path, conv: duckdb.read_json(path),
@@ -94,14 +95,16 @@ class DuckDBEngine(DataEngine):
 
         return {'schema': schema, 'error': None}
 
-    def read_file(self, file_path: str) -> duckdb.DuckDBPyRelation:
+    def read_file(self, path: str) -> duckdb.DuckDBPyRelation:
         """Reads a file based on its extension."""
 
-        self.validate_file_path(file_path, read_formats)
-        file_extension = self.get_file_ext(file_path)
+        self.validate_file_path(path, read_formats)
+        file_extension = self.get_file_ext(path)
 
-        rel: duckdb.DuckDBPyRelation = READERS[file_extension](
-            file_path, self.converter)
+        if os.path.isdir(path):
+            path = os.path.join(path, f'*.{file_extension}')
+
+        rel: duckdb.DuckDBPyRelation = READERS[file_extension](path, self.converter)
 
         cols_count = len(rel.columns)
 

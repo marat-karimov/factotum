@@ -5,6 +5,7 @@ import shutil
 import hashlib
 import pandavro as pdx
 from server.src.orc import read_orc
+from glob import glob
 
 class ReadConverter:
     CHUNKSIZE = 50000
@@ -41,21 +42,39 @@ class ReadConverter:
 
     def _read_file_chunks(self, read_func, path, chunksize, **kwargs):
         temp_file_path = self._generate_temp_file_path(path)
-    
         first_chunk = True
-        
-        for chunk in read_func(path, chunksize=chunksize, **kwargs):
-            chunk.to_csv(temp_file_path, mode='a', header=first_chunk, index=False)
-            first_chunk = False
+
+        for file_path in glob(path):
+            for chunk in read_func(file_path, chunksize=chunksize, **kwargs):
+                chunk['filename'] = file_path
+                chunk.to_csv(temp_file_path, mode='a', header=first_chunk, index=False)
+                first_chunk = False
 
         return temp_file_path
 
     def _read_file_once(self, read_func, path, **kwargs):
         temp_file_path = self._generate_temp_file_path(path)
 
-        df = read_func(path, **kwargs)
-        df.to_csv(temp_file_path, index=False)
-        del df
+        first_file = True
+        cols_number_expected = None
+
+        for file_path in glob(path):
+            df: pd.DataFrame = read_func(file_path, **kwargs)
+            cols_number_actual = len(df.columns)
+
+            if cols_number_expected is None:
+                cols_number_expected = cols_number_actual
+            elif cols_number_actual != cols_number_expected:
+                os.remove(temp_file_path)
+                del df
+                raise ValueError(
+                    f"File {file_path} has a different number of columns ({cols_number_actual}) than expected ({cols_number_expected})."
+                )
+
+            df['filename'] = file_path
+            df.to_csv(temp_file_path, mode='a', header=first_file, index=False)
+            first_file = False
+            del df
 
         return temp_file_path
 
