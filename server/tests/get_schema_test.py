@@ -1,5 +1,4 @@
 import pytest
-from glob import glob
 
 from .helpers.make_request import make_request
 
@@ -14,8 +13,14 @@ class TestEngine:
         Asserts that the response matches the expected response.
         """
 
+        engine = start_server['engine']
+        expected_cols = ["col1", "col2"]
+
+        if engine == 'duckdb':
+            expected_cols.append('filename')
+
         expected_response = {
-            "schema": {"test": ["col1", "col2"]},
+            "schema": {"test": expected_cols},
             "error": None
         }
 

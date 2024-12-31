@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     outputs:
       MSI_BLOB_NAME: ${{ steps.upload_msi.outputs.MSI_BLOB_NAME }}
-      DMG_X64_BLOB_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_BLOB_NAME }}
+      DMG_ARM64_BLOB_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ steps.upload_deb.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ steps.upload_rpm.outputs.RPM_BLOB_NAME }}
     env:
@@ -35,7 +35,7 @@ jobs:
         if: runner.os == 'macOS'
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '14.2'
+          xcode-version: '15.1.0'
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -74,8 +74,8 @@ jobs:
       - name: Install Wix Toolset
         if: runner.os == 'Windows'
         run: |
-          choco install wixtoolset -y --version 3.11.2
-          echo "C:\Program Files (x86)\WiX Toolset v3.11\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
+          choco install wixtoolset -y --version 3.14.1
+          echo "C:\Program Files (x86)\WiX Toolset v3.14\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
         
       - name: Setup env variables for Windows
         if: runner.os == 'Windows'
@@ -111,7 +111,7 @@ jobs:
         run: npm run dist
 
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: trace
@@ -126,13 +126,13 @@ jobs:
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
           echo "MSI_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
-      - name: Upload DMG x64 to Azure Blob Storage
+      - name: Upload DMG arm64 to Azure Blob Storage
         if: runner.os == 'macOS'
-        id: upload_dmg_x64
+        id: upload_dmg_arm64
         run: |
-          name="${{ env.VERSION }}/Factotum-x64.dmg"
-          az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
-          echo "DMG_X64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
+          name="${{ env.VERSION }}/Factotum-arm64.dmg"
+          az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
+          echo "DMG_ARM64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DEB to Azure Blob Storage
         if: runner.os == 'Linux'
@@ -159,7 +159,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.PAT }}
       MSI_BLOB_NAME: ${{ needs.build.outputs.MSI_BLOB_NAME }}
-      DMG_X64_BLOB_NAME: ${{ needs.build.outputs.DMG_X64_BLOB_NAME }}
+      DMG_ARM64_BLOB_NAME: ${{ needs.build.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ needs.build.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ needs.build.outputs.RPM_BLOB_NAME }}
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
@@ -192,22 +192,18 @@ jobs:
       - name: Download MSI from Azure Blob Storage
         run: |
           az storage blob download --name $MSI_BLOB_NAME --file "./Factotum.msi" --container-name factotum
-          az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
 
-      - name: Download DMG x64 from Azure Blob Storage
+      - name: Download DMG arm64 from Azure Blob Storage
         run: |
-          az storage blob download --name $DMG_X64_BLOB_NAME --file "./Factotum-x64.dmg" --container-name factotum
-          az storage blob delete --name $DMG_X64_BLOB_NAME --container-name factotum
+          az storage blob download --name $DMG_ARM64_BLOB_NAME --file "./Factotum-arm64.dmg" --container-name factotum
 
       - name: Download DEB from Azure Blob Storage
         run: |
           az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64.deb" --container-name factotum
-          az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
 
       - name: Download RPM from Azure Blob Storage
         run: |
           az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64.rpm" --container-name factotum
-          az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
 
       - name: Create Release
         uses: marvinpinto/action-automatic-releases@latest
@@ -219,7 +215,7 @@ jobs:
           title: "Release ${{ env.VERSION }}"
           files: |
             ./Factotum.msi
-            ./Factotum-x64.dmg
+            ./Factotum-arm64.dmg
             ./Factotum-amd64.deb
             ./Factotum-x86_64.rpm
 
@@ -229,3 +225,10 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -am "Update version to ${{ env.VERSION }}"
           git push
+
+      - name: Delete blobs from Azure Blob Storage
+        run: |
+          az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
+          az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
+          az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
+          az storage blob delete --name $RPM_BLOB_NAME --container-name factotum

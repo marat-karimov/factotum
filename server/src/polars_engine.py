@@ -1,5 +1,6 @@
 from server.src.engine import DataEngine
 import polars as pl
+import os
 from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats
@@ -86,13 +87,16 @@ class PolarsEngine(DataEngine):
 
         return {'schema': schema, 'error': None}
 
-    def read_file(self, file_path: str) -> pl.LazyFrame:
+    def read_file(self, path: str) -> pl.LazyFrame:
         """Reads a file based on its extension."""
 
-        self.validate_file_path(file_path, read_formats)
-        file_extension = self.get_file_ext(file_path)
+        self.validate_file_path(path, read_formats)
+        file_extension = self.get_file_ext(path)
 
-        return READERS[file_extension](file_path, self.converter)
+        if os.path.isdir(path):
+            path = os.path.join(path, f'*.{file_extension}')
+
+        return READERS[file_extension](path, self.converter)
 
     def write_file(self, file_path: str, latest_query_result: pl.LazyFrame) -> dict:
         """Writes the result of the latest query to a file based on its extension."""

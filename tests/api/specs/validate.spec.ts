@@ -23,7 +23,7 @@ describe.each(engines)("Engine: %s", (engine) => {
     // Prepare SQL
     const first_statement = "select * from test2";
     const second_statement = "select * from test1";
-    const data = `--comment\n ${first_statement}; ${second_statement}`;
+    const data = `--comment\n${first_statement}; ${second_statement}`;
 
     // Make request
     const response: ValidateResponse = await makeRequest("/validate", { data });
@@ -44,7 +44,7 @@ describe.each(engines)("Engine: %s", (engine) => {
     // Prepare SQL
     const first_statement = "select * from test2";
     const second_statement = "select * from test";
-    const data = `--comment\n ${first_statement}; ${second_statement}`;
+    const data = `--comment\n${first_statement}; ${second_statement}`;
 
     // Make request
     const response: ValidateResponse = await makeRequest("/validate", { data });

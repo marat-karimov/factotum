@@ -43,6 +43,19 @@ export class MainMenu {
     this.engineSwitchHandler = engineSwitchHandler;
   }
 
+  async openFolderDialog() {
+    const result = await dialog.showOpenDialog({
+      properties: ["openDirectory"],
+    });
+  
+    if (!result.canceled) {
+      const folderPath = result.filePaths[0];
+      if (folderPath) {
+        await this.importFilesHandler(folderPath);
+      }
+    }
+  }
+
   async openFileDialog() {
     const result = await dialog.showOpenDialog({
       properties: ["openFile", "multiSelections"],
@@ -67,7 +80,16 @@ export class MainMenu {
     }
   }
 
+  
+
   buildMenu(): Electron.Menu {
+    const importFolderItem: MenuItemConstructorOptions = {
+      label: "Import folder",
+      id: "import-folder",
+      accelerator: "CmdOrCtrl+Shift+O",
+      click: () => this.openFolderDialog(),
+    };
+
     const importFilesItem: MenuItemConstructorOptions = {
       label: "Import files",
       id: "import-files",
@@ -94,7 +116,7 @@ export class MainMenu {
     const fileMenu: MenuItemConstructorOptions = {
       label: "File",
       id: "file",
-      submenu: [importFilesItem, exportSqlItem, separatorItem, quitItem],
+      submenu: [importFilesItem, importFolderItem, exportSqlItem, separatorItem, quitItem],
     };
 
     const searchItem: MenuItemConstructorOptions = {

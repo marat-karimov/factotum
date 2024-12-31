@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.10
   - nomkl
-  - polars
+  - polars=0.19.13
   - xlsx2csv
   - psutil
   - sqlparse
@@ -23,9 +23,9 @@ dependencies:
   - pyorc
   - pip
   - pip:
-    - lief
-    - duckdb
-    - cx-Freeze
+    - lief==0.13.2
+    - duckdb==0.9.2
+    - cx-Freeze==6.15.10
     - openpyxl
     - pytest
     - requests

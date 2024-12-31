@@ -14,10 +14,18 @@ class TestEngine:
         Tests the run_sql endpoint to ensure it returns valid data for a given SQL query
         """
 
-        expected_response = {'tableData': [
-            {'col1': 'val1', 'col2': 'val2'}], 'columns': ['col1', 'col2'], 'error': None}
+        engine = start_server['engine']
+
+        expected_cols = ['col1', 'col2']
+        expected_data = {'col1': 'val1', 'col2': 'val2'}
+
+        if engine == 'duckdb':
+            expected_cols.append('filename')
+            expected_data['filename'] = import_file
+
+        expected_response = {'tableData': [expected_data], 'columns': expected_cols, 'error': None}
 
         response = make_request(
-            "/run_sql", {"sql": f"select * from test limit 1"})
+            '/run_sql', {'sql': f'select * from test limit 1'})
 
         assert response == expected_response
