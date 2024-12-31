@@ -192,22 +192,18 @@ jobs:
       - name: Download MSI from Azure Blob Storage
         run: |
           az storage blob download --name $MSI_BLOB_NAME --file "./Factotum.msi" --container-name factotum
-          az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
 
       - name: Download DMG arm64 from Azure Blob Storage
         run: |
           az storage blob download --name $DMG_ARM64_BLOB_NAME --file "./Factotum-arm64.dmg" --container-name factotum
-          az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
 
       - name: Download DEB from Azure Blob Storage
         run: |
           az storage blob download --name $DEB_BLOB_NAME --file "./Factotum-amd64.deb" --container-name factotum
-          az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
 
       - name: Download RPM from Azure Blob Storage
         run: |
           az storage blob download --name $RPM_BLOB_NAME --file "./Factotum-x86_64.rpm" --container-name factotum
-          az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
 
       - name: Create Release
         uses: marvinpinto/action-automatic-releases@latest
@@ -229,3 +225,10 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -am "Update version to ${{ env.VERSION }}"
           git push
+
+      - name: Delete blobs from Azure Blob Storage
+        run: |
+          az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
+          az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
+          az storage blob delete --name $DEB_BLOB_NAME --container-name factotum
+          az storage blob delete --name $RPM_BLOB_NAME --container-name factotum
