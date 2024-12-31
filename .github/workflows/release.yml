@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     outputs:
       MSI_BLOB_NAME: ${{ steps.upload_msi.outputs.MSI_BLOB_NAME }}
-      DMG_X64_BLOB_NAME: ${{ steps.upload_dmg_x64.outputs.DMG_X64_BLOB_NAME }}
+      DMG_ARM64_BLOB_NAME: ${{ steps.upload_dmg_arm64.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ steps.upload_deb.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ steps.upload_rpm.outputs.RPM_BLOB_NAME }}
     env:
@@ -126,13 +126,13 @@ jobs:
           az storage blob upload --name $name --file "./dist/Factotum.msi" --container-name factotum --overwrite
           echo "MSI_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
-      - name: Upload DMG x64 to Azure Blob Storage
+      - name: Upload DMG arm64 to Azure Blob Storage
         if: runner.os == 'macOS'
-        id: upload_dmg_x64
+        id: upload_dmg_arm64
         run: |
-          name="${{ env.VERSION }}/Factotum-x64.dmg"
-          az storage blob upload --name $name --file "./dist/Factotum-x64.dmg" --container-name factotum --overwrite
-          echo "DMG_X64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
+          name="${{ env.VERSION }}/Factotum-arm64.dmg"
+          az storage blob upload --name $name --file "./dist/Factotum-arm64.dmg" --container-name factotum --overwrite
+          echo "DMG_ARM64_BLOB_NAME=$name" >> $GITHUB_OUTPUT
 
       - name: Upload DEB to Azure Blob Storage
         if: runner.os == 'Linux'
@@ -159,7 +159,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.PAT }}
       MSI_BLOB_NAME: ${{ needs.build.outputs.MSI_BLOB_NAME }}
-      DMG_X64_BLOB_NAME: ${{ needs.build.outputs.DMG_X64_BLOB_NAME }}
+      DMG_ARM64_BLOB_NAME: ${{ needs.build.outputs.DMG_ARM64_BLOB_NAME }}
       DEB_BLOB_NAME: ${{ needs.build.outputs.DEB_BLOB_NAME }}
       RPM_BLOB_NAME: ${{ needs.build.outputs.RPM_BLOB_NAME }}
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
@@ -194,10 +194,10 @@ jobs:
           az storage blob download --name $MSI_BLOB_NAME --file "./Factotum.msi" --container-name factotum
           az storage blob delete --name $MSI_BLOB_NAME --container-name factotum
 
-      - name: Download DMG x64 from Azure Blob Storage
+      - name: Download DMG arm64 from Azure Blob Storage
         run: |
-          az storage blob download --name $DMG_X64_BLOB_NAME --file "./Factotum-x64.dmg" --container-name factotum
-          az storage blob delete --name $DMG_X64_BLOB_NAME --container-name factotum
+          az storage blob download --name $DMG_ARM64_BLOB_NAME --file "./Factotum-arm64.dmg" --container-name factotum
+          az storage blob delete --name $DMG_ARM64_BLOB_NAME --container-name factotum
 
       - name: Download DEB from Azure Blob Storage
         run: |
@@ -219,7 +219,7 @@ jobs:
           title: "Release ${{ env.VERSION }}"
           files: |
             ./Factotum.msi
-            ./Factotum-x64.dmg
+            ./Factotum-arm64.dmg
             ./Factotum-amd64.deb
             ./Factotum-x86_64.rpm
 
