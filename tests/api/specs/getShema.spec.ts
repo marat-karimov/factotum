@@ -6,11 +6,6 @@ import { makeRequest } from "../helpers/request";
 
 const engines = ["polars", "duckdb"];
 
-const expectedResponse = {
-  schema: { test: ["col1", "col2"] },
-  error: null as null,
-};
-
 describe.each(engines)("Engine: %s", (engine) => {
   let server: ChildProcessWithoutNullStreams;
 
@@ -25,6 +20,17 @@ describe.each(engines)("Engine: %s", (engine) => {
   });
 
   test("Get schema", async () => {
+    const expectedCols = ["col1", "col2"];
+
+    if (engine == "duckdb") {
+      expectedCols.push("filename");
+    }
+
+    const expectedResponse = {
+      schema: { test: expectedCols },
+      error: null as null,
+    };
+
     const response: DataBaseSchemaResponse = await makeRequest(
       "/get_schema",
       {}
