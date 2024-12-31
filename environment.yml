@@ -25,7 +25,7 @@ dependencies:
   - pip:
     - lief
     - duckdb==0.9.2
-    - cx-Freeze
+    - cx-Freeze==6.15.10
     - openpyxl
     - pytest
     - requests
