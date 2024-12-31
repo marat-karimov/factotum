@@ -1,5 +1,4 @@
 import pytest
-from glob import glob
 
 from .helpers.make_request import make_request
 
@@ -13,7 +12,7 @@ class TestEngine:
         Tests the validate endpoint with correct sql query.
         """
 
-        sql = "--comment\n select * from test2; select * from test"
+        sql = "--comment\nselect * from test2; select * from test"
 
         response = make_request("/validate", {"data": sql})
 
@@ -27,7 +26,7 @@ class TestEngine:
         Tests the validate endpoint with wrong sql query.
         """
 
-        sql = "--comment\n select * from test2; select * from test1"
+        sql = "--comment\nselect * from test2; select * from test1"
 
         response = make_request("/validate", {"data": sql})
 
