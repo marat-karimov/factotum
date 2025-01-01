@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
+      fail-fast: false
     runs-on: ${{ matrix.os }}
     outputs:
       MSI_BLOB_NAME: ${{ steps.upload_msi.outputs.MSI_BLOB_NAME }}
