@@ -1,46 +1,48 @@
 
-import polars as pl
-from server.src.engine import DataEngine
+import os
 import duckdb
+import polars as pl
+import pandavro as pdx
+from server.src.engine import DataEngine
+from duckdb import DuckDBPyRelation, DuckDBPyConnection
 from typing import Callable, Dict
 from server.src.converter import ReadConverter
-from server.src.read_config import read_formats, write_formats
-import pandavro as pdx
+from server.src.read_config import read_formats, write_formats, filename_column
 from server.src.orc import write_orc
-import os
 
-WriterType = Callable[[duckdb.DuckDBPyRelation, str], None]
-ReaderType = Callable[[str, ReadConverter], duckdb.DuckDBPyRelation]
+
+WriterType = Callable[[DuckDBPyRelation, str], None]
+ReaderType = Callable[[str, DuckDBPyConnection, ReadConverter], DuckDBPyRelation]
 
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conv: duckdb.read_csv(path, header=True, filename=True),
-    'tsv': lambda path, conv: duckdb.read_csv(path, header=True, sep="\t"),
-    'parquet': lambda path, conv: duckdb.read_parquet(path),
-    'json': lambda path, conv: duckdb.read_json(path),
-    'avro': lambda path, conv: duckdb.read_csv(conv.avro_to_csv(path)),
-    'orc': lambda path, conv: duckdb.read_csv(conv.orc_to_csv(path)),
-    'xlsx': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'xls': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'xlsm': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'xlsb': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'odf': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'ods': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'odt': lambda path, conv: duckdb.read_csv(conv.excel_to_csv(path)),
-    'feather': lambda path, conv: duckdb.read_csv(conv.feather_to_csv(path)),
-    'sas7bdat': lambda path, conv: duckdb.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xpt': lambda path, conv: duckdb.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xml': lambda path, conv: duckdb.read_csv(conv.xml_to_csv(path)),
-    'sav': lambda path, conv: duckdb.read_csv(conv.spss_to_csv(path)),
-    'dta': lambda path, conv: duckdb.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
-    'h5': lambda path, conv: duckdb.read_csv(conv.hdf_to_csv(path)),
-    'hdf5': lambda path, conv: duckdb.read_csv(conv.hdf_to_csv(path))
+    'csv': lambda path, conn, conv: conn.read_csv(path, header=True, filename=filename_column),
+    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t"),
+    'parquet': lambda path, conn, conv: conn.read_parquet(path),
+    'json': lambda path, conn, conv: conn.read_json(path),
+    'avro': lambda path, conn, conv: conn.read_csv(conv.avro_to_csv(path)),
+    'orc': lambda path, conn, conv: conn.read_csv(conv.orc_to_csv(path)),
+    'xlsx': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'xls': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'xlsm': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'xlsb': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'odf': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'ods': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'odt': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
+    'feather': lambda path, conn, conv: conn.read_csv(conv.feather_to_csv(path)),
+    'sas7bdat': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xml': lambda path, conn, conv: conn.read_csv(conv.xml_to_csv(path)),
+    'sav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
+    'dta': lambda path, conn, conv: conn.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
+    'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
+    'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
     'csv': lambda rel, path: rel.write_csv(path, header=True),
     'tsv': lambda rel, path: rel.write_csv(path, header=True, sep="\t"),
     'parquet': lambda rel, path: rel.write_parquet(path),
-    'json': lambda rel, path: rel.pl().write_json(path, row_oriented=True),
+    'json': lambda rel, path: rel.pl().write_json(path),
     'xlsx': lambda rel, path: rel.pl().write_excel(path),
     'avro': lambda rel, path: pdx.to_avro(path, rel.to_df()),
     'orc': lambda rel, path: write_orc(path, rel.to_df()),
@@ -68,13 +70,13 @@ class DuckDBEngine(DataEngine):
         self.UNSUPPORTED_STATEMENTS = []
         self.UNSUPPORTED_EXPRESSIONS = []
 
-    def register(self, name: str, df: duckdb.DuckDBPyRelation):
+    def register(self, name: str, df: DuckDBPyRelation):
         self.ctx.register(name, df)
 
     def sql(self, query: str):
-        return duckdb.sql(query)
+        return self.ctx.sql(query)
 
-    def is_empty(self, lazyframe: duckdb.DuckDBPyRelation) -> bool:
+    def is_empty(self, lazyframe: DuckDBPyRelation) -> bool:
         return True if not lazyframe else False
 
     def get_schema(self):
@@ -95,7 +97,7 @@ class DuckDBEngine(DataEngine):
 
         return {'schema': schema, 'error': None}
 
-    def read_file(self, path: str) -> duckdb.DuckDBPyRelation:
+    def read_file(self, path: str) -> DuckDBPyRelation:
         """Reads a file based on its extension."""
 
         self.validate_file_path(path, read_formats)
@@ -104,17 +106,11 @@ class DuckDBEngine(DataEngine):
         if os.path.isdir(path):
             path = os.path.join(path, f'*.{file_extension}')
 
-        rel: duckdb.DuckDBPyRelation = READERS[file_extension](path, self.converter)
-
-        cols_count = len(rel.columns)
-
-        if cols_count > 100:
-            raise Exception(
-                f"At the moment, duckdb can't process tables more than 100 columns wide. Use polars engine to import this file")
+        rel: DuckDBPyRelation = READERS[file_extension](path, self.ctx, self.converter)
 
         return rel
 
-    def write_file(self, file_path: str, latest_query_result: duckdb.DuckDBPyRelation) -> dict:
+    def write_file(self, file_path: str, latest_query_result: DuckDBPyRelation) -> dict:
         """Writes the result of the latest query to a file based on its extension."""
        
         self.validate_file_path(file_path, write_formats)
@@ -124,6 +120,6 @@ class DuckDBEngine(DataEngine):
 
         return {'error': None}
 
-    def to_dataframe(self, max_rows: int, max_cols: int, lf: duckdb.DuckDBPyRelation) -> pl.DataFrame:
+    def to_dataframe(self, max_rows: int, max_cols: int, lf: DuckDBPyRelation) -> pl.DataFrame:
         cols_to_display = lf.columns[0: max_cols]
         return lf.limit(max_rows).pl().select(cols_to_display)

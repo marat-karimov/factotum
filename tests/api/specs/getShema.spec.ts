@@ -3,6 +3,7 @@ import { waitForServerToStart, closeServer } from "../helpers/server";
 import { ChildProcessWithoutNullStreams } from "child_process";
 import { DataBaseSchemaResponse, Engine } from "../../../src/types/types";
 import { makeRequest } from "../helpers/request";
+import { filenameColumn } from "../../../src/main/loadConfig";
 
 const engines = ["polars", "duckdb"];
 
@@ -20,12 +21,8 @@ describe.each(engines)("Engine: %s", (engine) => {
   });
 
   test("Get schema", async () => {
-    const expectedCols = ["col1", "col2"];
-
-    if (engine == "duckdb") {
-      expectedCols.push("filename");
-    }
-
+    const expectedCols = ["col1", "col2", filenameColumn];
+    
     const expectedResponse = {
       schema: { test: expectedCols },
       error: null as null,

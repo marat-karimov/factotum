@@ -35,7 +35,11 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 const defaultEngine: Engine = "polars";
-const server = spawnPythonProcess(defaultEngine);
+
+const server =
+  process.env.NODE_ENV === "development"
+    ? null
+    : spawnPythonProcess(defaultEngine);
 
 const handleSearch = async (mainWindow: BrowserWindow) => {
   sendRenderSearchBox(mainWindow);
@@ -60,7 +64,7 @@ app.whenReady().then(() => {
       message: messages.welcome,
       kind: "info",
     });
-    sendRefreshMenu(mainWindow)
+    sendRefreshMenu(mainWindow);
     sendRenderCurrentEngine(mainWindow, defaultEngine);
   });
 
@@ -96,13 +100,17 @@ app.whenReady().then(() => {
       clipboard.writeText(data);
     }
   );
-  ipcMain.on(FromRendererToMain.SearchBoxHidden, () => unregisterEsc(mainWindow));
+  ipcMain.on(FromRendererToMain.SearchBoxHidden, () =>
+    unregisterEsc(mainWindow)
+  );
 
-  server.stdout.on("data", (data) => {
-    if (data.toString().includes("Starting Factotum server")) {
-      heartbeat.startSendingHeartbeats();
-    }
-  });
+  if (server) {
+    server.stdout.on("data", (data) => {
+      if (data.toString().includes("Starting Factotum server")) {
+        heartbeat.startSendingHeartbeats();
+      }
+    });
+  }
 });
 
 app.on("activate", function () {

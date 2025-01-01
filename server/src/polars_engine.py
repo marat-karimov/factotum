@@ -3,7 +3,7 @@ import polars as pl
 import os
 from typing import Callable, Dict
 from server.src.converter import ReadConverter
-from server.src.read_config import read_formats, write_formats
+from server.src.read_config import read_formats, write_formats, filename_column
 import pandavro as pdx
 from server.src.orc import write_orc
 
@@ -11,9 +11,11 @@ WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
 
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conv: pl.scan_csv(path, ignore_errors=True),
-    'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t"),
-    'parquet': lambda path, conv: pl.scan_parquet(path),
+    'csv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, include_file_paths=filename_column,
+                                          try_parse_dates=True),
+    'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t", include_file_paths=filename_column,
+                                          try_parse_dates=True),
+    'parquet': lambda path, conv: pl.scan_parquet(path, include_file_paths=filename_column),
     'json': lambda path, conv: pl.read_json(path),
     'avro': lambda path, conv: pl.scan_csv(conv.avro_to_csv(path)),
     'orc': lambda path, conv: pl.scan_csv(conv.orc_to_csv(path)),
@@ -38,7 +40,7 @@ WRITERS: Dict[str, WriterType] = {
     'csv': lambda result, path: result.write_csv(path),
     'tsv': lambda result, path: result.write_csv(path, separator="\t"),
     'parquet': lambda result, path: result.write_parquet(path),
-    'json': lambda result, path: result.write_json(path, row_oriented=True),
+    'json': lambda result, path: result.write_json(path),
     'xlsx': lambda result, path: result.write_excel(path),
     'avro': lambda result, path: pdx.to_avro(path, result.to_pandas()),
     'orc': lambda result, path: write_orc(path, result.to_pandas()),
@@ -73,7 +75,7 @@ class PolarsEngine(DataEngine):
         return self.ctx.execute(query, eager=False)
 
     def is_empty(self, lazyframe: pl.LazyFrame) -> bool:
-        return False if len(lazyframe.columns) > 0 else True
+        return False if len(lazyframe.collect_schema().names()) > 0 else True
 
     def get_schema(self):
         """Returns the schema of all tables in the SQL context."""
@@ -112,4 +114,4 @@ class PolarsEngine(DataEngine):
         return {'error': None}
 
     def to_dataframe(self, max_rows: int, max_cols: int, lf: pl.LazyFrame) -> pl.DataFrame:
-        return lf.select(lf.columns[0: max_cols]).limit(max_rows).collect()
+        return lf.select(lf.collect_schema().names()[0: max_cols]).limit(max_rows).collect()

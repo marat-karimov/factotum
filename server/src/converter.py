@@ -5,6 +5,7 @@ import shutil
 import hashlib
 import pandavro as pdx
 from server.src.orc import read_orc
+from server.src.read_config import filename_column
 from glob import glob
 
 class ReadConverter:
@@ -46,7 +47,7 @@ class ReadConverter:
 
         for file_path in glob(path):
             for chunk in read_func(file_path, chunksize=chunksize, **kwargs):
-                chunk['filename'] = file_path
+                chunk[filename_column] = file_path
                 chunk.to_csv(temp_file_path, mode='a', header=first_chunk, index=False)
                 first_chunk = False
 
@@ -71,7 +72,7 @@ class ReadConverter:
                     f"File {file_path} has a different number of columns ({cols_number_actual}) than expected ({cols_number_expected})."
                 )
 
-            df['filename'] = file_path
+            df[filename_column] = file_path
             df.to_csv(temp_file_path, mode='a', header=first_file, index=False)
             first_file = False
             del df
