@@ -56,6 +56,7 @@ WRITERS: Dict[str, WriterType] = {
     'xpt': lambda result, path: write_xpt(path, result.to_pandas()),
     'sav': lambda result, path: write_sav(path, result.to_pandas()),
     'zsav': lambda result, path: write_zsav(path, result.to_pandas()),
+    'ods': lambda result, path: result.to_pandas().to_excel(path, index=False, engine="odf"),
 }
 
 assert set(read_formats) == set(READERS.keys()), \

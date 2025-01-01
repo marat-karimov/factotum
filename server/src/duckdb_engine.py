@@ -45,7 +45,7 @@ WRITERS: Dict[str, WriterType] = {
     'tsv': lambda rel, path: rel.write_csv(path, header=True, sep="\t"),
     'parquet': lambda rel, path: rel.write_parquet(path),
     'json': lambda rel, path: rel.pl().write_json(path),
-    'xlsx': lambda rel, path: rel.pl().write_excel(path),
+    'xlsx': lambda rel, path: rel.to_df().to_excel(path, index=False),
     'avro': lambda rel, path: pdx.to_avro(path, rel.to_df()),
     'orc': lambda rel, path: write_orc(path, rel.to_df()),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
@@ -57,6 +57,7 @@ WRITERS: Dict[str, WriterType] = {
     'xpt': lambda rel, path: write_xpt(path, rel.to_df()),
     'sav': lambda rel, path: write_sav(path, rel.to_df()),
     'zsav': lambda rel, path: write_zsav(path, rel.to_df()),
+    'ods': lambda rel, path: rel.to_df().to_excel(path, index=False, engine="odf"),
 }
 
 assert set(read_formats) == set(READERS.keys()), \
