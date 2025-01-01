@@ -30,7 +30,7 @@ class DataProcessor:
     MAX_ROWS_TO_DISPLAY = 100000
     MAX_COLS_TO_DISPLAY = 200
 
-    def __init__(self, engine: DataEngine, validator: SqlValidator ):
+    def __init__(self, engine: DataEngine, validator: SqlValidator):
         self.engine = engine
         self.validator = validator
         self.latest_query_result = None
@@ -44,6 +44,9 @@ class DataProcessor:
             return True
 
         if not identifier.replace('_', '').isalnum() or ' ' in identifier:
+            return True
+
+        if identifier[0].isdigit() or identifier[-1].isdigit():
             return True
 
         return False
