@@ -1,6 +1,7 @@
 import pytest
 
 from .helpers.make_request import make_request
+from server.src.read_config import filename_column
 
 engines = ["polars", "duckdb"]
 
@@ -17,7 +18,7 @@ class TestEngine:
         expected_cols = ["col1", "col2"]
 
         if engine == 'duckdb':
-            expected_cols.append('filename')
+            expected_cols.append(filename_column)
 
         expected_response = {
             "schema": {"test": expected_cols},

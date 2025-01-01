@@ -13,3 +13,4 @@ with open(config_path, "r") as file:
 
 read_formats = [ext for file in data["read_files"] for ext in file["extensions"] if ext != '*']
 write_formats = [ext for file in data["write_files"] for ext in file["extensions"] if ext != '*']
+filename_column = data["filename_column"]

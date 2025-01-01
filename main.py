@@ -13,7 +13,8 @@ from server.src.converter import ReadConverter
 from server.src.duckdb_engine import DuckDBEngine
 from server.src.polars_engine import PolarsEngine
 
-heartbeat_timeout_sec = 30
+development = os.getenv('NODE_ENV') == 'development'
+heartbeat_timeout_sec = 9999 if development else 30
 
 
 @dataclass
@@ -103,7 +104,7 @@ def get_cli_args():
     parser = argparse.ArgumentParser(
         description="Factotum server configuration")
     parser.add_argument('engine', type=str, choices=[
-                        'duckdb', 'polars'], help="Choose the data processing engine")
+        'duckdb', 'polars'], help="Choose the data processing engine")
     return parser.parse_args()
 
 

@@ -5,7 +5,7 @@
   "description": "SQL powered tabular data viewer and editor",
   "main": ".webpack/main",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "NODE_ENV=development npm run server -- $ENGINE & electron-forge start",
     "pack": "electron-forge package && electron-builder --dir -c.mac.identity=null --publish never --config electron-builder.config.js",
     "dist": "electron-forge package && electron-builder --publish never --config electron-builder.config.js",
     "lint": "eslint --ext .ts,.tsx .",
@@ -20,7 +20,7 @@
     "server:test:win32": "./micromamba/envs/venv/Scripts/pytest -v -s",
     "server:build": "./micromamba/bin/micromamba run --prefix ./micromamba/envs/venv python setup.py build",
     "test:e2e": "playwright test",
-    "test:api": "NODE_ENV=development jest"
+    "test:api": "NODE_ENV=test jest"
   },
   "keywords": [],
   "author": {

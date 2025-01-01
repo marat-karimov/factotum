@@ -32,7 +32,7 @@ function resolvePyExecPath() {
   const pyExecName = platform === "win32" ? "Factotum.exe" : "Factotum";
   const pyExecDir = platform + "_python";
   const pyExecPath =
-    process.env.NODE_ENV === "development"
+    process.env.NODE_ENV === "test"
       ? join(__dirname, `../../${pyExecDir}`, pyExecName)
       : join(process.resourcesPath, pyExecDir, pyExecName);
 

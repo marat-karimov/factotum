@@ -1,8 +1,6 @@
 import pytest
-import os
-from glob import glob
-
 from .helpers.make_request import make_request
+from server.src.read_config import filename_column
 
 engines = ["polars", "duckdb"]
 
@@ -20,8 +18,8 @@ class TestEngine:
         expected_data = {'col1': 'val1', 'col2': 'val2'}
 
         if engine == 'duckdb':
-            expected_cols.append('filename')
-            expected_data['filename'] = import_file
+            expected_cols.append(filename_column)
+            expected_data[filename_column] = import_file
 
         expected_response = {'tableData': [expected_data], 'columns': expected_cols, 'error': None}
 
