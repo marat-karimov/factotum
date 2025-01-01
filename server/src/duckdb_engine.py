@@ -16,9 +16,9 @@ ReaderType = Callable[[str, DuckDBPyConnection, ReadConverter], DuckDBPyRelation
 
 READERS: Dict[str, ReaderType] = {
     'csv': lambda path, conn, conv: conn.read_csv(path, header=True, filename=filename_column),
-    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t"),
+    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t", filename=filename_column),
     'parquet': lambda path, conn, conv: conn.read_parquet(path),
-    'json': lambda path, conn, conv: conn.read_json(path),
+    'json': lambda path, conn, conv: conn.read_json(path, filename=filename_column),
     'avro': lambda path, conn, conv: conn.read_csv(conv.avro_to_csv(path)),
     'orc': lambda path, conn, conv: conn.read_csv(conv.orc_to_csv(path)),
     'xlsx': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
