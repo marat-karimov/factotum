@@ -58,6 +58,7 @@ WRITERS: Dict[str, WriterType] = {
     'sav': lambda rel, path: write_sav(path, rel.to_df()),
     'zsav': lambda rel, path: write_zsav(path, rel.to_df()),
     'ods': lambda rel, path: rel.to_df().to_excel(path, index=False, engine="odf"),
+    'html': lambda rel, path: rel.to_df().to_html(path, index=False),
 }
 
 assert set(read_formats) == set(READERS.keys()), \
