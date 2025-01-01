@@ -9,6 +9,7 @@ from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 from server.src.orc import write_orc
+from server.src.stat import write_por
 
 
 WriterType = Callable[[DuckDBPyRelation, str], None]
@@ -35,7 +36,8 @@ READERS: Dict[str, ReaderType] = {
     'sav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
     'dta': lambda path, conn, conv: conn.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
-    'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path))
+    'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
+    'por': lambda path, conn, conv: conn.read_csv(conv.por_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -51,6 +53,7 @@ WRITERS: Dict[str, WriterType] = {
     'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),
     'h5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'hdf5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
+    'por': lambda rel, path: write_por(path, rel.to_df()),
 }
 
 assert set(read_formats) == set(READERS.keys()), \
@@ -115,6 +118,9 @@ class DuckDBEngine(DataEngine):
        
         self.validate_file_path(file_path, write_formats)
         file_extension = self.get_file_ext(file_path)
+
+        columns = latest_query_result.columns
+        latest_query_result = latest_query_result.project(*[x for x in columns if x != filename_column])
 
         WRITERS[file_extension](latest_query_result, file_path)
 

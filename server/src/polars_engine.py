@@ -6,6 +6,7 @@ from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 import pandavro as pdx
 from server.src.orc import write_orc
+from server.src.stat import write_por
 
 WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
@@ -33,7 +34,8 @@ READERS: Dict[str, ReaderType] = {
     'sav': lambda path, conv: pl.scan_csv(conv.spss_to_csv(path)),
     'dta': lambda path, conv: pl.scan_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
-    'hdf5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path))
+    'hdf5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
+    'por': lambda path, conv: pl.scan_csv(conv.por_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -49,6 +51,7 @@ WRITERS: Dict[str, WriterType] = {
     'dta': lambda result, path: result.to_pandas().to_stata(path, write_index=False),
     'h5': lambda result, path: result.to_pandas().to_hdf(path, key='s', index=False),
     'hdf5': lambda result, path: result.to_pandas().to_hdf(path, key='s', index=False),
+    'por': lambda result, path: write_por(path, result.to_pandas()),
 }
 
 assert set(read_formats) == set(READERS.keys()), \
@@ -102,6 +105,7 @@ class PolarsEngine(DataEngine):
 
     def write_file(self, file_path: str, latest_query_result: pl.LazyFrame) -> dict:
         """Writes the result of the latest query to a file based on its extension."""
+        latest_query_result = latest_query_result.drop(filename_column, strict=False)
 
         df = latest_query_result.collect(streaming=True)
 
