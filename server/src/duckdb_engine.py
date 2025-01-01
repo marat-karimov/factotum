@@ -9,8 +9,7 @@ from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 from server.src.orc import write_orc
-from server.src.stat import write_por
-
+from server.src.pyreadstat_wrapper import write_por, write_xpt, write_sav, write_zsav
 
 WriterType = Callable[[DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, DuckDBPyConnection, ReadConverter], DuckDBPyRelation]
@@ -31,9 +30,10 @@ READERS: Dict[str, ReaderType] = {
     'odt': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
     'feather': lambda path, conn, conv: conn.read_csv(conv.feather_to_csv(path)),
     'sas7bdat': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xpt': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conn, conv: conn.read_csv(conv.xpt_to_csv(path)),
     'xml': lambda path, conn, conv: conn.read_csv(conv.xml_to_csv(path)),
     'sav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
+    'zsav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
     'dta': lambda path, conn, conv: conn.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
     'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
@@ -54,6 +54,9 @@ WRITERS: Dict[str, WriterType] = {
     'h5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'hdf5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'por': lambda rel, path: write_por(path, rel.to_df()),
+    'xpt': lambda rel, path: write_xpt(path, rel.to_df()),
+    'sav': lambda rel, path: write_sav(path, rel.to_df()),
+    'zsav': lambda rel, path: write_zsav(path, rel.to_df()),
 }
 
 assert set(read_formats) == set(READERS.keys()), \

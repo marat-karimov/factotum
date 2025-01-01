@@ -12,7 +12,7 @@
         { "name": "Feather", "extensions": ["feather"] },
         { "name": "Statistical Analysis System(SAS)", "extensions": ["sas7bdat", "xpt"] },
         { "name": "Extensible Markup Language(XML)", "extensions": ["xml"] },
-        { "name": "Statistical Package for the Social Sciences(SPSS)", "extensions": ["sav", "por"] },
+        { "name": "Statistical Package for the Social Sciences(SPSS)", "extensions": ["zsav", "sav", "por"] },
         { "name": "Stata Data Format", "extensions": ["dta"] },
         { "name": "Hierarchical Data Format (HDF)", "extensions": ["h5", "hdf5"] }    
       ],
@@ -28,7 +28,8 @@
         { "name": "Extensible Markup Language", "extensions": ["xml"] },
         { "name": "Stata Data Format", "extensions": ["dta"] },
         { "name": "Hierarchical Data Format (HDF)", "extensions": ["h5", "hdf5"] },
-        { "name": "Statistical Package for the Social Sciences(SPSS)", "extensions": ["por"] }
+        { "name": "Statistical Package for the Social Sciences(SPSS)", "extensions": ["zsav", "sav", "por"] },
+        { "name": "Statistical Analysis System(SAS)", "extensions": ["xpt"] }
       ],
       "filename_column": "_factotum_filename"
   }

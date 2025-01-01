@@ -5,7 +5,7 @@ import shutil
 import hashlib
 import pandavro as pdx
 from server.src.orc import read_orc
-from server.src.stat import read_por
+from server.src.pyreadstat_wrapper import read_por, read_xpt
 from server.src.read_config import filename_column
 from glob import glob
 
@@ -44,6 +44,10 @@ class ReadConverter:
     
     def por_to_csv(self, path, **kwargs):
         return self._read_file_once(read_por, path, **kwargs)
+    
+    def xpt_to_csv(self, path, **kwargs):
+        return self._read_file_once(read_xpt, path, **kwargs)
+    
 
     def _read_file_chunks(self, read_func, path, chunksize, **kwargs):
         temp_file_path = self._generate_temp_file_path(path)

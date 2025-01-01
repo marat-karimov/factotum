@@ -6,7 +6,7 @@ from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 import pandavro as pdx
 from server.src.orc import write_orc
-from server.src.stat import write_por
+from server.src.pyreadstat_wrapper import write_por, write_xpt, write_zsav, write_sav
 
 WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
@@ -29,9 +29,10 @@ READERS: Dict[str, ReaderType] = {
     'odt': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
     'feather': lambda path, conv: pl.scan_csv(conv.feather_to_csv(path)),
     'sas7bdat': lambda path, conv: pl.scan_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xpt': lambda path, conv: pl.scan_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conv: pl.scan_csv(conv.xpt_to_csv(path)),
     'xml': lambda path, conv: pl.scan_csv(conv.xml_to_csv(path)),
     'sav': lambda path, conv: pl.scan_csv(conv.spss_to_csv(path)),
+    'zsav': lambda path, conv: pl.scan_csv(conv.spss_to_csv(path)),
     'dta': lambda path, conv: pl.scan_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
     'hdf5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
@@ -52,6 +53,9 @@ WRITERS: Dict[str, WriterType] = {
     'h5': lambda result, path: result.to_pandas().to_hdf(path, key='s', index=False),
     'hdf5': lambda result, path: result.to_pandas().to_hdf(path, key='s', index=False),
     'por': lambda result, path: write_por(path, result.to_pandas()),
+    'xpt': lambda result, path: write_xpt(path, result.to_pandas()),
+    'sav': lambda result, path: write_sav(path, result.to_pandas()),
+    'zsav': lambda result, path: write_zsav(path, result.to_pandas()),
 }
 
 assert set(read_formats) == set(READERS.keys()), \
