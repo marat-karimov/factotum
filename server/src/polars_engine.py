@@ -38,7 +38,7 @@ WRITERS: Dict[str, WriterType] = {
     'csv': lambda result, path: result.write_csv(path),
     'tsv': lambda result, path: result.write_csv(path, separator="\t"),
     'parquet': lambda result, path: result.write_parquet(path),
-    'json': lambda result, path: result.write_json(path, row_oriented=True),
+    'json': lambda result, path: result.write_json(path),
     'xlsx': lambda result, path: result.write_excel(path),
     'avro': lambda result, path: pdx.to_avro(path, result.to_pandas()),
     'orc': lambda result, path: write_orc(path, result.to_pandas()),
@@ -73,7 +73,7 @@ class PolarsEngine(DataEngine):
         return self.ctx.execute(query, eager=False)
 
     def is_empty(self, lazyframe: pl.LazyFrame) -> bool:
-        return False if len(lazyframe.columns) > 0 else True
+        return False if len(lazyframe.collect_schema().names()) > 0 else True
 
     def get_schema(self):
         """Returns the schema of all tables in the SQL context."""
@@ -112,4 +112,4 @@ class PolarsEngine(DataEngine):
         return {'error': None}
 
     def to_dataframe(self, max_rows: int, max_cols: int, lf: pl.LazyFrame) -> pl.DataFrame:
-        return lf.select(lf.columns[0: max_cols]).limit(max_rows).collect()
+        return lf.select(lf.collect_schema().names()[0: max_cols]).limit(max_rows).collect()

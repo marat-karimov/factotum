@@ -2,7 +2,6 @@ import os
 from typing import Dict, Callable, Any
 from functools import wraps
 import ntpath
-from polars.exceptions import PolarsPanicError
 from server.src.validator import SqlValidator
 
 from server.src.engine import DataEngine
@@ -15,7 +14,7 @@ def handle_exceptions(func: Callable[..., Any]) -> Callable[..., Any]:
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except (Exception, PolarsPanicError) as e:
+        except (Exception) as e:
             error_message = f"Error in {func.__name__}: {str(e)}"
             if func.__name__ in ['export_file', 'import_file', 'run_sql']:
                 return {'error': error_message}

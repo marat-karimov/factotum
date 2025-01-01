@@ -4,7 +4,7 @@ channels:
 dependencies:
   - python=3.10
   - nomkl
-  - polars=0.19.13
+  - polars=1.17.1
   - xlsx2csv
   - psutil
   - sqlparse
