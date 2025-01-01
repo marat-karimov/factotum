@@ -3,7 +3,7 @@ import polars as pl
 import os
 from typing import Callable, Dict
 from server.src.converter import ReadConverter
-from server.src.read_config import read_formats, write_formats
+from server.src.read_config import read_formats, write_formats, filename_column
 import pandavro as pdx
 from server.src.orc import write_orc
 
@@ -11,9 +11,11 @@ WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
 
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conv: pl.scan_csv(path, ignore_errors=True),
-    'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t"),
-    'parquet': lambda path, conv: pl.scan_parquet(path),
+    'csv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, include_file_paths=filename_column,
+                                          try_parse_dates=True),
+    'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t", include_file_paths=filename_column,
+                                          try_parse_dates=True),
+    'parquet': lambda path, conv: pl.scan_parquet(path, include_file_paths=filename_column),
     'json': lambda path, conv: pl.read_json(path),
     'avro': lambda path, conv: pl.scan_csv(conv.avro_to_csv(path)),
     'orc': lambda path, conv: pl.scan_csv(conv.orc_to_csv(path)),

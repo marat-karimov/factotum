@@ -14,11 +14,7 @@ class TestEngine:
         Asserts that the response matches the expected response.
         """
 
-        engine = start_server['engine']
-        expected_cols = ["col1", "col2"]
-
-        if engine == 'duckdb':
-            expected_cols.append(filename_column)
+        expected_cols = ["col1", "col2", filename_column]
 
         expected_response = {
             "schema": {"test": expected_cols},

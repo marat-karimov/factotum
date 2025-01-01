@@ -12,14 +12,8 @@ class TestEngine:
         Tests the run_sql endpoint to ensure it returns valid data for a given SQL query
         """
 
-        engine = start_server['engine']
-
-        expected_cols = ['col1', 'col2']
-        expected_data = {'col1': 'val1', 'col2': 'val2'}
-
-        if engine == 'duckdb':
-            expected_cols.append(filename_column)
-            expected_data[filename_column] = import_file
+        expected_cols = ['col1', 'col2', filename_column]
+        expected_data = {'col1': 'val1', 'col2': 'val2', filename_column: import_file}
 
         expected_response = {'tableData': [expected_data], 'columns': expected_cols, 'error': None}
 

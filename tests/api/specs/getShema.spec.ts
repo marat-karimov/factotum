@@ -21,12 +21,8 @@ describe.each(engines)("Engine: %s", (engine) => {
   });
 
   test("Get schema", async () => {
-    const expectedCols = ["col1", "col2"];
-
-    if (engine == "duckdb") {
-      expectedCols.push(filenameColumn);
-    }
-
+    const expectedCols = ["col1", "col2", filenameColumn];
+    
     const expectedResponse = {
       schema: { test: expectedCols },
       error: null as null,
