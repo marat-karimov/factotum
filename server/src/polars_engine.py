@@ -5,38 +5,49 @@ from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 import pandavro as pdx
-from server.src.orc import write_orc
+from server.src.pyorc_wrapper import write_orc
 from server.src.pyreadstat_wrapper import write_por, write_xpt, write_zsav, write_sav
 
 WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
 
+
+def pl_scan_csv(path, ignore_errors=True,
+                include_file_paths=None,
+                try_parse_dates=True,
+                separator=","):
+    return pl.scan_csv(source=path,
+                       ignore_errors=ignore_errors,
+                       include_file_paths=include_file_paths,
+                       try_parse_dates=try_parse_dates,
+                       separator=separator)
+
+
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, include_file_paths=filename_column,
-                                          try_parse_dates=True),
-    'tsv': lambda path, conv: pl.scan_csv(path, ignore_errors=True, separator="\t", include_file_paths=filename_column,
-                                          try_parse_dates=True),
+    'csv': lambda path, conv: pl_scan_csv(path, include_file_paths=filename_column),
+    'tsv': lambda path, conv: pl_scan_csv(path, separator="\t", include_file_paths=filename_column),
     'parquet': lambda path, conv: pl.scan_parquet(path, include_file_paths=filename_column),
     'json': lambda path, conv: pl.read_json(path),
-    'avro': lambda path, conv: pl.scan_csv(conv.avro_to_csv(path)),
-    'orc': lambda path, conv: pl.scan_csv(conv.orc_to_csv(path)),
-    'xlsx': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'xls': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'xlsm': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'xlsb': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'odf': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'ods': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'odt': lambda path, conv: pl.scan_csv(conv.excel_to_csv(path)),
-    'feather': lambda path, conv: pl.scan_csv(conv.feather_to_csv(path)),
-    'sas7bdat': lambda path, conv: pl.scan_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xpt': lambda path, conv: pl.scan_csv(conv.xpt_to_csv(path)),
-    'xml': lambda path, conv: pl.scan_csv(conv.xml_to_csv(path)),
-    'sav': lambda path, conv: pl.scan_csv(conv.spss_to_csv(path)),
-    'zsav': lambda path, conv: pl.scan_csv(conv.spss_to_csv(path)),
-    'dta': lambda path, conv: pl.scan_csv(conv.stata_to_csv(path, convert_categoricals=False)),
-    'h5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
-    'hdf5': lambda path, conv: pl.scan_csv(conv.hdf_to_csv(path)),
-    'por': lambda path, conv: pl.scan_csv(conv.por_to_csv(path))
+    'avro': lambda path, conv: pl_scan_csv(conv.avro_to_csv(path)),
+    'orc': lambda path, conv: pl_scan_csv(conv.orc_to_csv(path)),
+    'xlsx': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'xls': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'xlsm': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'xlsb': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'odf': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'ods': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'odt': lambda path, conv: pl_scan_csv(conv.excel_to_csv(path)),
+    'feather': lambda path, conv: pl_scan_csv(conv.feather_to_csv(path)),
+    'sas7bdat': lambda path, conv: pl_scan_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conv: pl_scan_csv(conv.xpt_to_csv(path)),
+    'xml': lambda path, conv: pl_scan_csv(conv.xml_to_csv(path)),
+    'sav': lambda path, conv: pl_scan_csv(conv.spss_to_csv(path)),
+    'zsav': lambda path, conv: pl_scan_csv(conv.spss_to_csv(path)),
+    'dta': lambda path, conv: pl_scan_csv(conv.stata_to_csv(path, convert_categoricals=False)),
+    'h5': lambda path, conv: pl_scan_csv(conv.hdf_to_csv(path)),
+    'hdf5': lambda path, conv: pl_scan_csv(conv.hdf_to_csv(path)),
+    'por': lambda path, conv: pl_scan_csv(conv.por_to_csv(path)),
+    'sdf': lambda path, conv: pl_scan_csv(conv.sdf_to_csv(path), ignore_errors=True)
 }
 
 WRITERS: Dict[str, WriterType] = {

@@ -22,6 +22,7 @@ dependencies:
   - pytables=3.7
   - pyorc
   - duckdb=1.1.3
+  - rdkit=2024.09.3
   - pip
   - pip:
     - lief==0.13.2
