@@ -9,16 +9,16 @@ from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 from server.src.orc import write_orc
-
+from server.src.pyreadstat_wrapper import write_por, write_xpt, write_sav, write_zsav
 
 WriterType = Callable[[DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, DuckDBPyConnection, ReadConverter], DuckDBPyRelation]
 
 READERS: Dict[str, ReaderType] = {
     'csv': lambda path, conn, conv: conn.read_csv(path, header=True, filename=filename_column),
-    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t"),
+    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t", filename=filename_column),
     'parquet': lambda path, conn, conv: conn.read_parquet(path),
-    'json': lambda path, conn, conv: conn.read_json(path),
+    'json': lambda path, conn, conv: conn.read_json(path, filename=filename_column),
     'avro': lambda path, conn, conv: conn.read_csv(conv.avro_to_csv(path)),
     'orc': lambda path, conn, conv: conn.read_csv(conv.orc_to_csv(path)),
     'xlsx': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
@@ -30,12 +30,14 @@ READERS: Dict[str, ReaderType] = {
     'odt': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
     'feather': lambda path, conn, conv: conn.read_csv(conv.feather_to_csv(path)),
     'sas7bdat': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xpt': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conn, conv: conn.read_csv(conv.xpt_to_csv(path)),
     'xml': lambda path, conn, conv: conn.read_csv(conv.xml_to_csv(path)),
     'sav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
+    'zsav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
     'dta': lambda path, conn, conv: conn.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
-    'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path))
+    'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
+    'por': lambda path, conn, conv: conn.read_csv(conv.por_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -43,7 +45,7 @@ WRITERS: Dict[str, WriterType] = {
     'tsv': lambda rel, path: rel.write_csv(path, header=True, sep="\t"),
     'parquet': lambda rel, path: rel.write_parquet(path),
     'json': lambda rel, path: rel.pl().write_json(path),
-    'xlsx': lambda rel, path: rel.pl().write_excel(path),
+    'xlsx': lambda rel, path: rel.to_df().to_excel(path, index=False),
     'avro': lambda rel, path: pdx.to_avro(path, rel.to_df()),
     'orc': lambda rel, path: write_orc(path, rel.to_df()),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
@@ -51,6 +53,12 @@ WRITERS: Dict[str, WriterType] = {
     'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),
     'h5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'hdf5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
+    'por': lambda rel, path: write_por(path, rel.to_df()),
+    'xpt': lambda rel, path: write_xpt(path, rel.to_df()),
+    'sav': lambda rel, path: write_sav(path, rel.to_df()),
+    'zsav': lambda rel, path: write_zsav(path, rel.to_df()),
+    'ods': lambda rel, path: rel.to_df().to_excel(path, index=False, engine="odf"),
+    'html': lambda rel, path: rel.to_df().to_html(path, index=False),
 }
 
 assert set(read_formats) == set(READERS.keys()), \
@@ -115,6 +123,9 @@ class DuckDBEngine(DataEngine):
        
         self.validate_file_path(file_path, write_formats)
         file_extension = self.get_file_ext(file_path)
+
+        columns = latest_query_result.columns
+        latest_query_result = latest_query_result.project(*[x for x in columns if x != filename_column])
 
         WRITERS[file_extension](latest_query_result, file_path)
 
