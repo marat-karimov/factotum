@@ -8,7 +8,7 @@ from duckdb import DuckDBPyRelation, DuckDBPyConnection
 from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
-from server.src.orc import write_orc
+from server.src.pyorc_wrapper import write_orc
 from server.src.pyreadstat_wrapper import write_por, write_xpt, write_sav, write_zsav
 
 WriterType = Callable[[DuckDBPyRelation, str], None]
@@ -37,7 +37,8 @@ READERS: Dict[str, ReaderType] = {
     'dta': lambda path, conn, conv: conn.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
     'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
     'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
-    'por': lambda path, conn, conv: conn.read_csv(conv.por_to_csv(path))
+    'por': lambda path, conn, conv: conn.read_csv(conv.por_to_csv(path)),
+    'sdf': lambda path, conn, conv: conn.read_csv(conv.sdf_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {

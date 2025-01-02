@@ -19,13 +19,14 @@ Factotum provides compatibility with the following data file formats:
 - **Apache Parquet:** `.parquet`
 - **Apache AVRO:** `.avro`
 - **Apache ORC:** `.orc`
+- **Apache Arrow IPC:** `.feather`
 - **JavaScript Object Notation (JSON):** `.json`
-- **Feather Binary Format:** `.feather`
 - **Statistical Analysis System (SAS):** `.sas7bdat`, `.xpt`
 - **Extensible Markup Language (XML):** `.xml`
-- **Statistical Package for the Social Sciences (SPSS):** `.sav`
+- **Statistical Package for the Social Sciences (SPSS):** `.sav`, `.zsav`, `.por`
 - **Stata Data Format:** `.dta`
 - **Hierarchical Data Format (HDF):** `.h5`, `.hdf5`
+- **Structure Data Format for Chemical Data:** `.sdf`
 
 ## SQL Engines
 
