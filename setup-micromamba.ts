@@ -4,7 +4,7 @@ import path from "path";
 import { execSync } from "child_process";
 
 const baseUrl = "https://micromamba.snakepit.net/api/micromamba";
-const version = "1.4.9";
+const version = "2.0.5";
 const platformArch = `${os.platform()}-${os.arch()}`;
 const inArchivePath =
   os.platform() === "win32" ? "Library/bin/micromamba.exe" : "bin/micromamba";
