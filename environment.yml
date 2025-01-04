@@ -2,7 +2,7 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.11
   - nomkl
   - polars=1.17.1
   - xlsx2csv
@@ -12,7 +12,7 @@ dependencies:
   - pyarrow
   - pandas=2.2.3
   - lxml
-  - pyreadstat  
+  - pyreadstat
   - odfpy
   - xlsxwriter
   - pyxlsb
@@ -26,8 +26,8 @@ dependencies:
   - pip
   - pip:
     - lief==0.13.2
-    - cx-Freeze==6.15.10
+    - cx-Freeze==7.0
     - openpyxl
     - pytest
     - requests
-    - numpy==1.26.4
+    - numpy==1.23.5
