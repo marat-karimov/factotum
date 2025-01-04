@@ -10,7 +10,7 @@ dependencies:
   - sqlparse
   - sqlglot
   - pyarrow
-  - pandas=2.0.3
+  - pandas=2.2.3
   - lxml
   - pyreadstat  
   - odfpy
@@ -19,7 +19,7 @@ dependencies:
   - xlrd
   - pandavro
   - python-snappy
-  - pytables=3.7
+  - pytables=3.8.0
   - pyorc
   - duckdb=1.1.3
   - rdkit=2024.09.3
@@ -30,4 +30,4 @@ dependencies:
     - openpyxl
     - pytest
     - requests
-    - numpy==1.23.5
+    - numpy==1.26.4
