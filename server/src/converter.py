@@ -52,6 +52,9 @@ class ReadConverter:
 
     def xpt_to_csv(self, path, **kwargs):
         return self._read_file_once(read_xpt, path, **kwargs)
+    
+    def pkl_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_pickle, path, **kwargs)
 
     def _read_file_chunks(self, read_func, path, chunksize, **kwargs):
         temp_file_path = self._generate_temp_file_path(path)
