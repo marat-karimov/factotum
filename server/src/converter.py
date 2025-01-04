@@ -52,6 +52,9 @@ class ReadConverter:
 
     def xpt_to_csv(self, path, **kwargs):
         return self._read_file_once(read_xpt, path, **kwargs)
+    
+    def pkl_to_csv(self, path, **kwargs):
+        return self._read_file_once(pd.read_pickle, path, **kwargs)
 
     def _read_file_chunks(self, read_func, path, chunksize, **kwargs):
         temp_file_path = self._generate_temp_file_path(path)
@@ -70,6 +73,9 @@ class ReadConverter:
 
     def _read_file_once(self, read_func, path, **kwargs):
         temp_file_path = self._generate_temp_file_path(path)
+
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
 
         first_file = True
         cols_number_expected = None

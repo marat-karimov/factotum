@@ -38,7 +38,8 @@ READERS: Dict[str, ReaderType] = {
     'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
     'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
     'por': lambda path, conn, conv: conn.read_csv(conv.por_to_csv(path)),
-    'sdf': lambda path, conn, conv: conn.read_csv(conv.sdf_to_csv(path))
+    'sdf': lambda path, conn, conv: conn.read_csv(conv.sdf_to_csv(path)),
+    'pkl': lambda path, conn, conv: conn.read_csv(conv.pkl_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -60,6 +61,7 @@ WRITERS: Dict[str, WriterType] = {
     'zsav': lambda rel, path: write_zsav(path, rel.to_df()),
     'ods': lambda rel, path: rel.to_df().to_excel(path, index=False, engine="odf"),
     'html': lambda rel, path: rel.to_df().to_html(path, index=False),
+    'pkl': lambda rel, path: rel.to_df().to_pickle(path),
 }
 
 assert set(read_formats) == set(READERS.keys()), \

@@ -24,7 +24,8 @@
         { "name": "Stata Data Format (.dta)", "extensions": ["dta"] },
         { "name": "Hierarchical Data Format (HDF) (.h5)", "extensions": ["h5"] },
         { "name": "Hierarchical Data Format (HDF) (.hdf5)", "extensions": ["hdf5"] },
-        { "name": "Structure Data Format for Chemical Data (.sdf)", "extensions": ["sdf"] }
+        { "name": "Structure Data Format for Chemical Data (.sdf)", "extensions": ["sdf"] },
+        { "name": "Python Pickle Format (.pkl)", "extensions": ["pkl"] }
       ],
       "write_files": [
         { "name": "Comma Separated (.csv)", "extensions": ["csv"] },
@@ -44,7 +45,8 @@
         { "name": "Statistical Package for the Social Sciences (SPSS) (.por)", "extensions": ["por"] },
         { "name": "Statistical Analysis System (SAS) (.xpt)", "extensions": ["xpt"] },
         { "name": "Open Office (.ods)", "extensions": ["ods"] },
-        { "name": "Hypertext Mark-up Language (HTML) (.html)", "extensions": ["html"] }
+        { "name": "Hypertext Mark-up Language (HTML) (.html)", "extensions": ["html"] },
+        { "name": "Python Pickle Format (.pkl)", "extensions": ["pkl"] }
       ],
       "filename_column": "_factotum_filename"
   }
