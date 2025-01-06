@@ -13,8 +13,8 @@ WriterType = Callable[[pl.DataFrame, str], None]
 ReaderType = Callable[[str, ReadConverter], pl.LazyFrame]
 
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conv: pl.scan_csv(path, include_file_paths=filename_column),
-    'tsv': lambda path, conv: pl.scan_csv(path, separator="\t", include_file_paths=filename_column),
+    'csv': lambda path, conv: pl.scan_csv(path, include_file_paths=filename_column, ignore_errors=True),
+    'tsv': lambda path, conv: pl.scan_csv(path, separator="\t", include_file_paths=filename_column, ignore_errors=True),
     'parquet': lambda path, conv: pl.scan_parquet(path, include_file_paths=filename_column),
     'json': lambda path, conv: pl.read_json(path),
     'avro': lambda path, conv: pl.scan_parquet(conv.avro_to_csv(path)),
