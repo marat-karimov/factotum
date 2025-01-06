@@ -9,6 +9,7 @@ from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 from server.src.pyorc_wrapper import write_orc
+from server.src.stata_wrapper import write_dta
 from server.src.pyreadstat_wrapper import write_por, write_xpt, write_sav, write_zsav
 
 WriterType = Callable[[DuckDBPyRelation, str], None]
@@ -52,7 +53,7 @@ WRITERS: Dict[str, WriterType] = {
     'orc': lambda rel, path: write_orc(path, rel.to_df()),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
     'xml': lambda rel, path: rel.to_df().to_xml(path, index=False),
-    'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),
+    'dta': lambda rel, path: write_dta(path, rel.to_df()),
     'h5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'hdf5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'por': lambda rel, path: write_por(path, rel.to_df()),

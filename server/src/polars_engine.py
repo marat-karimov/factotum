@@ -6,6 +6,7 @@ from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 import pandavro as pdx
 from server.src.pyorc_wrapper import write_orc
+from server.src.stata_wrapper import write_dta
 from server.src.pyreadstat_wrapper import write_por, write_xpt, write_zsav, write_sav
 
 WriterType = Callable[[pl.DataFrame, str], None]
@@ -49,7 +50,7 @@ WRITERS: Dict[str, WriterType] = {
     'orc': lambda result, path: write_orc(path, result.to_pandas()),
     'feather': lambda result, path: result.to_pandas().to_feather(path, version=1),
     'xml': lambda result, path: result.to_pandas().to_xml(path, index=False),
-    'dta': lambda result, path: result.to_pandas().to_stata(path, write_index=False),
+    'dta': lambda result, path: write_dta(path, result.to_pandas()),
     'h5': lambda result, path: result.to_pandas().to_hdf(path, key='s', index=False),
     'hdf5': lambda result, path: result.to_pandas().to_hdf(path, key='s', index=False),
     'por': lambda result, path: write_por(path, result.to_pandas()),
