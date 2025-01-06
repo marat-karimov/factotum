@@ -9,37 +9,38 @@ from typing import Callable, Dict
 from server.src.converter import ReadConverter
 from server.src.read_config import read_formats, write_formats, filename_column
 from server.src.pyorc_wrapper import write_orc
+from server.src.stata_wrapper import write_dta
 from server.src.pyreadstat_wrapper import write_por, write_xpt, write_sav, write_zsav
 
 WriterType = Callable[[DuckDBPyRelation, str], None]
 ReaderType = Callable[[str, DuckDBPyConnection, ReadConverter], DuckDBPyRelation]
 
 READERS: Dict[str, ReaderType] = {
-    'csv': lambda path, conn, conv: conn.read_csv(path, header=True, filename=filename_column),
-    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t", filename=filename_column),
+    'csv': lambda path, conn, conv: conn.read_csv(path, header=True, filename=filename_column, ignore_errors=True),
+    'tsv': lambda path, conn, conv: conn.read_csv(path, header=True, sep="\t", filename=filename_column, ignore_errors=True),
     'parquet': lambda path, conn, conv: conn.read_parquet(path),
     'json': lambda path, conn, conv: conn.read_json(path, filename=filename_column),
-    'avro': lambda path, conn, conv: conn.read_csv(conv.avro_to_csv(path)),
-    'orc': lambda path, conn, conv: conn.read_csv(conv.orc_to_csv(path)),
-    'xlsx': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'xls': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'xlsm': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'xlsb': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'odf': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'ods': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'odt': lambda path, conn, conv: conn.read_csv(conv.excel_to_csv(path)),
-    'feather': lambda path, conn, conv: conn.read_csv(conv.feather_to_csv(path)),
-    'sas7bdat': lambda path, conn, conv: conn.read_csv(conv.sas_to_csv(path, encoding='utf-8')),
-    'xpt': lambda path, conn, conv: conn.read_csv(conv.xpt_to_csv(path)),
-    'xml': lambda path, conn, conv: conn.read_csv(conv.xml_to_csv(path)),
-    'sav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
-    'zsav': lambda path, conn, conv: conn.read_csv(conv.spss_to_csv(path)),
-    'dta': lambda path, conn, conv: conn.read_csv(conv.stata_to_csv(path, convert_categoricals=False)),
-    'h5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
-    'hdf5': lambda path, conn, conv: conn.read_csv(conv.hdf_to_csv(path)),
-    'por': lambda path, conn, conv: conn.read_csv(conv.por_to_csv(path)),
-    'sdf': lambda path, conn, conv: conn.read_csv(conv.sdf_to_csv(path)),
-    'pkl': lambda path, conn, conv: conn.read_csv(conv.pkl_to_csv(path))
+    'avro': lambda path, conn, conv: conn.read_parquet(conv.avro_to_csv(path)),
+    'orc': lambda path, conn, conv: conn.read_parquet(conv.orc_to_csv(path)),
+    'xlsx': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'xls': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'xlsm': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'xlsb': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'odf': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'ods': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'odt': lambda path, conn, conv: conn.read_parquet(conv.excel_to_csv(path)),
+    'feather': lambda path, conn, conv: conn.read_parquet(conv.feather_to_csv(path)),
+    'sas7bdat': lambda path, conn, conv: conn.read_parquet(conv.sas_to_csv(path, encoding='utf-8')),
+    'xpt': lambda path, conn, conv: conn.read_parquet(conv.xpt_to_csv(path)),
+    'xml': lambda path, conn, conv: conn.read_parquet(conv.xml_to_csv(path)),
+    'sav': lambda path, conn, conv: conn.read_parquet(conv.spss_to_csv(path)),
+    'zsav': lambda path, conn, conv: conn.read_parquet(conv.spss_to_csv(path)),
+    'dta': lambda path, conn, conv: conn.read_parquet(conv.stata_to_csv(path, convert_categoricals=False)),
+    'h5': lambda path, conn, conv: conn.read_parquet(conv.hdf_to_csv(path)),
+    'hdf5': lambda path, conn, conv: conn.read_parquet(conv.hdf_to_csv(path)),
+    'por': lambda path, conn, conv: conn.read_parquet(conv.por_to_csv(path)),
+    'sdf': lambda path, conn, conv: conn.read_parquet(conv.sdf_to_csv(path)),
+    'pkl': lambda path, conn, conv: conn.read_parquet(conv.pkl_to_csv(path))
 }
 
 WRITERS: Dict[str, WriterType] = {
@@ -52,7 +53,7 @@ WRITERS: Dict[str, WriterType] = {
     'orc': lambda rel, path: write_orc(path, rel.to_df()),
     'feather': lambda rel, path: rel.to_df().to_feather(path, version=1),
     'xml': lambda rel, path: rel.to_df().to_xml(path, index=False),
-    'dta': lambda rel, path: rel.to_df().to_stata(path, write_index=False),
+    'dta': lambda rel, path: write_dta(path, rel.to_df()),
     'h5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'hdf5': lambda rel, path: rel.to_df().to_hdf(path, key='s', index=False),
     'por': lambda rel, path: write_por(path, rel.to_df()),
