@@ -34,7 +34,7 @@ import { messages } from "../messages";
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-const defaultEngine: Engine = "polars";
+const defaultEngine: Engine = "duckdb";
 
 const server =
   process.env.NODE_ENV === "development"

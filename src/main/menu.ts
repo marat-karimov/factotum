@@ -159,23 +159,23 @@ export class MainMenu {
       id: "polars",
       type: "checkbox",
       label: "Polars",
-      checked: true,
-      enabled: false,
+      checked: false,
+      enabled: true,
       click: () => this.engineSwitchHandler("polars", "duckdb"),
     };
 
     const duckdbItem: MenuItemConstructorOptions = {
       type: "checkbox",
       id: "duckdb",
-      label: "DuckDB (experimental)",
-      checked: false,
-      enabled: true,
+      label: "DuckDB",
+      checked: true,
+      enabled: false,
       click: () => this.engineSwitchHandler("duckdb", "polars"),
     };
 
     const engineMenu: MenuItemConstructorOptions = {
       label: "Engine",
-      submenu: [polarsItem, duckdbItem],
+      submenu: [duckdbItem, polarsItem],
     };
 
     const runSqlItem: MenuItemConstructorOptions = {
